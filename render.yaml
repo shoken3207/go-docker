@@ -20,6 +20,8 @@ services:
         valueFromInstance: DB_USER
       - key: DB_PASSWORD
         valueFromInstance: DB_PASSWORD
+      - key: SSL_MODE
+        valueFromInstance: SSL_MODE
 
 databases:
   - name: go-app-db

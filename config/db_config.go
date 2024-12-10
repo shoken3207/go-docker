@@ -1,6 +1,8 @@
 package config
 
-import "os"
+import (
+	"os"
+)
 
 func GetDBConfig() string {
 	return "host=" + os.Getenv("DB_HOST") +

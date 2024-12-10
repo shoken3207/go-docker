@@ -26,22 +26,22 @@ func (s *AuthService) findUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
-func (s *AuthService) createUser(newUser *models.User) ( error) {
+func (s *AuthService) createUser(newUser *models.User) error {
 	if err := db.DB.Create(&newUser).Error; err != nil {
 		log.Printf("Error: %v", err)
-		return  err
+		return err
 	}
 
-	return  nil
+	return nil
 }
 
-func (s *AuthService) createEmailVerification(newEmailVerification *models.EmailVerification) ( error) {
+func (s *AuthService) createEmailVerification(newEmailVerification *models.EmailVerification) error {
 	if err := db.DB.Create(&newEmailVerification).Error; err != nil {
 		log.Printf("Error: %v", err)
-		return  err
+		return err
 	}
 
-	return  nil
+	return nil
 }
 
 func (s *AuthService) generateHashedPass(password string) (*string, error) {
@@ -54,7 +54,7 @@ func (s *AuthService) generateHashedPass(password string) (*string, error) {
 	return &stringPassHash, nil
 }
 
-func (s *AuthService) comparePassword(requestPass string, savedPass string) (error) {
+func (s *AuthService) comparePassword(requestPass string, savedPass string) error {
 	if err := bcrypt.CompareHashAndPassword([]byte(savedPass), []byte(requestPass)); err != nil {
 		log.Printf("パスワード比較エラー: %v", err)
 		return err
@@ -65,8 +65,8 @@ func (s *AuthService) comparePassword(requestPass string, savedPass string) (err
 func (s *AuthService) generateJwtToken(userId uint) (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId,
-		"jti": uuid.New().String(),
-		"exp": time.Now().Add(constants.JwtTokenExpDate).Unix(),
+		"jti":    uuid.New().String(),
+		"exp":    time.Now().Add(constants.JwtTokenExpDate).Unix(),
 	})
 	secretKey := os.Getenv("SECRET_KEY")
 	if secretKey == "" {
@@ -81,8 +81,7 @@ func (s *AuthService) generateJwtToken(userId uint) (*string, error) {
 	return &tokenString, nil
 }
 
-
-func(s *AuthService) SendEmail(to string, subject string, body string) error {
+func (s *AuthService) SendEmail(to string, subject string, body string) error {
 	// smtpHost := "smtp.gmail.com"
 	// smtpPort := 587
 	smtpHost := "mailhog"
@@ -103,7 +102,6 @@ func(s *AuthService) SendEmail(to string, subject string, body string) error {
 	}
 	return nil
 }
-
 
 func NewAuthService() *AuthService {
 	return &AuthService{}

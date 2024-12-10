@@ -1,0 +1,21 @@
+# Dockerfile for Development
+FROM golang:1.23.3-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install necessary tools (swag and air for development)
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN go install github.com/air-verse/air@latest
+
+# Copy application code
+COPY . .
+
+# Install dependencies
+RUN go mod download
+
+# Expose port for debugging or development server
+EXPOSE 8080
+
+# Start application with hot-reloading
+CMD ["air"]

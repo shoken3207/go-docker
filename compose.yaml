@@ -17,6 +17,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
     depends_on:
       - db
+      - mailhog
 
   db:
     image: postgres:15
@@ -29,6 +30,13 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql/data
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
 
 volumes:
   db_data:

@@ -1,167 +1,194 @@
 package auth
 
 import (
-	"fmt"
+	"errors"
+	"go-docker/models"
+	"go-docker/pkg/constants"
+	"go-docker/pkg/utils"
+	"log"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type AuthHandler struct{}
 
-type User struct{
-	Id string `json:"id"`
-	Name string `json:"name"`
-	Email string `json:"email"`
-	Password string `json:"password"`
+var authService = NewAuthService()
+
+// @Summary メールアドレスの本人確認
+// @Description リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信
+// @Tags auth
+// @Param email path string true "メールアドレス"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/auth/emailVerified/{email} [get]
+func (h *AuthHandler) EmailVerification(c *gin.Context) {
+	request := EmailVerificationRequest{}
+	if err := c.ShouldBindUri(&request); err != nil {
+		utils.ErrorResponse[interface{}](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+	log.Printf(request.Email)
+	user, err := authService.findUserByEmail(request.Email)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		return
+	}
+	log.Print("called")
+	if user != nil {
+		utils.ErrorResponse[interface{}](c, http.StatusConflict, "登録済みのメールアドレスです。")
+		return
+	}
+
+	token := utils.GenerateRandomToken(32)
+	EmailVerificationData := models.EmailVerification{
+		Email: request.Email,
+		Token: token,
+		ExpiresAt: time.Now().Add(constants.EmailVerificationExpDate),
+	}
+	if err := authService.createEmailVerification(&EmailVerificationData); err != nil {
+		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		return
+	}
+
+	// registerUrl := constants.RegisteBaserUrl + "/?token=" + token
+	// authService.SendEmail(registerUrl)
+	if err := authService.SendEmail(request.Email,"タイトル","本文"); err != nil {
+		log.Printf("メール送信に失敗しました: %v\n", err)
+		utils.ErrorResponse[any](c, http.StatusInternalServerError, "メール送信に失敗しました")
+		return
+	}
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "入力されたメールアドレス宛に本登録用URLを送信しました。")
 }
-var users []User
-
-type RegisterRequest struct{
-	Name string `json:"name" binding:"required,min=3,max=100"`
-	Email string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6,max=50"`
-}
-
-type LoginRequest struct{
-	Email string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6,max=50"`
-}
-
-type ErrorResponse struct{
-	Error string `json:"error"`
-	Message string `json:"message"`
-}
-
-func (h *AuthHandler) GetUsers(c *gin.Context) {
-	c.JSON(http.StatusOK, users)
-}
 
 
+// @Summary ユーザー登録
+// @Description メールアドレス確認後にリクエスト内容をユーザーテーブルに保存
+// @Tags auth
+// @Param request body auth.RegisterRequest true "ユーザー情報"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var request RegisterRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{
-			Error: "Invalid Request",
-			Message: err.Error(),
-		})
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c,http.StatusBadRequest, "リクエストに不備があります。")
+		return
 	}
 
 
-	id := uuid.New()
-	fmt.Print(request)
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	user, err := authService.findUserByEmail(request.Email)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{
-			Error: "Server Error",
-			Message: err.Error(),
-		})
-	}
-
-	newUser := User{
-		Id: id.String(),
-		Name: request.Name,
-		Email: request.Email,
-		Password: string(hashedPassword),
-	}
-
-
-
-	users = append(users, newUser)
-	c.JSON(http.StatusOK, newUser)
-}
-
-func findUserByEmail(email string) (*User, error) {
-	for _, user := range users {
-		if user.Email == email {
-			return &user, nil
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Printf("データベースエラー: %v", err)
+			utils.ErrorResponse[any](c,http.StatusInternalServerError, "内部エラーが発生しました。")
+			return;
 		}
 	}
 
-	return nil, fmt.Errorf("user not found")
+
+	if user != nil {
+		utils.ErrorResponse[any](c,http.StatusConflict, "登録済みのメールアドレスです。")
+		return
+	}
+	passHash, err := authService.generateHashedPass(request.Password)
+	if err != nil {
+		utils.ErrorResponse[any](c,http.StatusInternalServerError,"内部エラーが発生しました。")
+		return
+	}
+
+	newUser := models.User{Name: request.Name, Email: request.Email, PassHash: *passHash, Description: request.Description, ProfileImage: request.ProfileImage}
+
+	if err := authService.createUser(&newUser); err != nil {
+		utils.ErrorResponse[any](c,http.StatusInternalServerError,"内部エラーが発生しました。")
+		return
+	}
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "ユーザー登録に成功しました。")
 }
 
+
+// @Summary ログイン
+// @Description メールアドレスとパスワードが合致したら、jwtトークンをCookieに保存
+// @Tags auth
+// @Param request body auth.LoginRequest true "ログイン情報"
+// @Success 200 {object} utils.ApiResponse[LoginResponse] "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 404 {object} utils.BasicResponse "not foundエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/auth/login [post]
 func (h *AuthHandler)Login(c *gin.Context){
 	var request LoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{
-			Error: "Invalid Request",
-			Message: err.Error(),
-		})
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[interface{}](c,http.StatusBadRequest, "リクエストに不備があります。")
 		return;
 	}
 
-	user, err := findUserByEmail(request.Email)
+	user, err := authService.findUserByEmail(request.Email)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, ErrorResponse{
-			Error: "Invalid credentials",
-			Message: err.Error(),
-		})
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			utils.ErrorResponse[interface{}](c,http.StatusNotFound, "認証に失敗しました。")
+		} else {
+			utils.ErrorResponse[interface{}](c,http.StatusInternalServerError, "内部エラーが発生しました。")
+		}
+		return;
+	}
+	if  err = authService.comparePassword(request.Password, user.PassHash); err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			utils.ErrorResponse[interface{}](c,http.StatusNotFound, "認証に失敗しました。")
+		}else {
+			utils.ErrorResponse[interface{}](c,http.StatusInternalServerError, "内部エラーが発生しました。")
+		}
 		return;
 	}
 
-	
-	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, ErrorResponse{
-			Error: "Invalid credentials",
-			Message: err.Error(),
-		})
-	}
-	
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId": user.Id,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
-	})
-	fmt.Println("token",token)
-
-	err = godotenv.Load(".env")
+	token, err := authService.generateJwtToken(user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{
-			Error: "server error",
-			Message: err.Error(),
-		})
+		utils.ErrorResponse[interface{}](c,http.StatusInternalServerError, "内部エラーが発生しました。")
 		return;
 	}
-	secretKey := os.Getenv("SECRET_KEY")
-	fmt.Print("key: ", secretKey)
 
-	tokenString, err := token.SignedString(secretKey)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{
-			Error: "Failed to generate token",
-			Message: err.Error(),
-		})
-		return;
+	domain := os.Getenv("COOKIE_DOMAIN")
+	if domain == "" {
+		domain = "localhost"
 	}
-	fmt.Print("token",tokenString)
-	c.SetCookie("token", tokenString, 3600 * 24, "/", "localhost", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully"})
+	utils.SuccessResponse[LoginResponse](c, http.StatusOK, LoginResponse{Token: *token}, "ログインに成功しました。")
 }
 
-// func authenticateJWT(c *gin.Context) {
-// 	tokenString, err := c.Cookie("token")
-// 	if err != nil {
-// 		c.JSON(http.StatusUnauthorized, ErrorResponse{
-// 			Error: "Authorization cookie not found",
-// 			Message: err.Error(),
-// 		})
-// 	}
 
-// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-// 		if _, ok := token.Method.(*jwt.SigningMethodHS256); !ok {
-// 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-// 		}
-// 		return 
-// 	})
-// }
+// @Summary ログアウト状態からパスワードを変更
+// @Description メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、
+// @Tags auth
+// @Param request body auth.EmailVerificationRequest true "メールアドレス"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/auth/resetPass [put]
+func (h *AuthHandler) ResetPass(c *gin.Context) {
+}
+
+
+// @Summary ログイン状態からパスワードを変更
+// @Description 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
+// @Tags auth
+// @Security BearerAuth
+// @Param request body auth.UpdatePassRequest true "メールアドレス"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 404 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/auth/updatePass [put]
+func (h *AuthHandler) UpdatePass(c *gin.Context) {
+
+}
 
 func NewAuthHandler() *AuthHandler {
 	return &AuthHandler{}

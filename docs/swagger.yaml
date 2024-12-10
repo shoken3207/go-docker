@@ -1,0 +1,405 @@
+consumes:
+- application/json
+definitions:
+  auth.EmailVerificationRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 50
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  auth.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  auth.RegisterRequest:
+    properties:
+      description:
+        type: string
+      email:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      password:
+        maxLength: 50
+        minLength: 6
+        type: string
+      profileImage:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  auth.UpdatePassRequest:
+    properties:
+      afterPassword:
+        maxLength: 50
+        minLength: 6
+        type: string
+      beforePassword:
+        maxLength: 50
+        minLength: 6
+        type: string
+    required:
+    - afterPassword
+    - beforePassword
+    type: object
+  user.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  user.User:
+    properties:
+      age:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  utils.ApiResponse-auth_LoginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/auth.LoginResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  utils.BasicResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: このapiは、ビジターゴーのAPIで、ユーザー、スタジアム、遠征記録、などについて扱います。
+  title: ビジターゴーAPI
+  version: "1.0"
+paths:
+  /api/auth/emailVerified/{email}:
+    get:
+      description: リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信
+      parameters:
+      - description: メールアドレス
+        in: path
+        name: email
+        required: true
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: メールアドレスの本人確認
+      tags:
+      - auth
+  /api/auth/login:
+    post:
+      description: メールアドレスとパスワードが合致したら、jwtトークンをCookieに保存
+      parameters:
+      - description: ログイン情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-auth_LoginResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: ログイン
+      tags:
+      - auth
+  /api/auth/register:
+    post:
+      description: メールアドレス確認後にリクエスト内容をユーザーテーブルに保存
+      parameters:
+      - description: ユーザー情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: ユーザー登録
+      tags:
+      - auth
+  /api/auth/resetPass:
+    put:
+      description: メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、
+      parameters:
+      - description: メールアドレス
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.EmailVerificationRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: ログアウト状態からパスワードを変更
+      tags:
+      - auth
+  /api/auth/updatePass:
+    put:
+      description: 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
+      parameters:
+      - description: メールアドレス
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UpdatePassRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: ログイン状態からパスワードを変更
+      tags:
+      - auth
+  /api/expedition/create:
+    post:
+      description: 遠征、出費、試合、訪れた施設の情報を保存する。
+      responses:
+        "200":
+          description: アップロードした画像のURL
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "403":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録を作成
+      tags:
+      - expedition
+  /api/expedition/delete/{id}:
+    delete:
+      description: pathのidをもとに遠征記録を削除する。
+      responses:
+        "200":
+          description: アップロードした画像のURL
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "403":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録を削除
+      tags:
+      - expedition
+  /api/expedition/update/{id}:
+    put:
+      description: 遠征、出費、試合、訪れた施設の情報を更新する。
+      responses:
+        "200":
+          description: アップロードした画像のURL
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "403":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録を更新
+      tags:
+      - expedition
+  /api/sample/helloWorld:
+    get:
+      responses: {}
+      summary: サンプルAPI
+      tags:
+      - sample
+  /api/sample/protectedHelloWorld:
+    get:
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: サンプルAPI
+      tags:
+      - sample
+  /api/upload/images:
+    post:
+      description: 画像をアップロードし、URLを返します。
+      parameters:
+      - description: 画像ファイル
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses: {}
+      summary: 画像をクラウドストレージにアップロード
+      tags:
+      - upload
+  /api/user/{id}:
+    get:
+      description: userIdからユーザーを1人取得
+      parameters:
+      - description: userId
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ユーザー情報
+          schema:
+            $ref: '#/definitions/user.User'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+        "404":
+          description: ユーザーが見つかりません
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+      summary: ユーザー情報取得
+      tags:
+      - user
+  /api/user/update/:id:
+    put:
+      description: userIdが同じユーザーの情報を変更する
+      parameters:
+      - description: userId
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ユーザー情報
+          schema:
+            $ref: '#/definitions/user.User'
+      summary: ユーザー情報変更
+      tags:
+      - user
+produces:
+- application/json
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

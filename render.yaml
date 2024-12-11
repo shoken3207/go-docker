@@ -25,10 +25,4 @@ services:
 databases:
   - name: go-app-db
     plan: free
-    envVars:
-      - key: POSTGRES_USER
-        valueFromInstance: POSTGRES_USER
-      - key: POSTGRES_PASSWORD
-        valueFromInstance: POSTGRES_PASSWORD
-      - key: POSTGRES_DB
-        valueFromInstance: POSTGRES_DB
+    region: singapore

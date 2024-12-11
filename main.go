@@ -22,9 +22,6 @@ import (
 // @host localhost:8080
 // @BasePath /api
 func main() {
-	// if err := godotenv.Load(".env"); err != nil {
-	//     log.Printf("環境変数をロードできませんでした: %v", err)
-	// }
 	db.InitDB()
 	r := router.SetupRouter()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

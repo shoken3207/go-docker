@@ -20,10 +20,6 @@ services:
         fromDatabase:
           name: go-app-db
           property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: go-app-db
-          property: name
       - key: DB_USER
         fromDatabase:
           name: go-app-db

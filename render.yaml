@@ -29,7 +29,7 @@ services:
           name: go-app-db
           property: password
       - key: SSL_MODE
-        value: SSL_MODE
+        value: require
 
 databases:
   - name: go-app-db

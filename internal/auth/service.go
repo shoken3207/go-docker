@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/gomail.v2"
+	"net/smtp"
 )
 
 type AuthService struct{}
@@ -84,22 +85,37 @@ func (s *AuthService) generateJwtToken(userId uint) (*string, error) {
 func (s *AuthService) SendEmail(to string, subject string, body string) error {
 	// smtpHost := "smtp.gmail.com"
 	// smtpPort := 587
-	smtpHost := "mailhog"
+	smtpHost := "host.docker.internal"
 	smtpPort := 1025
 	email := "sotsuken.testosterone@gmail.com"
 	password := "sotsuken@2024"
-	log.Printf("generate mail")
-	m := gomail.NewMessage()
-	m.SetHeader("From", email)
-	m.SetHeader("To", to)
-	m.SetHeader("Subject", subject)
-	m.SetBody("text/plain", body)
+	message := []byte("From: " + email + "\r\n" +
+		"To: " + to + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"\r\n" +
+		body + "\r\n")
 
-	d := gomail.NewDialer(smtpHost, smtpPort, email, password)
-	d.TLSConfig = nil
-	if err := d.DialAndSend(m); err != nil {
+	// SMTP認証
+	auth := smtp.PlainAuth("", email, password, smtpHost)
+
+	// メール送信
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, email, []string{to}, message)
+	if err != nil {
 		return err
 	}
+	log.Println("メール送信に成功しました")
+	// log.Printf("generate mail")
+	// m := gomail.NewMessage()
+	// m.SetHeader("From", email)
+	// m.SetHeader("To", to)
+	// m.SetHeader("Subject", subject)
+	// m.SetBody("text/plain", body)
+
+	// d := gomail.NewDialer(smtpHost, smtpPort, email, password)
+	// d.TLSConfig = nil
+	// if err := d.DialAndSend(m); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 

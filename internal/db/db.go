@@ -13,7 +13,6 @@ var DB *gorm.DB
 
 func InitDB() {
 	dsn := config.GetDBConfig()
-	log.Printf(dsn)
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

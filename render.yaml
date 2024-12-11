@@ -7,22 +7,36 @@ services:
     healthCheckPath: /
     autoDeploy: true
     buildCommand: ""
-    startCommand: "./main"
     envVars:
       - key: DB_HOST
-        valueFromInstance: DB_HOST
-      - key: DB_PORT
-        valueFromInstance: DB_PORT
+        fromDatabase:
+          name: go-app-db
+          property: host
       - key: DB_NAME
-        valueFromInstance: DB_NAME
+        fromDatabase:
+          name: go-app-db
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: go-app-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: go-app-db
+          property: name
       - key: DB_USER
-        valueFromInstance: DB_USER
+        fromDatabase:
+          name: go-app-db
+          property: user
       - key: DB_PASSWORD
-        valueFromInstance: DB_PASSWORD
+        fromDatabase:
+          name: go-app-db
+          property: password
       - key: SSL_MODE
-        valueFromInstance: SSL_MODE
+        value: SSL_MODE
 
 databases:
   - name: go-app-db
     plan: free
     region: singapore
+    postgresMajorVersion: "15"

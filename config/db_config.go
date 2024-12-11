@@ -1,12 +1,22 @@
 package config
 
-import "os"
+import (
+	"os"
+)
 
 func GetDBConfig() string {
-	return "host=" + os.Getenv("DB_HOST") +
+	env := os.Getenv("ENV")
+	var fullHost string
+	host := os.Getenv("DB_HOST")
+	if env == "prod" {
+		fullHost = host + ".singapore-postgres.render.com"
+	} else {
+		fullHost = host
+	}
+	return "host=" + fullHost +
 		" user=" + os.Getenv("DB_USER") +
 		" password=" + os.Getenv("DB_PASSWORD") +
 		" dbname=" + os.Getenv("DB_NAME") +
 		" port=" + os.Getenv("DB_PORT") +
-		" sslmode=disable"
+		" sslmode=" + os.Getenv("SSL_MODE")
 }

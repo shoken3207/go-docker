@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: go-app
+    env: docker
+    plan: free
+    dockerfilePath: ./docker/go/Dockerfile.prod
+    healthCheckPath: /
+    autoDeploy: true
+    buildCommand: ""
+    envVars:
+      - key: ENV
+        value: prod
+      - key: DB_HOST
+        fromDatabase:
+          name: go-app-db
+          property: host
+      - key: DB_NAME
+        fromDatabase:
+          name: go-app-db
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: go-app-db
+          property: port
+      - key: DB_USER
+        fromDatabase:
+          name: go-app-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: go-app-db
+          property: password
+      - key: SSL_MODE
+        value: require
+
+databases:
+  - name: go-app-db
+    plan: free
+    region: singapore
+    postgresMajorVersion: "15"

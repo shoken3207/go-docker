@@ -12,8 +12,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/gomail.v2"
-	"net/smtp"
 )
 
 type AuthService struct{}
@@ -27,22 +25,22 @@ func (s *AuthService) findUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
-func (s *AuthService) createUser(newUser *models.User) error {
+func (s *AuthService) createUser(newUser *models.User) ( error) {
 	if err := db.DB.Create(&newUser).Error; err != nil {
 		log.Printf("Error: %v", err)
-		return err
+		return  err
 	}
 
-	return nil
+	return  nil
 }
 
-func (s *AuthService) createEmailVerification(newEmailVerification *models.EmailVerification) error {
+func (s *AuthService) createEmailVerification(newEmailVerification *models.EmailVerification) ( error) {
 	if err := db.DB.Create(&newEmailVerification).Error; err != nil {
 		log.Printf("Error: %v", err)
-		return err
+		return  err
 	}
 
-	return nil
+	return  nil
 }
 
 func (s *AuthService) generateHashedPass(password string) (*string, error) {
@@ -55,7 +53,7 @@ func (s *AuthService) generateHashedPass(password string) (*string, error) {
 	return &stringPassHash, nil
 }
 
-func (s *AuthService) comparePassword(requestPass string, savedPass string) error {
+func (s *AuthService) comparePassword(requestPass string, savedPass string) (error) {
 	if err := bcrypt.CompareHashAndPassword([]byte(savedPass), []byte(requestPass)); err != nil {
 		log.Printf("パスワード比較エラー: %v", err)
 		return err
@@ -66,8 +64,8 @@ func (s *AuthService) comparePassword(requestPass string, savedPass string) erro
 func (s *AuthService) generateJwtToken(userId uint) (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId,
-		"jti":    uuid.New().String(),
-		"exp":    time.Now().Add(constants.JwtTokenExpDate).Unix(),
+		"jti": uuid.New().String(),
+		"exp": time.Now().Add(constants.JwtTokenExpDate).Unix(),
 	})
 	secretKey := os.Getenv("SECRET_KEY")
 	if secretKey == "" {
@@ -80,43 +78,6 @@ func (s *AuthService) generateJwtToken(userId uint) (*string, error) {
 		return nil, err
 	}
 	return &tokenString, nil
-}
-
-func (s *AuthService) SendEmail(to string, subject string, body string) error {
-	// smtpHost := "smtp.gmail.com"
-	// smtpPort := 587
-	smtpHost := "host.docker.internal"
-	smtpPort := 1025
-	email := "sotsuken.testosterone@gmail.com"
-	password := "sotsuken@2024"
-	message := []byte("From: " + email + "\r\n" +
-		"To: " + to + "\r\n" +
-		"Subject: " + subject + "\r\n" +
-		"\r\n" +
-		body + "\r\n")
-
-	// SMTP認証
-	auth := smtp.PlainAuth("", email, password, smtpHost)
-
-	// メール送信
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, email, []string{to}, message)
-	if err != nil {
-		return err
-	}
-	log.Println("メール送信に成功しました")
-	// log.Printf("generate mail")
-	// m := gomail.NewMessage()
-	// m.SetHeader("From", email)
-	// m.SetHeader("To", to)
-	// m.SetHeader("Subject", subject)
-	// m.SetBody("text/plain", body)
-
-	// d := gomail.NewDialer(smtpHost, smtpPort, email, password)
-	// d.TLSConfig = nil
-	// if err := d.DialAndSend(m); err != nil {
-	// 	return err
-	// }
-	return nil
 }
 
 func NewAuthService() *AuthService {

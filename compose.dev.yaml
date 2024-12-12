@@ -12,6 +12,7 @@ services:
     environment:
       - ENV=${ENV}
       - SECRET_KEY=${SECRET_KEY}
+      - FROM_EMAIL=${FROM_EMAIL}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}

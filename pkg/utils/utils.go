@@ -9,6 +9,9 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"gopkg.in/gomail.v2"
 )
 
 func SuccessResponse[T any](c *gin.Context, statusCode int, data T, message string) {
@@ -67,4 +70,64 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Set("userID", userIDUint)
 		c.Next()
 	}
+}
+
+
+
+func SendEmailDev(from string, to string, subject string, body string) error {
+	m := gomail.NewMessage()
+	m.SetHeader("From", from)
+	m.SetHeader("To", to)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/plain", body)
+
+	smtpHost := "mailhog"
+	smtpPort := 1025
+	d := gomail.NewDialer(smtpHost, smtpPort, "", "")
+	if err := d.DialAndSend(m); err != nil {
+		log.Printf("メール送信エラー: %v", err)
+		return err
+	}
+	return nil
+}
+
+func SendEmailProd(from string, to string, subject string, body string) error {
+	apiKey := os.Getenv("SENDGRID_API_KEY")
+	if apiKey == "" {
+		return fmt.Errorf("SENDGRID_API_KEY environment variable is not set")
+	}
+	client := sendgrid.NewSendClient(apiKey)
+	log.Printf(body)
+	fromEmail := mail.NewEmail("ビジターGOサポートチーム", from)
+	toEmail := mail.NewEmail("Recipient", to)
+	message := mail.NewSingleEmail(fromEmail, subject, toEmail, body, "")
+	response, err := client.Send(message)
+	if  err != nil {
+		log.Printf("メール送信エラー: %v", err)
+		return err
+	} else {
+		log.Println(response.StatusCode)
+		log.Println(response.Body)
+		log.Println(response.Headers)
+	}
+
+	return nil
+}
+
+func SendEmail(to string, subject string, body string) error {
+	from := os.Getenv("FROM_EMAIL")
+	env := os.Getenv("ENV")
+	log.Printf(env)
+	log.Printf(from)
+	var err error
+	if(env == "prod") {
+		err = SendEmailProd(from, to, subject, body)
+	}else {
+		err = SendEmailDev(from, to, subject, body)
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

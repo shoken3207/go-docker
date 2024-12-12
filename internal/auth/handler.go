@@ -56,9 +56,29 @@ func (h *AuthHandler) EmailVerification(c *gin.Context) {
 		return
 	}
 
-	// registerUrl := constants.RegisteBaserUrl + "/?token=" + token
-	// authService.SendEmail(registerUrl)
-	if err := authService.SendEmail(request.Email,"タイトル","本文"); err != nil {
+	registerUrl := constants.RegisteBaserUrl + "/?token=" + token
+	body := `
+[ビジターGO] メールアドレス確認のご案内とユーザー登録
+
+こんにちは、
+
+この度はビジターGOにご登録いただき、ありがとうございます。
+
+以下のリンクから、ユーザー登録を完了させてください。
+
+確認リンク:
+` + registerUrl + `
+
+※ 上記のリンクは、発行から30分以内にご利用ください。期限が過ぎると、再度新しいリンクをリクエストする必要があります。
+
+もし、ご不明点がございましたら、お気軽にお問い合わせください。
+
+どうぞよろしくお願いいたします。
+
+ビジターGOサポートチーム
+`
+
+	if err := utils.SendEmail(request.Email,"[ビジターGO] ユーザー登録",body); err != nil {
 		log.Printf("メール送信に失敗しました: %v\n", err)
 		utils.ErrorResponse[any](c, http.StatusInternalServerError, "メール送信に失敗しました")
 		return

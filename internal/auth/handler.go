@@ -93,7 +93,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
-	claims, err := ParseJWTToken(request.Token)
+	claims, err := utils.ParseJWTToken(request.Token)
 	if err != nil {
 		utils.ErrorResponse[any](c, http.StatusUnauthorized, err.Error())
 		return

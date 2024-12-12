@@ -2,11 +2,11 @@ package utils
 
 import (
 	"fmt"
-	"go-docker/internal/auth"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -28,6 +28,22 @@ func ErrorResponse[T any](c *gin.Context, statusCode int, message string) {
 	})
 }
 
+func ParseJWTToken(tokenStr string) (jwt.MapClaims, error) {
+	secretKey := os.Getenv("SECRET_KEY")
+	if secretKey == "" {
+		return nil, fmt.Errorf("SECRET_KEYが設定されていません。")
+	}
+	claims := jwt.MapClaims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (any, error) {
+		return []byte(secretKey), nil
+	})
+	if err != nil || !token.Valid {
+		log.Printf("jwtトークンパースエラー %v", err)
+		return nil, fmt.Errorf("トークンが不正な値です。")
+	}
+	return claims, nil
+}
+
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.GetHeader("Authorization")
@@ -36,7 +52,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		claims, err := auth.ParseJWTToken(tokenStr)
+		claims, err := ParseJWTToken(tokenStr)
 		if err != nil {
 			ErrorResponse[any](c, http.StatusUnauthorized, err.Error())
 			c.Abort()

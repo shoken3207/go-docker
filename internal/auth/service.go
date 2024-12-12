@@ -87,22 +87,6 @@ func (s *AuthService) generateJwtToken(req TokenRequest, addExp time.Duration) (
 	return &tokenString, nil
 }
 
-func ParseJWTToken(tokenStr string) (jwt.MapClaims, error) {
-	secretKey := os.Getenv("SECRET_KEY")
-	if secretKey == "" {
-		return nil, fmt.Errorf("SECRET_KEYが設定されていません。")
-	}
-	claims := jwt.MapClaims{}
-	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (any, error) {
-		return []byte(secretKey), nil
-	})
-	if err != nil || !token.Valid {
-		log.Printf("jwtトークンパースエラー %v", err)
-		return nil, fmt.Errorf("トークンが不正な値です。")
-	}
-	return claims, nil
-}
-
 func NewAuthService() *AuthService {
 	return &AuthService{}
 }

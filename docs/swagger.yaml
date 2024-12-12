@@ -29,8 +29,6 @@ definitions:
     properties:
       description:
         type: string
-      email:
-        type: string
       name:
         maxLength: 100
         minLength: 3
@@ -41,10 +39,12 @@ definitions:
         type: string
       profileImage:
         type: string
+      token:
+        type: string
     required:
-    - email
     - name
     - password
+    - token
     type: object
   auth.UpdatePassRequest:
     properties:
@@ -100,7 +100,7 @@ info:
   title: ビジターゴーAPI
   version: "1.0"
 paths:
-  /api/auth/emailVerified/{email}:
+  /api/auth/emailVerification/{email}:
     get:
       description: リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信
       parameters:

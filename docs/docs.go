@@ -21,7 +21,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/auth/emailVerified/{email}": {
+        "/api/auth/emailVerification/{email}": {
             "get": {
                 "description": "リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信",
                 "tags": [
@@ -521,15 +521,12 @@ const docTemplate = `{
         "auth.RegisterRequest": {
             "type": "object",
             "required": [
-                "email",
                 "name",
-                "password"
+                "password",
+                "token"
             ],
             "properties": {
                 "description": {
-                    "type": "string"
-                },
-                "email": {
                     "type": "string"
                 },
                 "name": {
@@ -543,6 +540,9 @@ const docTemplate = `{
                     "minLength": 6
                 },
                 "profileImage": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }

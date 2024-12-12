@@ -6,8 +6,8 @@ type EmailVerificationRequest struct {
 }
 
 type RegisterRequest struct {
+	Token        string `json:"token" binding:"required"`
 	Name         string `json:"name" binding:"required,min=3,max=100"`
-	Email        string `json:"email" binding:"required,email"`
 	Password     string `json:"password" binding:"required,min=6,max=50"`
 	Description  string `json:"description"`
 	ProfileImage string `json:"profileImage"`
@@ -28,7 +28,6 @@ type ResetPassRequest struct {
 	AfterPassword string `json:"afterPassword" binding:"required,min=6,max=50"`
 }
 
-
 // レスポンス
 type LoginResponse struct {
 	Token string `json:"token"`
@@ -39,4 +38,10 @@ type User struct {
 	Name  string `json:"name"`
 	Age   int    `json:"age"`
 	Email string `json:"email"`
+}
+
+// その他
+type TokenRequest struct {
+	UserID *uint
+	Email  *string
 }

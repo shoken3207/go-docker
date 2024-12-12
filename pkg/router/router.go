@@ -28,14 +28,13 @@ func SetupRouter() *gin.Engine {
 
 		publicAuthGroup := publicGroup.Group("/auth")
 		{
-			publicAuthGroup.GET("/emailVerified/:email", authHandler.EmailVerification)
+			publicAuthGroup.GET("/emailVerification/:email", authHandler.EmailVerification)
 			publicAuthGroup.POST("/register", authHandler.Register)
 			publicAuthGroup.POST("/login", authHandler.Login)
 			publicAuthGroup.PUT("/resetPass", authHandler.ResetPass)
 
 		}
 	}
-
 
 	protectedGroup := api.Group("")
 	protectedGroup.Use(utils.AuthMiddleware())
@@ -60,9 +59,6 @@ func SetupRouter() *gin.Engine {
 			protectedExpeditionGroup.POST("/create", expeditionHandler.CreateExpedition)
 		}
 	}
-
-
-
 
 	return router
 }

@@ -1,29 +1,8 @@
 package user
 
-type Competition struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
-}
-
-type League struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
-}
-
-type Stadium struct {
-	Id uint `json:"id"`
-}
-
-type Team struct {
-	Id      uint   `json:"id"`
-	Name    string `json:"name"`
-	City    string `json:"city"`
-	Stadium string `json:"stadium"`
-}
-
-type FavoriteTeam struct {
-	Id uint `json:"id"`
-	Competition
+// リクエスト
+type GetUserByIdRequest struct {
+	UserId uint `uri:"userId" binding:"required"`
 }
 
 // レスポンスモデル

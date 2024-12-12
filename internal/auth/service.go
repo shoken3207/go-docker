@@ -21,7 +21,6 @@ func (s *AuthService) findUserByEmail(email string) (*models.User, error) {
 	if err := db.DB.Select("id", "email", "pass_hash").Where("email = ?", email).First(&user).Error; err != nil {
 		return nil, err
 	}
-
 	return &user, nil
 }
 
@@ -30,16 +29,6 @@ func (s *AuthService) createUser(newUser *models.User) error {
 		log.Printf("Error: %v", err)
 		return err
 	}
-
-	return nil
-}
-
-func (s *AuthService) createEmailVerification(newEmailVerification *models.EmailVerification) error {
-	if err := db.DB.Create(&newEmailVerification).Error; err != nil {
-		log.Printf("Error: %v", err)
-		return err
-	}
-
 	return nil
 }
 

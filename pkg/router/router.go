@@ -51,7 +51,6 @@ func SetupRouter() *gin.Engine {
 
 		protectedUserGroup := protectedGroup.Group("/user")
 		{
-			protectedUserGroup.GET("/logined", userHandler.GetMyData)
 			protectedUserGroup.GET("/:id", userHandler.GetUserById)
 		}
 

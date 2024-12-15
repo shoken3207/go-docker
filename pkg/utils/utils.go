@@ -44,19 +44,6 @@ func ParseJWTToken(tokenStr string) (jwt.MapClaims, error) {
 	return claims, nil
 }
 
-func GetUserIdFromJWT(tokenStr string) (userId *uint, err error) {
-	claims, err := ParseJWTToken(tokenStr)
-	if err != nil {
-		return nil, err
-	}
-	userID, ok := claims["userId"].(float64)
-	if !ok {
-		return nil, fmt.Errorf("トークンデータが不正な値です。")
-	}
-	userIDUint := uint(userID)
-	return &userIDUint, nil
-}
-
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.GetHeader("Authorization")

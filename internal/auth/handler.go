@@ -19,7 +19,6 @@ var authService = NewAuthService()
 
 // @Summary メールアドレスの本人確認
 // @Description リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信
-// emailを元に生成したtokenを含めた本登録画面URL
 // @Tags auth
 // @Param email path string true "メールアドレス"
 // @Success 200 {object} utils.BasicResponse "成功"
@@ -29,22 +28,22 @@ var authService = NewAuthService()
 func (h *AuthHandler) EmailVerification(c *gin.Context) {
 	request := EmailVerificationRequest{}
 	if err := c.ShouldBindUri(&request); err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[interface{}](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
 	user, err := authService.findUserByEmail(request.Email)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		return
 	}
 	if user != nil {
-		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのメールアドレスです。")
+		utils.ErrorResponse[interface{}](c, http.StatusConflict, "登録済みのメールアドレスです。")
 		return
 	}
 
 	token, err := authService.generateJwtToken(TokenRequest{Email: &request.Email}, constants.EmailVerificationTokenExpDate)
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		return
 	}
 
@@ -102,6 +101,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	email, ok := claims["email"].(string)
 	if !ok {
 		utils.ErrorResponse[any](c, http.StatusUnauthorized, "トークンデータが不正な値です。")
+		c.Abort()
 		return
 	}
 	user, err := authService.findUserByEmail(email)
@@ -133,7 +133,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 }
 
 // @Summary ログイン
-// @Description メールアドレスとパスワードが合致したら、jwtトークンをフロントに返却
+// @Description メールアドレスとパスワードが合致したら、jwtトークンをCookieに保存
 // @Tags auth
 // @Param request body auth.LoginRequest true "ログイン情報"
 // @Success 200 {object} utils.ApiResponse[LoginResponse] "成功"
@@ -145,31 +145,31 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	var request LoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[interface{}](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
 
 	user, err := authService.findUserByEmail(request.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			utils.ErrorResponse[any](c, http.StatusNotFound, "認証に失敗しました。")
+			utils.ErrorResponse[interface{}](c, http.StatusNotFound, "認証に失敗しました。")
 		} else {
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+			utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		}
 		return
 	}
 	if err = authService.comparePassword(request.Password, user.PassHash); err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			utils.ErrorResponse[any](c, http.StatusNotFound, "認証に失敗しました。")
+			utils.ErrorResponse[interface{}](c, http.StatusNotFound, "認証に失敗しました。")
 		} else {
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+			utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		}
 		return
 	}
 
 	token, err := authService.generateJwtToken(TokenRequest{UserID: &user.ID}, constants.LoginTokenExpDate)
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		return
 	}
 

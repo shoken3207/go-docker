@@ -11,9 +11,6 @@ func NewImageKit() *imagekit.ImageKit {
 	publicKey := os.Getenv("IMAGE_KIT_PUBLIC_KEY")
 	privateKey := os.Getenv("IMAGE_KIT_PRIVATE_KEY")
 	urlEndPoint := os.Getenv("IMAGE_KIT_URL_ENDPOINT")
-	log.Printf(publicKey)
-	log.Printf(privateKey)
-	log.Printf(urlEndPoint)
 	ik := imagekit.NewFromParams(imagekit.NewParams{
 		PublicKey: publicKey,
 		PrivateKey: privateKey,

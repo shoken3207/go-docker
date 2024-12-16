@@ -2,7 +2,6 @@ package upload
 
 import (
 	"go-docker/pkg/utils"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,8 +10,9 @@ import (
 
 type UploadHandler struct{}
 var uploadService = NewUploadService()
+
 // @Summary 画像をクラウドストレージ(imagekit)にアップロード
-// @Description 画像をアップロードし、URLを返します。
+// @Description 画像をアップロードし、URLを返します。<br>プロフィール、スタジアム、遠征など、格納フォルダを指定してください。<br>画像は1枚から10枚アップロードできるが、Swagger UIでは1つしか選択できません。<br>ファイルの拡張子は、[".jpg", ".jpeg", ".png"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。
 // @Tags upload
 // @Security BearerAuth
 // @Accept multipart/form-data
@@ -26,7 +26,6 @@ var uploadService = NewUploadService()
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/upload/images [post]
 func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
-	log.Printf("画像アップロード")
 	form, err := c.MultipartForm()
 	if err != nil {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "multipart formのパースに失敗")
@@ -37,6 +36,15 @@ func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
 	files := form.File["images"]
 	if len(files) == 0 {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "ファイルが選択されていません")
+		return
+	} else if len(files) > 10 {
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "ファイルの上限選択数を超えています")
+		return
+	}
+
+	folder := c.DefaultQuery("folder", "default")
+	if folder == "" {
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "画像格納フォルダを指定してください")
 		return
 	}
 
@@ -54,7 +62,7 @@ func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
 			return
 		}
 
-		url, err := uploadService.uploadToImageKit(ik, "default", file.Filename, src)
+		url, err := uploadService.uploadToImageKit(ik, folder, file.Filename, src)
 		if err != nil {
 			utils.ErrorResponse[any](c, http.StatusInternalServerError, err.Error())
 			return

@@ -50,13 +50,11 @@ func ParseJWTToken(tokenStr string) (jwt.MapClaims, error) {
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.GetHeader("Authorization")
-		log.Printf(tokenStr)
 		if tokenStr == "" {
 			ErrorResponse[any](c, http.StatusUnauthorized, "jwtトークンがありません。")
 			c.Abort()
 			return
 		}
-		log.Printf("認証")
 		claims, err := ParseJWTToken(tokenStr)
 		if err != nil {
 			ErrorResponse[any](c, http.StatusUnauthorized, err.Error())

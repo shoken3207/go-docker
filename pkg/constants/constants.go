@@ -10,3 +10,4 @@ const (
 	RegisteBaserUrl               = "visitorgo://verify"
 	MaxFileSize = 5 * 1024 * 1024
 )
+var AllowedExtensions = [...]string{".jpg", ".jpeg", ".png"}

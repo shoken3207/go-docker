@@ -360,7 +360,8 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: 画像をアップロードし、URLを返します。
+      description: 画像をアップロードし、URLを返します。<br>プロフィール、スタジアム、遠征など、格納フォルダを指定してください。<br>画像は1枚から10枚アップロードできるが、Swagger
+        UIでは1つしか選択できません。<br>ファイルの拡張子は、[".jpg", ".jpeg", ".png"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。
       parameters:
       - description: 格納フォルダ
         in: query

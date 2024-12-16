@@ -16,15 +16,13 @@ import (
 type UploadService struct{}
 
 func (s *UploadService) validateFile(file *multipart.FileHeader) error {
-	allowedExtensions := []string{".jpg", ".jpeg", ".png",}
-
 	if file.Size > constants.MaxFileSize {
 		return fmt.Errorf("ファイルの上限サイズより大きいです。")
 	}
 
 	filename := file.Filename
 	ext := strings.ToLower(filename[strings.LastIndex(filename, "."):])
-	for _, allowedExt := range allowedExtensions {
+	for _, allowedExt := range constants.AllowedExtensions {
 		if ext == allowedExt {
 			return nil
 		}
@@ -34,8 +32,6 @@ func (s *UploadService) validateFile(file *multipart.FileHeader) error {
 }
 
 func (s *UploadService) uploadToImageKit(ik *imagekit.ImageKit, folder, filename string, file multipart.File) (string, error) {
-	defer file.Close()
-
 	ctx := context.Background()
 	resp, err := ik.Uploader.Upload(ctx, file, uploader.UploadParam{
 		FileName: filename,

@@ -18,6 +18,9 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - SSL_MODE=${SSL_MODE}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - IMAGE_KIT_PUBLIC_KEY=${IMAGE_KIT_PUBLIC_KEY}
+      - IMAGE_KIT_PRIVATE_KEY=${IMAGE_KIT_PRIVATE_KEY}
+      - IMAGE_KIT_URL_ENDPOINT=${IMAGE_KIT_URL_ENDPOINT}
 
   pgadmin:
     image: dpage/pgadmin4:latest

@@ -5,7 +5,6 @@ import (
 	"go-docker/pkg/utils"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -62,14 +61,12 @@ func (h *UserHandler) GetUserById(c *gin.Context) {
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/user/logined [get]
 func (h *UserHandler) GetMyData(c *gin.Context) {
-	strUserId := c.GetString("userId")
-	u, err := strconv.ParseUint(strUserId, 10, 64)
+	userId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
-		log.Printf("変換エラー:", err)
+		utils.ErrorResponse[any](c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	userId := uint(u)
-	user, err := userService.findUserById(userId)
+	user, err := userService.findUserById(*userId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			utils.ErrorResponse[any](c, http.StatusNotFound, "ユーザーが見つかりません。")
@@ -101,6 +98,45 @@ func (h *UserHandler) GetMyData(c *gin.Context) {
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @router /api/user/update/{userId} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
+	var requestBody UpdateUserRequestBody
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+	var requestPath UpdateUserRequestPath
+	if err := c.ShouldBindUri(&requestPath); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+	userId, err := utils.StringToUint(c.GetString("userId"))
+	if err != nil {
+		utils.ErrorResponse[any](c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if *userId != requestPath.UserId {
+		utils.ErrorResponse[any](c, http.StatusUnauthorized, "自分のユーザー情報しか更新できません。")
+		return
+	}
+	user, err := userService.updateUser(userId, &requestBody)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			utils.ErrorResponse[any](c, http.StatusNotFound, "ユーザーが見つかりません。")
+		} else {
+			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		}
+		return
+	}
+
+	userResponse := UserResponse{
+		Id:           user.ID,
+		Email:        user.Email,
+		Name:         user.Name,
+		Description:  user.Description,
+		ProfileImage: user.ProfileImage,
+	}
+	utils.SuccessResponse[UserResponse](c, http.StatusOK, userResponse, "ユーザー情報の更新に成功しました")
 }
 
 func NewUserHandler() *UserHandler {

@@ -179,7 +179,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Summary ログアウト状態からパスワードを変更
 // @Description メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、
 // @Tags auth
-// @Param request body auth.EmailVerificationRequest true "メールアドレス"
+// @Param request body EmailVerificationRequest true "メールアドレス"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
 // @Failure 404 {object} utils.BasicResponse "not foundエラー"
@@ -192,15 +192,44 @@ func (h *AuthHandler) ResetPass(c *gin.Context) {
 // @Description 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
 // @Tags auth
 // @Security BearerAuth
-// @Param request body auth.UpdatePassRequest true "メールアドレス"
+// @param userId path uint true "userId"
+// @Param request body UpdatePassRequestBody true "メールアドレス"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.BasicResponse "認証エラー"
 // @Failure 404 {object} utils.BasicResponse "not foundエラー"
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
-// @Router /api/auth/updatePass [put]
+// @Router /api/auth/updatePass/{userId} [put]
 func (h *AuthHandler) UpdatePass(c *gin.Context) {
+	var requestBody UpdatePassRequestBody
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+	var requestPath UpdateUserRequestPath
+	if err := c.ShouldBindUri(&requestPath); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+	userId, err := utils.StringToUint(c.GetString("userId"))
+	if err != nil {
+		utils.ErrorResponse[any](c, http.StatusInternalServerError, err.Error())
+	}
+	if *userId != requestPath.UserId {
+		utils.ErrorResponse[any](c, http.StatusUnauthorized, "自分のパスワードしか更新できません。")
+		return
+	}
 
+	if err := authService.updatePass(userId, &requestBody); err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "パスワードの更新に成功しました。")
 }
 
 func NewAuthHandler() *AuthHandler {

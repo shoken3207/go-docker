@@ -18,9 +18,12 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required,min=6,max=50"`
 }
 
-type UpdatePassRequest struct {
+type UpdatePassRequestBody struct {
 	BeforePassword string `json:"beforePassword" binding:"required,min=6,max=50"`
 	AfterPassword  string `json:"afterPassword" binding:"required,min=6,max=50"`
+}
+type UpdateUserRequestPath struct {
+	UserId uint `uri:"userId" binding:"required"`
 }
 
 type ResetPassRequest struct {

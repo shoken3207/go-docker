@@ -46,7 +46,7 @@ definitions:
     - password
     - token
     type: object
-  auth.UpdatePassRequest:
+  auth.UpdatePassRequestBody:
     properties:
       afterPassword:
         maxLength: 50
@@ -244,16 +244,21 @@ paths:
       summary: ログアウト状態からパスワードを変更
       tags:
       - auth
-  /api/auth/updatePass:
+  /api/auth/updatePass/{userId}:
     put:
       description: 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
       parameters:
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: integer
       - description: メールアドレス
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.UpdatePassRequest'
+          $ref: '#/definitions/auth.UpdatePassRequestBody'
       responses:
         "200":
           description: 成功

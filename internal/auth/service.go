@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"go-docker/internal/db"
 	"go-docker/models"
+	"go-docker/pkg/utils"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -27,15 +29,6 @@ func (s *AuthService) findUserByEmail(email string) (*models.User, error) {
 
 func (s *AuthService) createUser(newUser *models.User) error {
 	if err := db.DB.Create(&newUser).Error; err != nil {
-		log.Printf("Error: %v", err)
-		return err
-	}
-
-	return nil
-}
-
-func (s *AuthService) createEmailVerification(newEmailVerification *models.EmailVerification) error {
-	if err := db.DB.Create(&newEmailVerification).Error; err != nil {
 		log.Printf("Error: %v", err)
 		return err
 	}
@@ -85,6 +78,33 @@ func (s *AuthService) generateJwtToken(req TokenRequest, addExp time.Duration) (
 		return nil, err
 	}
 	return &tokenString, nil
+}
+
+func (s *AuthService) updatePass(userId *uint, request *UpdatePassRequestBody) error {
+	user := models.User{}
+	if err := db.DB.Where("id = ?", &userId).First(&user).Error; err != nil {
+		log.Println("ユーザー検索エラー:", err)
+		return utils.NewCustomError(http.StatusNotFound, "ユーザー検索エラー")
+	}
+
+	if err := authService.comparePassword(request.BeforePassword, user.PassHash); err != nil {
+		log.Println("パスワード比較エラー:", err)
+		return utils.NewCustomError(http.StatusBadRequest, "パスワードが違います")
+	}
+
+	afterPassHash, err := authService.generateHashedPass(request.AfterPassword)
+	if err != nil {
+		log.Println("パスワードハッシュ化エラー:", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "ハッシュ化に失敗しました")
+	}
+	user.PassHash = *afterPassHash
+
+	if err := db.DB.Model(&user).Updates(models.User{PassHash: *afterPassHash}).Error; err != nil {
+		log.Println("パスワード更新エラー:", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "パスワードの更新に失敗しました")
+	}
+
+	return nil
 }
 
 func NewAuthService() *AuthService {

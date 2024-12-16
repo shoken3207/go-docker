@@ -191,7 +191,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/updatePass": {
+        "/api/auth/updatePass/{userId}": {
             "put": {
                 "security": [
                     {
@@ -205,12 +205,19 @@ const docTemplate = `{
                 "summary": "ログイン状態からパスワードを変更",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "メールアドレス",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.UpdatePassRequest"
+                            "$ref": "#/definitions/auth.UpdatePassRequestBody"
                         }
                     }
                 ],
@@ -700,7 +707,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.UpdatePassRequest": {
+        "auth.UpdatePassRequestBody": {
             "type": "object",
             "required": [
                 "afterPassword",

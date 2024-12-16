@@ -49,14 +49,14 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 
 		protectedAuthGroup := protectedGroup.Group("/auth")
 		{
-			protectedAuthGroup.PUT("/updatePass", authHandler.UpdatePass)
+			protectedAuthGroup.PUT("/updatePass/:userId", authHandler.UpdatePass)
 		}
 
 		protectedUserGroup := protectedGroup.Group("/user")
 		{
 			protectedUserGroup.GET("/:userId", userHandler.GetUserById)
 			protectedUserGroup.GET("/logined", userHandler.GetMyData)
-			protectedUserGroup.PUT("/update/:userId", userHandler.GetMyData)
+			protectedUserGroup.PUT("/update/:userId", userHandler.UpdateUser)
 		}
 
 		protectedExpeditionGroup := protectedGroup.Group("/expedition")

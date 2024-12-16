@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,27 @@ import (
 
 func BoolPtr(b bool) *bool {
 	return &b
+}
+
+func StringToUint(s string) (*uint, error) {
+	u, err := strconv.ParseUint(s, 10, 64)
+	if err != nil {
+		log.Printf("変換エラー:", err)
+		return nil, fmt.Errorf("stringからuintへの変換エラー")
+	}
+	parseValue := uint(u)
+	return &parseValue, nil
+}
+
+func (e *CustomError) Error() string {
+	return e.Message
+}
+
+func NewCustomError(code int, message string) error {
+	return &CustomError{
+		Code:    code,
+		Message: message,
+	}
 }
 
 func SuccessResponse[T any](c *gin.Context, statusCode int, data T, message string) {

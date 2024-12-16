@@ -1,5 +1,10 @@
 package utils
 
+type CustomError struct {
+	Code    int
+	Message string
+}
+
 type ApiResponse[T any] struct {
 	Success bool   `json:"success"`
 	Data    T      `json:"data,omitempty"`

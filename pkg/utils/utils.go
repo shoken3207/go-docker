@@ -12,6 +12,9 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"gopkg.in/gomail.v2"
 )
+func BoolPtr(b bool) *bool {
+    return &b
+}
 
 func SuccessResponse[T any](c *gin.Context, statusCode int, data T, message string) {
 	c.JSON(statusCode, ApiResponse[T]{

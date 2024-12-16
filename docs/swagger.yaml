@@ -60,6 +60,13 @@ definitions:
     - afterPassword
     - beforePassword
     type: object
+  upload.UploadImagesResponse:
+    properties:
+      urls:
+        items:
+          type: string
+        type: array
+    type: object
   user.ErrorResponse:
     properties:
       error:
@@ -82,6 +89,15 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/auth.LoginResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  utils.ApiResponse-upload_UploadImagesResponse:
+    properties:
+      data:
+        $ref: '#/definitions/upload.UploadImagesResponse'
       message:
         type: string
       success:
@@ -342,15 +358,47 @@ paths:
       - sample
   /api/upload/images:
     post:
-      description: 画像をアップロードし、URLを返します。
+      consumes:
+      - multipart/form-data
+      description: 画像をアップロードし、URLを返します。<br>プロフィール、スタジアム、遠征など、格納フォルダを指定してください。<br>画像は1枚から10枚アップロードできるが、Swagger
+        UIでは1つしか選択できません。<br>ファイルの拡張子は、[".jpg", ".jpeg", ".png"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。
       parameters:
+      - description: 格納フォルダ
+        in: query
+        name: folder
+        required: true
+        type: string
       - description: 画像ファイル
         in: formData
-        name: file
+        name: images
         required: true
         type: file
-      responses: {}
-      summary: 画像をクラウドストレージにアップロード
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-upload_UploadImagesResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 画像をクラウドストレージ(imagekit)にアップロード
       tags:
       - upload
   /api/user/{id}:

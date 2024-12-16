@@ -3,6 +3,7 @@ package main
 import (
 	"go-docker/internal/db"
 	"go-docker/pkg/router"
+	"go-docker/pkg/utils"
 
 	// "github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "go-docker/docs"
@@ -24,7 +25,8 @@ import (
 // @BasePath /api
 func main() {
 	db.InitDB()
-	r := router.SetupRouter()
+	ik := utils.NewImageKit()
+	r := router.SetupRouter(ik)
 	r.GET("/", func(c *gin.Context) {
 		c.String(200, "Hello, world!")
 	})

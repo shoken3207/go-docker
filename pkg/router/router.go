@@ -54,7 +54,9 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 
 		protectedUserGroup := protectedGroup.Group("/user")
 		{
-			protectedUserGroup.GET("/:id", userHandler.GetUserById)
+			protectedUserGroup.GET("/:userId", userHandler.GetUserById)
+			protectedUserGroup.GET("/logined", userHandler.GetMyData)
+			protectedUserGroup.PUT("/update/:userId", userHandler.GetMyData)
 		}
 
 		protectedExpeditionGroup := protectedGroup.Group("/expedition")
@@ -64,9 +66,9 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 
 		protectedUploadGroup := protectedGroup.Group("/upload")
 		{
-			protectedUploadGroup.POST("/images",func(c *gin.Context) {
+			protectedUploadGroup.POST("/images", func(c *gin.Context) {
 				uploadHandler.UploadImages(c, ik)
-			} )
+			})
 		}
 	}
 

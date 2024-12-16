@@ -28,22 +28,22 @@ var authService = NewAuthService()
 func (h *AuthHandler) EmailVerification(c *gin.Context) {
 	request := EmailVerificationRequest{}
 	if err := c.ShouldBindUri(&request); err != nil {
-		utils.ErrorResponse[interface{}](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
 	user, err := authService.findUserByEmail(request.Email)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		return
 	}
 	if user != nil {
-		utils.ErrorResponse[interface{}](c, http.StatusConflict, "登録済みのメールアドレスです。")
+		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのメールアドレスです。")
 		return
 	}
 
 	token, err := authService.generateJwtToken(TokenRequest{Email: &request.Email}, constants.EmailVerificationTokenExpDate)
 	if err != nil {
-		utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		return
 	}
 
@@ -133,7 +133,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 }
 
 // @Summary ログイン
-// @Description メールアドレスとパスワードが合致したら、jwtトークンをCookieに保存
+// @Description メールアドレスとパスワードが合致したら、jwtトークンをクライアントに返却
 // @Tags auth
 // @Param request body auth.LoginRequest true "ログイン情報"
 // @Success 200 {object} utils.ApiResponse[LoginResponse] "成功"
@@ -145,31 +145,31 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	var request LoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[interface{}](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
 
 	user, err := authService.findUserByEmail(request.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			utils.ErrorResponse[interface{}](c, http.StatusNotFound, "認証に失敗しました。")
+			utils.ErrorResponse[any](c, http.StatusNotFound, "認証に失敗しました。")
 		} else {
-			utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		}
 		return
 	}
 	if err = authService.comparePassword(request.Password, user.PassHash); err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			utils.ErrorResponse[interface{}](c, http.StatusNotFound, "認証に失敗しました。")
+			utils.ErrorResponse[any](c, http.StatusNotFound, "認証に失敗しました。")
 		} else {
-			utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		}
 		return
 	}
 
 	token, err := authService.generateJwtToken(TokenRequest{UserID: &user.ID}, constants.LoginTokenExpDate)
 	if err != nil {
-		utils.ErrorResponse[interface{}](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
 		return
 	}
 
@@ -182,6 +182,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Param request body auth.EmailVerificationRequest true "メールアドレス"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 404 {object} utils.BasicResponse "not foundエラー"
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/auth/resetPass [put]
 func (h *AuthHandler) ResetPass(c *gin.Context) {
@@ -194,7 +195,8 @@ func (h *AuthHandler) ResetPass(c *gin.Context) {
 // @Param request body auth.UpdatePassRequest true "メールアドレス"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 404 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 401 {object} utils.BasicResponse "認証エラー"
+// @Failure 404 {object} utils.BasicResponse "not foundエラー"
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/auth/updatePass [put]
 func (h *AuthHandler) UpdatePass(c *gin.Context) {

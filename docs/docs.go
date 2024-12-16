@@ -61,7 +61,7 @@ const docTemplate = `{
         },
         "/api/auth/login": {
             "post": {
-                "description": "メールアドレスとパスワードが合致したら、jwtトークンをCookieに保存",
+                "description": "メールアドレスとパスワードが合致したら、jwtトークンをクライアントに返却",
                 "tags": [
                     "auth"
                 ],
@@ -176,6 +176,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
                     },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
@@ -221,8 +227,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
                     },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
                     "404": {
-                        "description": "リクエストエラー",
+                        "description": "not foundエラー",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
@@ -408,9 +420,6 @@ const docTemplate = `{
                 "consumes": [
                     "multipart/form-data"
                 ],
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "upload"
                 ],
@@ -465,8 +474,53 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/update/:id": {
+        "/api/user/logined": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ヘッダーのトークンからユーザーを取得する",
+                "tags": [
+                    "user"
+                ],
+                "summary": "ログイン済みの場合、ログインユーザーの情報を取得",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/update/{userId}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "userIdが同じユーザーの情報を変更する",
                 "tags": [
                     "user"
@@ -476,23 +530,61 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "userId",
-                        "name": "id",
+                        "name": "userId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "userId",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UpdateUserRequestBody"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "ユーザー情報",
                         "schema": {
-                            "$ref": "#/definitions/user.User"
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
                         }
                     }
                 }
             }
         },
-        "/api/user/{id}": {
+        "/api/user/{userId}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "userIdからユーザーを1人取得",
                 "tags": [
                     "user"
@@ -502,7 +594,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "userId",
-                        "name": "id",
+                        "name": "userId",
                         "in": "path",
                         "required": true
                     }
@@ -511,19 +603,31 @@ const docTemplate = `{
                     "200": {
                         "description": "ユーザー情報",
                         "schema": {
-                            "$ref": "#/definitions/user.User"
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/user.ErrorResponse"
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
                         }
                     },
                     "404": {
-                        "description": "ユーザーが見つかりません",
+                        "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/user.ErrorResponse"
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
                         }
                     }
                 }
@@ -626,22 +730,30 @@ const docTemplate = `{
                 }
             }
         },
-        "user.ErrorResponse": {
+        "user.UpdateUserRequestBody": {
             "type": "object",
+            "required": [
+                "description",
+                "name",
+                "profileImage"
+            ],
             "properties": {
-                "error": {
+                "description": {
                     "type": "string"
                 },
-                "message": {
+                "name": {
+                    "type": "string"
+                },
+                "profileImage": {
                     "type": "string"
                 }
             }
         },
-        "user.User": {
+        "user.UserResponse": {
             "type": "object",
             "properties": {
-                "age": {
-                    "type": "integer"
+                "description": {
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
@@ -650,6 +762,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "profileImage": {
                     "type": "string"
                 }
             }
@@ -673,6 +788,20 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/upload.UploadImagesResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "utils.ApiResponse-user_UserResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/user.UserResponse"
                 },
                 "message": {
                     "type": "string"

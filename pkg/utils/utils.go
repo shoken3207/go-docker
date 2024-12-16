@@ -12,8 +12,9 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"gopkg.in/gomail.v2"
 )
+
 func BoolPtr(b bool) *bool {
-    return &b
+	return &b
 }
 
 func SuccessResponse[T any](c *gin.Context, statusCode int, data T, message string) {
@@ -62,14 +63,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userID, ok := claims["userId"].(float64)
+		userId, ok := claims["userId"].(float64)
 		if !ok {
 			ErrorResponse[any](c, http.StatusUnauthorized, "トークンデータが不正な値です。")
 			c.Abort()
 			return
 		}
-		userIDUint := uint(userID)
-		c.Set("userID", userIDUint)
+		userIdUint := uint(userId)
+		c.Set("userId", fmt.Sprintf("%d", userIdUint))
 		c.Next()
 	}
 }

@@ -2,6 +2,7 @@ package upload
 
 import (
 	"go-docker/pkg/utils"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,7 @@ import (
 )
 
 type UploadHandler struct{}
+
 var uploadService = NewUploadService()
 
 // @Summary 画像をクラウドストレージ(imagekit)にアップロード
@@ -16,7 +18,6 @@ var uploadService = NewUploadService()
 // @Tags upload
 // @Security BearerAuth
 // @Accept multipart/form-data
-// @Produce json
 // @Param folder query string true "格納フォルダ"
 // @Param images formData file true "画像ファイル"
 // @Success 200 {object} utils.ApiResponse[UploadImagesResponse] "成功"
@@ -26,12 +27,18 @@ var uploadService = NewUploadService()
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/upload/images [post]
 func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
+	var query UploadImagesRequestQuery
+	if err := c.ShouldBindQuery(&query); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
 	form, err := c.MultipartForm()
 	if err != nil {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "multipart formのパースに失敗")
 		return
 	}
-
 
 	files := form.File["images"]
 	if len(files) == 0 {
@@ -42,13 +49,7 @@ func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
 		return
 	}
 
-	folder := c.DefaultQuery("folder", "default")
-	if folder == "" {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "画像格納フォルダを指定してください")
-		return
-	}
-
-	var uploadedURLs []string
+	var urls []string
 	for _, file := range files {
 		src, err := file.Open()
 		if err != nil {
@@ -62,15 +63,15 @@ func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
 			return
 		}
 
-		url, err := uploadService.uploadToImageKit(ik, folder, file.Filename, src)
+		url, err := uploadService.uploadToImageKit(ik, query.Folder, file.Filename, src)
 		if err != nil {
 			utils.ErrorResponse[any](c, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		uploadedURLs = append(uploadedURLs, url)
+		urls = append(urls, url)
 	}
-	utils.SuccessResponse(c, http.StatusOK, uploadedURLs, "画像のアップロードに成功しました")
+	utils.SuccessResponse[UploadImagesResponse](c, http.StatusOK, UploadImagesResponse{Urls: urls}, "画像のアップロードに成功しました")
 }
 
 func NewUploadHandler() *UploadHandler {

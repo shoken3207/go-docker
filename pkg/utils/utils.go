@@ -12,6 +12,9 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"gopkg.in/gomail.v2"
 )
+func BoolPtr(b bool) *bool {
+    return &b
+}
 
 func SuccessResponse[T any](c *gin.Context, statusCode int, data T, message string) {
 	c.JSON(statusCode, ApiResponse[T]{
@@ -47,11 +50,13 @@ func ParseJWTToken(tokenStr string) (jwt.MapClaims, error) {
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.GetHeader("Authorization")
+		log.Printf(tokenStr)
 		if tokenStr == "" {
 			ErrorResponse[any](c, http.StatusUnauthorized, "jwtトークンがありません。")
 			c.Abort()
 			return
 		}
+		log.Printf("認証")
 		claims, err := ParseJWTToken(tokenStr)
 		if err != nil {
 			ErrorResponse[any](c, http.StatusUnauthorized, err.Error())

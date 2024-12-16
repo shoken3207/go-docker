@@ -399,21 +399,70 @@ const docTemplate = `{
         },
         "/api/upload/images": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "画像をアップロードし、URLを返します。",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "upload"
                 ],
-                "summary": "画像をクラウドストレージにアップロード",
+                "summary": "画像をクラウドストレージ(imagekit)にアップロード",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "格納フォルダ",
+                        "name": "folder",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "type": "file",
                         "description": "画像ファイル",
-                        "name": "file",
+                        "name": "images",
                         "in": "formData",
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-upload_UploadImagesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
             }
         },
         "/api/user/update/:id": {
@@ -566,6 +615,17 @@ const docTemplate = `{
                 }
             }
         },
+        "upload.UploadImagesResponse": {
+            "type": "object",
+            "properties": {
+                "urls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "user.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -599,6 +659,20 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/auth.LoginResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "utils.ApiResponse-upload_UploadImagesResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/upload.UploadImagesResponse"
                 },
                 "message": {
                     "type": "string"

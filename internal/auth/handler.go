@@ -13,16 +13,17 @@ type AuthHandler struct{}
 var authService = NewAuthService()
 
 // @Summary メールアドレスの本人確認
-// @Description リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信
+// @Description リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信
 // @Tags auth
-// @Param email path string true "メールアドレス"
+// @Param email query string true "メールアドレス"
+// @Param tokenType query string true "トークンタイプ register or reset"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/auth/emailVerification/{email} [get]
 func (h *AuthHandler) EmailVerification(c *gin.Context) {
 	request := EmailVerificationRequest{}
-	if err := c.ShouldBindUri(&request); err != nil {
+	if err := c.ShouldBindQuery(&request); err != nil {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
@@ -90,15 +91,28 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 // @Summary ログアウト状態からパスワードを変更
-// @Description メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、
+// @Description メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する
 // @Tags auth
-// @Param request body EmailVerificationRequest true "メールアドレス"
+// @Param request body ResetPassRequest true "tokenと新しいパスワード"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
 // @Failure 404 {object} utils.BasicResponse "not foundエラー"
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/auth/resetPass [put]
 func (h *AuthHandler) ResetPass(c *gin.Context) {
+	var request ResetPassRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+	}
+
+	if err := authService.resetPassService(&request); err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "パスワードのリセットに成功しました。")
 }
 
 // @Summary ログイン状態からパスワードを変更

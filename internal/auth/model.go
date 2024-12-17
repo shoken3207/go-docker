@@ -2,7 +2,8 @@ package auth
 
 // リクエスト
 type EmailVerificationRequest struct {
-	Email string `uri:"email" binding:"required,email"`
+	Email     string `form:"email" binding:"required,email"`
+	TokenType string `form:"tokenType" binding:"required,oneof=register reset"`
 }
 
 type RegisterRequest struct {
@@ -38,6 +39,7 @@ type LoginResponse struct {
 
 // その他
 type TokenRequest struct {
-	UserID *uint
-	Email  *string
+	UserID    *uint
+	Email     *string
+	TokenType *string
 }

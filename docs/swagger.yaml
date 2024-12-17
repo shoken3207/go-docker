@@ -1,13 +1,6 @@
 consumes:
 - application/json
 definitions:
-  auth.EmailVerificationRequest:
-    properties:
-      email:
-        type: string
-    required:
-    - email
-    type: object
   auth.LoginRequest:
     properties:
       email:
@@ -44,6 +37,18 @@ definitions:
     required:
     - name
     - password
+    - token
+    type: object
+  auth.ResetPassRequest:
+    properties:
+      afterPassword:
+        maxLength: 50
+        minLength: 6
+        type: string
+      token:
+        type: string
+    required:
+    - afterPassword
     - token
     type: object
   auth.UpdatePassRequestBody:
@@ -135,11 +140,16 @@ info:
 paths:
   /api/auth/emailVerification/{email}:
     get:
-      description: リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信
+      description: リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信
       parameters:
       - description: メールアドレス
-        in: path
+        in: query
         name: email
+        required: true
+        type: string
+      - description: トークンタイプ register or reset
+        in: query
+        name: tokenType
         required: true
         type: string
       responses:
@@ -216,14 +226,14 @@ paths:
       - auth
   /api/auth/resetPass:
     put:
-      description: メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、
+      description: メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する
       parameters:
-      - description: メールアドレス
+      - description: tokenと新しいパスワード
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.EmailVerificationRequest'
+          $ref: '#/definitions/auth.ResetPassRequest'
       responses:
         "200":
           description: 成功

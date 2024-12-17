@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"go-docker/internal/db"
 	"go-docker/models"
 	"go-docker/pkg/constants"
@@ -37,7 +38,7 @@ func (s *AuthService) findUserByEmail(email string) (*models.User, error) {
 func (s *AuthService) createUser(newUser *models.User) error {
 	if err := db.DB.Create(&newUser).Error; err != nil {
 		log.Printf("ユーザーデータ追加エラー: %v", err)
-		return  utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータ追加に失敗しました。")
+		return utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータ追加に失敗しました。")
 	}
 
 	return nil
@@ -72,6 +73,10 @@ func (s *AuthService) generateJwtToken(req TokenRequest, addExp time.Duration) (
 		claims["email"] = *req.Email
 	} else {
 		return nil, utils.NewCustomError(http.StatusBadRequest, "JWTトークン生成に必要なキーがありません。")
+	}
+
+	if req.TokenType != nil {
+		claims["tokenType"] = *req.TokenType
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	secretKey := os.Getenv("SECRET_KEY")
@@ -115,41 +120,31 @@ func (s *AuthService) updatePass(userId *uint, request *UpdatePassRequestBody) e
 func (s *AuthService) emailVerificationService(request *EmailVerificationRequest) error {
 	user, err := authService.findUserByEmail(request.Email)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok && customErr.Code != http.StatusNotFound {
-			return err
+		if customErr, ok := err.(*utils.CustomError); ok {
+			if !(request.TokenType == "register" && customErr.Code == http.StatusNotFound) {
+				return err
+			}
 		}
 	}
-	if user != nil {
+	if request.TokenType == "register" && user != nil {
 		return utils.NewCustomError(http.StatusConflict, "登録済みのメールアドレスです。")
 	}
 
-	token, err := authService.generateJwtToken(TokenRequest{Email: &request.Email}, constants.EmailVerificationTokenExpDate)
+	token, err := authService.generateJwtToken(TokenRequest{Email: &request.Email, TokenType: &request.TokenType}, constants.EmailVerificationTokenExpDate)
 	if err != nil {
 		return err
 	}
 
-	subject := "[ビジターGO] ユーザー登録"
+	var subject string
+	var body string
 	registerUrl := constants.RegisteBaserUrl + "/?token=" + *token
-	body := `
-[ビジターGO] メールアドレス確認のご案内とユーザー登録
-
-こんにちは、
-
-この度はビジターGOにご登録いただき、ありがとうございます。
-
-以下のリンクから、ユーザー登録を完了させてください。
-
-確認リンク:
-` + registerUrl + `
-
-※ 上記のリンクは、発行から30分以内にご利用ください。期限が過ぎると、再度新しいリンクをリクエストする必要があります。
-
-もし、ご不明点がございましたら、お気軽にお問い合わせください。
-
-どうぞよろしくお願いいたします。
-
-ビジターGOサポートチーム
-`
+	if request.TokenType == "register" {
+		subject = "メールアドレス確認のご案内とユーザー登録"
+		body = fmt.Sprintf(constants.MailBody, subject, "ご登録いただき、ありがとうございます。", "ユーザー登録を完了させてください。", registerUrl)
+	} else {
+		subject = "メールアドレス確認のご案内とパスワードリセット"
+		body = fmt.Sprintf(constants.MailBody, subject, "パスワードリセットのリクエストをいただき、ありがとうございます。", "パスワードリセットを完了させてください。", registerUrl)
+	}
 
 	if err := utils.SendEmail(request.Email, subject, body); err != nil {
 		return err
@@ -165,6 +160,10 @@ func (s *AuthService) registerService(request *RegisterRequest) error {
 	}
 	email, ok := claims["email"].(string)
 	if !ok {
+		return utils.NewCustomError(http.StatusUnauthorized, "トークンデータが不正な値です。")
+	}
+	tokenType, ok := claims["tokenType"].(string)
+	if !ok || tokenType != "register" {
 		return utils.NewCustomError(http.StatusUnauthorized, "トークンデータが不正な値です。")
 	}
 	user, err := authService.findUserByEmail(email)
@@ -228,6 +227,38 @@ func (s *AuthService) validateUpdatePassRequest(c *gin.Context) (*uint, *UpdateP
 	}
 
 	return userId, &requestBody, nil
+}
+
+func (s *AuthService) resetPassService(request *ResetPassRequest) error {
+	claims, err := utils.ParseJWTToken(request.Token)
+	if err != nil {
+		return err
+	}
+	email, ok := claims["email"].(string)
+	if !ok {
+		return utils.NewCustomError(http.StatusUnauthorized, "トークンデータが不正な値です。")
+	}
+	tokenType, ok := claims["tokenType"].(string)
+	if !ok || tokenType != "reset" {
+		return utils.NewCustomError(http.StatusUnauthorized, "トークンデータが不正な値です。")
+	}
+	user, err := authService.findUserByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	afterPassHash, err := authService.generateHashedPass(request.AfterPassword)
+	if err != nil {
+		return err
+	}
+	user.PassHash = *afterPassHash
+
+	if err := db.DB.Model(&user).Updates(models.User{PassHash: *afterPassHash}).Error; err != nil {
+		log.Println("パスワード更新エラー:", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "パスワードの更新に失敗しました。")
+	}
+
+	return nil
 }
 
 func NewAuthService() *AuthService {

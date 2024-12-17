@@ -23,7 +23,7 @@ const docTemplate = `{
     "paths": {
         "/api/auth/emailVerification/{email}": {
             "get": {
-                "description": "リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信",
+                "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信",
                 "tags": [
                     "auth"
                 ],
@@ -33,7 +33,14 @@ const docTemplate = `{
                         "type": "string",
                         "description": "メールアドレス",
                         "name": "email",
-                        "in": "path",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "トークンタイプ register or reset",
+                        "name": "tokenType",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -147,19 +154,19 @@ const docTemplate = `{
         },
         "/api/auth/resetPass": {
             "put": {
-                "description": "メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、",
+                "description": "メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する",
                 "tags": [
                     "auth"
                 ],
                 "summary": "ログアウト状態からパスワードを変更",
                 "parameters": [
                     {
-                        "description": "メールアドレス",
+                        "description": "tokenと新しいパスワード",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.EmailVerificationRequest"
+                            "$ref": "#/definitions/auth.ResetPassRequest"
                         }
                     }
                 ],
@@ -642,17 +649,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "auth.EmailVerificationRequest": {
-            "type": "object",
-            "required": [
-                "email"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
         "auth.LoginRequest": {
             "type": "object",
             "required": [
@@ -701,6 +697,23 @@ const docTemplate = `{
                 },
                 "profileImage": {
                     "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.ResetPassRequest": {
+            "type": "object",
+            "required": [
+                "afterPassword",
+                "token"
+            ],
+            "properties": {
+                "afterPassword": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 6
                 },
                 "token": {
                     "type": "string"

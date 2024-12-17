@@ -1,4 +1,4 @@
-package admintool
+package adminTool
 
 // リクエスト
 type teamAddRequest struct {

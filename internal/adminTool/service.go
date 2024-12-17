@@ -1,4 +1,4 @@
-package admintool
+package adminTool
 
 import (
 	"go-docker/internal/db"

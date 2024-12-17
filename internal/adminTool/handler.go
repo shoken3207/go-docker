@@ -1,9 +1,10 @@
-package admintool
+package adminTool
 
 import (
 	"errors"
 	"go-docker/models"
 	"go-docker/pkg/utils"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,14 +18,15 @@ var adminToolService = NewAdminToolService()
 // @summary チームの追加
 // @Description リクエストからチーム名を取得後、チーム一覧から同一のチームが存在しない場合に登録する。
 // @Tags teams
-// @Param teamname path string true "チーム名"
+// @Param request body teamAddRequest true "チーム名"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/teams/teamAdd [post]
-func (h *AdminToolHandler) teamAdd(c *gin.Context) {
+func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 	request := teamAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
@@ -45,4 +47,8 @@ func (h *AdminToolHandler) teamAdd(c *gin.Context) {
 		return
 	}
 	utils.SuccessResponse[any](c, http.StatusOK, nil, "チーム登録に成功しました。")
+}
+
+func NewAdminToolHandler() *AdminToolHandler {
+	return &AdminToolHandler{}
 }

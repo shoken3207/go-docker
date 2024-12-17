@@ -1,6 +1,7 @@
 package router
 
 import (
+	"go-docker/internal/adminTool"
 	"go-docker/internal/auth"
 	"go-docker/internal/expedition"
 	"go-docker/internal/sample"
@@ -21,6 +22,7 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 	userHandler := user.NewUserHandler()
 	expeditionHandler := expedition.NewExpeditionHandler()
 	uploadHandler := upload.NewUploadHandler()
+	adminToolHandler := adminTool.NewAdminToolHandler()
 
 	publicGroup := api.Group("")
 	{
@@ -36,6 +38,11 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 			publicAuthGroup.POST("/login", authHandler.Login)
 			publicAuthGroup.PUT("/resetPass", authHandler.ResetPass)
 
+		}
+
+		publicAdminGroup := publicGroup.Group("/teams")
+		{
+			publicAdminGroup.POST("/teamAdd", adminToolHandler.TeamAdd)
 		}
 	}
 

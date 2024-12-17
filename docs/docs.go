@@ -432,11 +432,13 @@ const docTemplate = `{
                 "summary": "チームの追加",
                 "parameters": [
                     {
-                        "type": "string",
                         "description": "チーム名",
-                        "name": "teamname",
-                        "in": "path",
-                        "required": true
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.teamAddRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -687,6 +689,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "adminTool.teamAddRequest": {
+            "type": "object",
+            "required": [
+                "LeagueId",
+                "sportsId",
+                "stadiumId",
+                "teamName"
+            ],
+            "properties": {
+                "LeagueId": {
+                    "type": "integer"
+                },
+                "sportsId": {
+                    "type": "integer"
+                },
+                "stadiumId": {
+                    "type": "integer"
+                },
+                "teamName": {
+                    "type": "string"
+                }
+            }
+        },
         "auth.LoginRequest": {
             "type": "object",
             "required": [

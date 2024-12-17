@@ -1,6 +1,22 @@
 consumes:
 - application/json
 definitions:
+  adminTool.teamAddRequest:
+    properties:
+      LeagueId:
+        type: integer
+      sportsId:
+        type: integer
+      stadiumId:
+        type: integer
+      teamName:
+        type: string
+    required:
+    - LeagueId
+    - sportsId
+    - stadiumId
+    - teamName
+    type: object
   auth.LoginRequest:
     properties:
       email:
@@ -401,10 +417,11 @@ paths:
       description: リクエストからチーム名を取得後、チーム一覧から同一のチームが存在しない場合に登録する。
       parameters:
       - description: チーム名
-        in: path
-        name: teamname
+        in: body
+        name: request
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/adminTool.teamAddRequest'
       responses:
         "200":
           description: 成功

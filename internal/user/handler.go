@@ -1,71 +1,101 @@
 package user
 
 import (
-	"log"
+	"go-docker/pkg/utils"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct{}
 
-type User struct {
-	Id    int    `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Age   int    `json:"age"`
-}
-
-type CreateUserRequest struct {
-	Name  string `json:"name" binding:"required,min=3,max=100"`
-	Email string `json:"email" binding:"required,email"`
-	Age   int    `json:"age" binding:"required"`
-}
-
-type ErrorResponse struct {
-	Error   string `json:"error"`
-	Message string `json:"message"`
-}
-
+var userService = NewUserService()
 
 // @Summary ユーザー情報取得
 // @Description userIdからユーザーを1人取得
 // @Tags user
-// @Param id path integer true "userId"
-// @Success 200 {object} User "ユーザー情報"
-// @Failure 400 {object} ErrorResponse "リクエストエラー"
-// @Failure 404 {object} ErrorResponse "ユーザーが見つかりません"
-// @Router /api/user/{id} [get]
+// @Security BearerAuth
+// @Param userId path integer true "userId"
+// @Success 200 {object} utils.ApiResponse[UserResponse] "ユーザー情報"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 401 {object} utils.BasicResponse "認証エラー"
+// @Failure 404 {object} utils.BasicResponse "not foundエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/user/{userId} [get]
 func (h *UserHandler) GetUserById(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 {
-		log.Println(id)
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "idが不正です", Message: "idは1以上の整数である必要があります。"})
+	request := GetUserByIdRequest{}
+	if err := c.ShouldBindUri(&request); err != nil {
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
 
-	// for _, user := range users {
-	// 	if user.Id == id {
-	// 		c.JSON(http.StatusOK, user)
-	// 		return
-	// 	}
-	// }
-
-	c.JSON(http.StatusNotFound, ErrorResponse{Error: "ユーザーが見つかりません。", Message: "idが同じユーザーが存在しません。"})
+	userResponse, err := userService.getUserByIdService(&request)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の取得に成功しました。")
 }
 
+// @Summary ログイン済みの場合、ログインユーザーの情報を取得
+// @Description ヘッダーのトークンからユーザーを取得する
+// @Tags user
+// @Security BearerAuth
+// @Success 200 {object} utils.ApiResponse[UserResponse] "成功"
+// @Failure 401 {object} utils.BasicResponse "認証エラー"
+// @Failure 404 {object} utils.BasicResponse "not foundエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/user/logined [get]
+func (h *UserHandler) GetMyData(c *gin.Context) {
+	userId, err := utils.StringToUint(c.GetString("userId"))
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+	userResponse, err := userService.getUserByIdService(&GetUserByIdRequest{UserId: *userId})
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の取得に成功しました。")
+}
 
 // @Summary ユーザー情報変更
 // @description userIdが同じユーザーの情報を変更する
 // @Tags user
-// @param id path uint true "userId"
-// @success 200 {object} User "ユーザー情報"
-// failure 400 {object} ErrorResponse "リクエストエラー"
-// failure 404 {object} ErrorResponse "ユーザーが見つかりません"
-// @router /api/user/update/:id [put]
+// @Security BearerAuth
+// @param userId path uint true "userId"
+// @param request body UpdateUserRequestBody true "userId"
+// @success 200 {object} utils.ApiResponse[UserResponse] "ユーザー情報"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 401 {object} utils.BasicResponse "認証エラー"
+// @Failure 404 {object} utils.BasicResponse "not foundエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @router /api/user/update/{userId} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
+	userId, requestBody, err := userService.validateUpdateUserRequest(c)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
 
+	userResponse, err := userService.updateUserService(userId, requestBody)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+
+	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の更新に成功しました")
 }
 
 func NewUserHandler() *UserHandler {

@@ -1,13 +1,6 @@
 consumes:
 - application/json
 definitions:
-  auth.EmailVerificationRequest:
-    properties:
-      email:
-        type: string
-    required:
-    - email
-    type: object
   auth.LoginRequest:
     properties:
       email:
@@ -46,7 +39,19 @@ definitions:
     - password
     - token
     type: object
-  auth.UpdatePassRequest:
+  auth.ResetPassRequest:
+    properties:
+      afterPassword:
+        maxLength: 50
+        minLength: 6
+        type: string
+      token:
+        type: string
+    required:
+    - afterPassword
+    - token
+    type: object
+  auth.UpdatePassRequestBody:
     properties:
       afterPassword:
         maxLength: 50
@@ -60,28 +65,61 @@ definitions:
     - afterPassword
     - beforePassword
     type: object
-  user.ErrorResponse:
+  upload.UploadImagesResponse:
     properties:
-      error:
-        type: string
-      message:
-        type: string
+      urls:
+        items:
+          type: string
+        type: array
     type: object
-  user.User:
+  user.UpdateUserRequestBody:
     properties:
-      age:
-        type: integer
+      description:
+        type: string
+      name:
+        type: string
+      profileImage:
+        type: string
+    required:
+    - description
+    - name
+    - profileImage
+    type: object
+  user.UserResponse:
+    properties:
+      description:
+        type: string
       email:
         type: string
       id:
         type: integer
       name:
         type: string
+      profileImage:
+        type: string
     type: object
   utils.ApiResponse-auth_LoginResponse:
     properties:
       data:
         $ref: '#/definitions/auth.LoginResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  utils.ApiResponse-upload_UploadImagesResponse:
+    properties:
+      data:
+        $ref: '#/definitions/upload.UploadImagesResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  utils.ApiResponse-user_UserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/user.UserResponse'
       message:
         type: string
       success:
@@ -102,11 +140,16 @@ info:
 paths:
   /api/auth/emailVerification/{email}:
     get:
-      description: リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信
+      description: リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信
       parameters:
       - description: メールアドレス
-        in: path
+        in: query
         name: email
+        required: true
+        type: string
+      - description: トークンタイプ register or reset
+        in: query
+        name: tokenType
         required: true
         type: string
       responses:
@@ -127,7 +170,7 @@ paths:
       - auth
   /api/auth/login:
     post:
-      description: メールアドレスとパスワードが合致したら、jwtトークンをCookieに保存
+      description: メールアドレスとパスワードが合致したら、jwtトークンをクライアントに返却
       parameters:
       - description: ログイン情報
         in: body
@@ -183,40 +226,14 @@ paths:
       - auth
   /api/auth/resetPass:
     put:
-      description: メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、
+      description: メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する
       parameters:
-      - description: メールアドレス
+      - description: tokenと新しいパスワード
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.EmailVerificationRequest'
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "400":
-          description: リクエストエラー
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "500":
-          description: 内部エラー
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-      summary: ログアウト状態からパスワードを変更
-      tags:
-      - auth
-  /api/auth/updatePass:
-    put:
-      description: 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
-      parameters:
-      - description: メールアドレス
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/auth.UpdatePassRequest'
+          $ref: '#/definitions/auth.ResetPassRequest'
       responses:
         "200":
           description: 成功
@@ -227,7 +244,46 @@ paths:
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: ログアウト状態からパスワードを変更
+      tags:
+      - auth
+  /api/auth/updatePass/{userId}:
+    put:
+      description: 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
+      parameters:
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: integer
+      - description: メールアドレス
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UpdatePassRequestBody'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
           description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "500":
@@ -342,56 +398,145 @@ paths:
       - sample
   /api/upload/images:
     post:
-      description: 画像をアップロードし、URLを返します。
+      consumes:
+      - multipart/form-data
+      description: 画像をアップロードし、URLを返します。<br>プロフィール、スタジアム、遠征など、格納フォルダを指定してください。<br>画像は1枚から10枚アップロードできるが、Swagger
+        UIでは1つしか選択できません。<br>ファイルの拡張子は、[".jpg", ".jpeg", ".png"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。
       parameters:
+      - description: 格納フォルダ
+        in: query
+        name: folder
+        required: true
+        type: string
       - description: 画像ファイル
         in: formData
-        name: file
+        name: images
         required: true
         type: file
-      responses: {}
-      summary: 画像をクラウドストレージにアップロード
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-upload_UploadImagesResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 画像をクラウドストレージ(imagekit)にアップロード
       tags:
       - upload
-  /api/user/{id}:
+  /api/user/{userId}:
     get:
       description: userIdからユーザーを1人取得
       parameters:
       - description: userId
         in: path
-        name: id
+        name: userId
         required: true
         type: integer
       responses:
         "200":
           description: ユーザー情報
           schema:
-            $ref: '#/definitions/user.User'
+            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/user.ErrorResponse'
-        "404":
-          description: ユーザーが見つかりません
+            $ref: '#/definitions/utils.BasicResponse'
+        "401":
+          description: 認証エラー
           schema:
-            $ref: '#/definitions/user.ErrorResponse'
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
       summary: ユーザー情報取得
       tags:
       - user
-  /api/user/update/:id:
+  /api/user/logined:
+    get:
+      description: ヘッダーのトークンからユーザーを取得する
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: ログイン済みの場合、ログインユーザーの情報を取得
+      tags:
+      - user
+  /api/user/update/{userId}:
     put:
       description: userIdが同じユーザーの情報を変更する
       parameters:
       - description: userId
         in: path
-        name: id
+        name: userId
         required: true
         type: integer
+      - description: userId
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserRequestBody'
       responses:
         "200":
           description: ユーザー情報
           schema:
-            $ref: '#/definitions/user.User'
+            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
       summary: ユーザー情報変更
       tags:
       - user

@@ -2,7 +2,8 @@ package auth
 
 // リクエスト
 type EmailVerificationRequest struct {
-	Email string `uri:"email" binding:"required,email"`
+	Email     string `form:"email" binding:"required,email"`
+	TokenType string `form:"tokenType" binding:"required,oneof=register reset"`
 }
 
 type RegisterRequest struct {
@@ -18,9 +19,12 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required,min=6,max=50"`
 }
 
-type UpdatePassRequest struct {
+type UpdatePassRequestBody struct {
 	BeforePassword string `json:"beforePassword" binding:"required,min=6,max=50"`
 	AfterPassword  string `json:"afterPassword" binding:"required,min=6,max=50"`
+}
+type UpdateUserRequestPath struct {
+	UserId uint `uri:"userId" binding:"required"`
 }
 
 type ResetPassRequest struct {
@@ -33,15 +37,9 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-type User struct {
-	Id    int    `json:"id"`
-	Name  string `json:"name"`
-	Age   int    `json:"age"`
-	Email string `json:"email"`
-}
-
 // その他
 type TokenRequest struct {
-	UserID *uint
-	Email  *string
+	UserID    *uint
+	Email     *string
+	TokenType *string
 }

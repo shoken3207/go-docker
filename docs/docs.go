@@ -23,7 +23,7 @@ const docTemplate = `{
     "paths": {
         "/api/auth/emailVerification/{email}": {
             "get": {
-                "description": "リクエストからメールアドレス取得後、ユーザー登録されていないか確認し、メールアドレス宛に本登録URLをメールで送信",
+                "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信",
                 "tags": [
                     "auth"
                 ],
@@ -33,7 +33,14 @@ const docTemplate = `{
                         "type": "string",
                         "description": "メールアドレス",
                         "name": "email",
-                        "in": "path",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "トークンタイプ register or reset",
+                        "name": "tokenType",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -61,7 +68,7 @@ const docTemplate = `{
         },
         "/api/auth/login": {
             "post": {
-                "description": "メールアドレスとパスワードが合致したら、jwtトークンをCookieに保存",
+                "description": "メールアドレスとパスワードが合致したら、jwtトークンをクライアントに返却",
                 "tags": [
                     "auth"
                 ],
@@ -147,64 +154,19 @@ const docTemplate = `{
         },
         "/api/auth/resetPass": {
             "put": {
-                "description": "メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、",
+                "description": "メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する",
                 "tags": [
                     "auth"
                 ],
                 "summary": "ログアウト状態からパスワードを変更",
                 "parameters": [
                     {
-                        "description": "メールアドレス",
+                        "description": "tokenと新しいパスワード",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.EmailVerificationRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/updatePass": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する",
-                "tags": [
-                    "auth"
-                ],
-                "summary": "ログイン状態からパスワードを変更",
-                "parameters": [
-                    {
-                        "description": "メールアドレス",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/auth.UpdatePassRequest"
+                            "$ref": "#/definitions/auth.ResetPassRequest"
                         }
                     }
                 ],
@@ -222,7 +184,71 @@ const docTemplate = `{
                         }
                     },
                     "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/updatePass/{userId}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "ログイン状態からパスワードを変更",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "メールアドレス",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.UpdatePassRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
                         "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
@@ -399,25 +425,116 @@ const docTemplate = `{
         },
         "/api/upload/images": {
             "post": {
-                "description": "画像をアップロードし、URLを返します。",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "画像をアップロードし、URLを返します。\u003cbr\u003eプロフィール、スタジアム、遠征など、格納フォルダを指定してください。\u003cbr\u003e画像は1枚から10枚アップロードできるが、Swagger UIでは1つしか選択できません。\u003cbr\u003eファイルの拡張子は、[\".jpg\", \".jpeg\", \".png\"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。",
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "tags": [
                     "upload"
                 ],
-                "summary": "画像をクラウドストレージにアップロード",
+                "summary": "画像をクラウドストレージ(imagekit)にアップロード",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "格納フォルダ",
+                        "name": "folder",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "type": "file",
                         "description": "画像ファイル",
-                        "name": "file",
+                        "name": "images",
                         "in": "formData",
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-upload_UploadImagesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
             }
         },
-        "/api/user/update/:id": {
+        "/api/user/logined": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ヘッダーのトークンからユーザーを取得する",
+                "tags": [
+                    "user"
+                ],
+                "summary": "ログイン済みの場合、ログインユーザーの情報を取得",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/update/{userId}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "userIdが同じユーザーの情報を変更する",
                 "tags": [
                     "user"
@@ -427,23 +544,61 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "userId",
-                        "name": "id",
+                        "name": "userId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "userId",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UpdateUserRequestBody"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "ユーザー情報",
                         "schema": {
-                            "$ref": "#/definitions/user.User"
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
                         }
                     }
                 }
             }
         },
-        "/api/user/{id}": {
+        "/api/user/{userId}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "userIdからユーザーを1人取得",
                 "tags": [
                     "user"
@@ -453,7 +608,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "userId",
-                        "name": "id",
+                        "name": "userId",
                         "in": "path",
                         "required": true
                     }
@@ -462,19 +617,31 @@ const docTemplate = `{
                     "200": {
                         "description": "ユーザー情報",
                         "schema": {
-                            "$ref": "#/definitions/user.User"
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/user.ErrorResponse"
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
                         }
                     },
                     "404": {
-                        "description": "ユーザーが見つかりません",
+                        "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/user.ErrorResponse"
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
                         }
                     }
                 }
@@ -482,17 +649,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "auth.EmailVerificationRequest": {
-            "type": "object",
-            "required": [
-                "email"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
         "auth.LoginRequest": {
             "type": "object",
             "required": [
@@ -547,7 +703,24 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.UpdatePassRequest": {
+        "auth.ResetPassRequest": {
+            "type": "object",
+            "required": [
+                "afterPassword",
+                "token"
+            ],
+            "properties": {
+                "afterPassword": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 6
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.UpdatePassRequestBody": {
             "type": "object",
             "required": [
                 "afterPassword",
@@ -566,22 +739,41 @@ const docTemplate = `{
                 }
             }
         },
-        "user.ErrorResponse": {
+        "upload.UploadImagesResponse": {
             "type": "object",
             "properties": {
-                "error": {
+                "urls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "user.UpdateUserRequestBody": {
+            "type": "object",
+            "required": [
+                "description",
+                "name",
+                "profileImage"
+            ],
+            "properties": {
+                "description": {
                     "type": "string"
                 },
-                "message": {
+                "name": {
+                    "type": "string"
+                },
+                "profileImage": {
                     "type": "string"
                 }
             }
         },
-        "user.User": {
+        "user.UserResponse": {
             "type": "object",
             "properties": {
-                "age": {
-                    "type": "integer"
+                "description": {
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
@@ -591,6 +783,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "profileImage": {
+                    "type": "string"
                 }
             }
         },
@@ -599,6 +794,34 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/auth.LoginResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "utils.ApiResponse-upload_UploadImagesResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/upload.UploadImagesResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "utils.ApiResponse-user_UserResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/user.UserResponse"
                 },
                 "message": {
                     "type": "string"

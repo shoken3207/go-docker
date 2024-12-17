@@ -4,13 +4,15 @@ import (
 	"go-docker/internal/auth"
 	"go-docker/internal/expedition"
 	"go-docker/internal/sample"
+	"go-docker/internal/upload"
 	"go-docker/internal/user"
 	"go-docker/pkg/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/imagekit-developer/imagekit-go"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 	router := gin.Default()
 	api := router.Group("/api")
 
@@ -18,6 +20,7 @@ func SetupRouter() *gin.Engine {
 	authHandler := auth.NewAuthHandler()
 	userHandler := user.NewUserHandler()
 	expeditionHandler := expedition.NewExpeditionHandler()
+	uploadHandler := upload.NewUploadHandler()
 
 	publicGroup := api.Group("")
 	{
@@ -46,17 +49,26 @@ func SetupRouter() *gin.Engine {
 
 		protectedAuthGroup := protectedGroup.Group("/auth")
 		{
-			protectedAuthGroup.PUT("/updatePass", authHandler.UpdatePass)
+			protectedAuthGroup.PUT("/updatePass/:userId", authHandler.UpdatePass)
 		}
 
 		protectedUserGroup := protectedGroup.Group("/user")
 		{
-			protectedUserGroup.GET("/:id", userHandler.GetUserById)
+			protectedUserGroup.GET("/:userId", userHandler.GetUserById)
+			protectedUserGroup.GET("/logined", userHandler.GetMyData)
+			protectedUserGroup.PUT("/update/:userId", userHandler.UpdateUser)
 		}
 
 		protectedExpeditionGroup := protectedGroup.Group("/expedition")
 		{
 			protectedExpeditionGroup.POST("/create", expeditionHandler.CreateExpedition)
+		}
+
+		protectedUploadGroup := protectedGroup.Group("/upload")
+		{
+			protectedUploadGroup.POST("/images", func(c *gin.Context) {
+				uploadHandler.UploadImages(c, ik)
+			})
 		}
 	}
 

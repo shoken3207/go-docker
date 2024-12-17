@@ -19,6 +19,9 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - SSL_MODE=${SSL_MODE}
+      - IMAGE_KIT_PUBLIC_KEY=${IMAGE_KIT_PUBLIC_KEY}
+      - IMAGE_KIT_PRIVATE_KEY=${IMAGE_KIT_PRIVATE_KEY}
+      - IMAGE_KIT_URL_ENDPOINT=${IMAGE_KIT_URL_ENDPOINT}
     depends_on:
       - db
       - mailhog

@@ -65,6 +65,109 @@ definitions:
     - afterPassword
     - beforePassword
     type: object
+  expedition.CreateExpeditionRequest:
+    properties:
+      endDate:
+        type: string
+      games:
+        items:
+          $ref: '#/definitions/expedition.GameRequest'
+        type: array
+      isPublic:
+        type: boolean
+      memo:
+        type: string
+      payments:
+        items:
+          $ref: '#/definitions/expedition.PaymentRequest'
+        type: array
+      sportId:
+        type: integer
+      startDate:
+        type: string
+      title:
+        type: string
+      visitedFacilities:
+        items:
+          $ref: '#/definitions/expedition.VisitedFacilityRequest'
+        type: array
+    required:
+    - endDate
+    - games
+    - isPublic
+    - memo
+    - payments
+    - sportId
+    - startDate
+    - title
+    - visitedFacilities
+    type: object
+  expedition.GameRequest:
+    properties:
+      comment:
+        type: string
+      date:
+        type: string
+      scores:
+        items:
+          $ref: '#/definitions/expedition.GameScoreRequest'
+        type: array
+      stadiumId:
+        type: integer
+      team1Id:
+        type: integer
+      team2Id:
+        type: integer
+    required:
+    - comment
+    - date
+    - scores
+    - stadiumId
+    - team1Id
+    - team2Id
+    type: object
+  expedition.GameScoreRequest:
+    properties:
+      order:
+        type: integer
+      score:
+        type: integer
+      teamId:
+        type: integer
+    required:
+    - order
+    - score
+    - teamId
+    type: object
+  expedition.PaymentRequest:
+    properties:
+      cost:
+        type: integer
+      date:
+        type: string
+      title:
+        type: string
+    required:
+    - cost
+    - date
+    - title
+    type: object
+  expedition.VisitedFacilityRequest:
+    properties:
+      address:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    required:
+    - address
+    - latitude
+    - longitude
+    - name
+    type: object
   upload.UploadImagesResponse:
     properties:
       urls:
@@ -298,6 +401,13 @@ paths:
   /api/expedition/create:
     post:
       description: 遠征、出費、試合、訪れた施設の情報を保存する。
+      parameters:
+      - description: 遠征記録作成リクエスト
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/expedition.CreateExpeditionRequest'
       responses:
         "200":
           description: アップロードした画像のURL

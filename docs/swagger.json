@@ -266,6 +266,17 @@
                     "expedition"
                 ],
                 "summary": "遠征記録を作成",
+                "parameters": [
+                    {
+                        "description": "遠征記録作成リクエスト",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/expedition.CreateExpeditionRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "アップロードした画像のURL",
@@ -728,6 +739,153 @@
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 6
+                }
+            }
+        },
+        "expedition.CreateExpeditionRequest": {
+            "type": "object",
+            "required": [
+                "endDate",
+                "games",
+                "isPublic",
+                "memo",
+                "payments",
+                "sportId",
+                "startDate",
+                "title",
+                "visitedFacilities"
+            ],
+            "properties": {
+                "endDate": {
+                    "type": "string"
+                },
+                "games": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.GameRequest"
+                    }
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "memo": {
+                    "type": "string"
+                },
+                "payments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.PaymentRequest"
+                    }
+                },
+                "sportId": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "visitedFacilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.VisitedFacilityRequest"
+                    }
+                }
+            }
+        },
+        "expedition.GameRequest": {
+            "type": "object",
+            "required": [
+                "comment",
+                "date",
+                "scores",
+                "stadiumId",
+                "team1Id",
+                "team2Id"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "scores": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.GameScoreRequest"
+                    }
+                },
+                "stadiumId": {
+                    "type": "integer"
+                },
+                "team1Id": {
+                    "type": "integer"
+                },
+                "team2Id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "expedition.GameScoreRequest": {
+            "type": "object",
+            "required": [
+                "order",
+                "score",
+                "teamId"
+            ],
+            "properties": {
+                "order": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "teamId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "expedition.PaymentRequest": {
+            "type": "object",
+            "required": [
+                "cost",
+                "date",
+                "title"
+            ],
+            "properties": {
+                "cost": {
+                    "type": "integer"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "expedition.VisitedFacilityRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "latitude",
+                "longitude",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

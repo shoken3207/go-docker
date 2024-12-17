@@ -10,7 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type AuthHandler struct{}
@@ -32,9 +31,11 @@ func (h *AuthHandler) EmailVerification(c *gin.Context) {
 		return
 	}
 	user, err := authService.findUserByEmail(request.Email)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok && customErr.Code != http.StatusNotFound {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
 	}
 	if user != nil {
 		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのメールアドレスです。")
@@ -71,9 +72,10 @@ func (h *AuthHandler) EmailVerification(c *gin.Context) {
 `
 
 	if err := utils.SendEmail(request.Email, subject, body); err != nil {
-		log.Printf("メール送信に失敗しました: %v\n", err)
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "メール送信に失敗しました")
-		return
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
 	}
 	utils.SuccessResponse[any](c, http.StatusOK, nil, "入力されたメールアドレス宛に本登録用URLを送信しました。")
 }
@@ -95,20 +97,20 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 	claims, err := utils.ParseJWTToken(request.Token)
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusUnauthorized, err.Error())
-		return
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
 	}
 	email, ok := claims["email"].(string)
 	if !ok {
 		utils.ErrorResponse[any](c, http.StatusUnauthorized, "トークンデータが不正な値です。")
-		c.Abort()
 		return
 	}
 	user, err := authService.findUserByEmail(email)
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Printf("データベースエラー: %v", err)
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		if customErr, ok := err.(*utils.CustomError); ok && customErr.Code != http.StatusNotFound {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
@@ -151,13 +153,13 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	user, err := authService.findUserByEmail(request.Email)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			utils.ErrorResponse[any](c, http.StatusNotFound, "認証に失敗しました。")
-		} else {
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
 		}
-		return
 	}
+	log.Printf("request: ",request.Password)
+	log.Printf("user:", user.PassHash)
 	if err = authService.comparePassword(request.Password, user.PassHash); err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 			utils.ErrorResponse[any](c, http.StatusNotFound, "認証に失敗しました。")
@@ -215,7 +217,10 @@ func (h *AuthHandler) UpdatePass(c *gin.Context) {
 	}
 	userId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, err.Error())
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
 	}
 	if *userId != requestPath.UserId {
 		utils.ErrorResponse[any](c, http.StatusUnauthorized, "自分のパスワードしか更新できません。")

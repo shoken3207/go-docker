@@ -2,7 +2,7 @@ package upload
 
 // リクエスト
 type UploadImagesRequestQuery struct {
-	Folder string `json:"folder" binding:"required"`
+	Folder string `form:"folder" binding:"required"`
 }
 
 // レスポンス

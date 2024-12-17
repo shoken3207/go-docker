@@ -2,7 +2,6 @@ package upload
 
 import (
 	"go-docker/pkg/utils"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,51 +26,21 @@ var uploadService = NewUploadService()
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/upload/images [post]
 func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
-	var query UploadImagesRequestQuery
-	if err := c.ShouldBindQuery(&query); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
-
-	form, err := c.MultipartForm()
+	query, files, err := uploadService.validateUploadImagesRequest(c)
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "multipart formのパースに失敗")
-		return
-	}
-
-	files := form.File["images"]
-	if len(files) == 0 {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "ファイルが選択されていません")
-		return
-	} else if len(files) > 10 {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "ファイルの上限選択数を超えています")
-		return
-	}
-
-	var urls []string
-	for _, file := range files {
-		src, err := file.Open()
-		if err != nil {
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, "ファイルの開封に失敗")
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
-		defer src.Close()
-
-		if err := uploadService.validateFile(file); err != nil {
-			utils.ErrorResponse[any](c, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		url, err := uploadService.uploadToImageKit(ik, query.Folder, file.Filename, src)
-		if err != nil {
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		urls = append(urls, url)
 	}
-	utils.SuccessResponse[UploadImagesResponse](c, http.StatusOK, UploadImagesResponse{Urls: urls}, "画像のアップロードに成功しました")
+	urls, err := uploadService.UploadImagesService(ik, &query.Folder, files)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+	utils.SuccessResponse[UploadImagesResponse](c, http.StatusOK, UploadImagesResponse{Urls: *urls}, "画像のアップロードに成功しました")
 }
 
 func NewUploadHandler() *UploadHandler {

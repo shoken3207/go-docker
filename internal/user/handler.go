@@ -63,8 +63,10 @@ func (h *UserHandler) GetUserById(c *gin.Context) {
 func (h *UserHandler) GetMyData(c *gin.Context) {
 	userId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, err.Error())
-		return
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
 	}
 	user, err := userService.findUserById(*userId)
 	if err != nil {
@@ -112,8 +114,10 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	}
 	userId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, err.Error())
-		return
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
 	}
 	if *userId != requestPath.UserId {
 		utils.ErrorResponse[any](c, http.StatusUnauthorized, "自分のユーザー情報しか更新できません。")

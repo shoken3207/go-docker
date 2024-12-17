@@ -2,9 +2,10 @@ package admintool
 
 // リクエスト
 type teamAddRequest struct {
-	Sports   string `uri:"sports" binding:"required"`
-	League   string `uri:"sports" binding:"required"`
-	TeamName string `uri:"teamName" binding:"required"`
+	StadiumId uint   `json:"stadiumId" binding:"required"`
+	SportsId  uint   `json:"sportsId" binding:"required"`
+	LeagueId  uint   `json:"LeagueId" binding:"required"`
+	TeamName  string `json:"teamName" binding:"required"`
 }
 
 type UppdateTeamRequest struct {
@@ -18,8 +19,8 @@ type DeleteTeamRequest struct {
 
 // レスポンス
 type team struct {
-	Sports   string `json:"sports"`
-	League   string `json:"league"`
-	teamId   uint   `json:"id"`
-	teamName string `json:"teamName"`
+	StadiumId uint   `json:"stadiumId"`
+	SportsId  uint   `json:"sportsId"`
+	LeagueId  uint   `json:"LeagueId"`
+	TeamName  string `json:"teamName"`
 }

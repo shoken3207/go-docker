@@ -415,6 +415,44 @@
                 "responses": {}
             }
         },
+        "/api/teams/teamAdd": {
+            "post": {
+                "description": "リクエストからチーム名を取得後、チーム一覧から同一のチームが存在しない場合に登録する。",
+                "tags": [
+                    "teams"
+                ],
+                "summary": "チームの追加",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "チーム名",
+                        "name": "teamname",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/upload/images": {
             "post": {
                 "security": [

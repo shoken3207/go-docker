@@ -1,13 +1,10 @@
 package user
 
 import (
-	"errors"
 	"go-docker/pkg/utils"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type UserHandler struct{}
@@ -32,23 +29,14 @@ func (h *UserHandler) GetUserById(c *gin.Context) {
 		return
 	}
 
-	user, err := userService.findUserById(request.UserId)
+	userResponse, err := userService.getUserByIdService(&request)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			utils.ErrorResponse[any](c, http.StatusNotFound, "認証に失敗しました。")
-		} else {
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
 		}
-		return
 	}
-	userResponse := UserResponse{
-		Id:           user.ID,
-		Email:        user.Email,
-		Name:         user.Name,
-		Description:  user.Description,
-		ProfileImage: user.ProfileImage,
-	}
-	utils.SuccessResponse[UserResponse](c, http.StatusOK, userResponse, "ユーザー情報の取得に成功しました。")
+	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の取得に成功しました。")
 }
 
 // @Summary ログイン済みの場合、ログインユーザーの情報を取得
@@ -68,23 +56,14 @@ func (h *UserHandler) GetMyData(c *gin.Context) {
 			return
 		}
 	}
-	user, err := userService.findUserById(*userId)
+	userResponse, err := userService.getUserByIdService(&GetUserByIdRequest{UserId: *userId})
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			utils.ErrorResponse[any](c, http.StatusNotFound, "ユーザーが見つかりません。")
-		} else {
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
 		}
-		return
 	}
-	userResponse := UserResponse{
-		Id:           user.ID,
-		Email:        user.Email,
-		Name:         user.Name,
-		Description:  user.Description,
-		ProfileImage: user.ProfileImage,
-	}
-	utils.SuccessResponse[UserResponse](c, http.StatusOK, userResponse, "ユーザー情報の取得に成功しました。")
+	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の取得に成功しました。")
 }
 
 // @Summary ユーザー情報変更
@@ -100,47 +79,23 @@ func (h *UserHandler) GetMyData(c *gin.Context) {
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @router /api/user/update/{userId} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
-	var requestBody UpdateUserRequestBody
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
-	var requestPath UpdateUserRequestPath
-	if err := c.ShouldBindUri(&requestPath); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
-	userId, err := utils.StringToUint(c.GetString("userId"))
+	userId, requestBody, err := userService.validateUpdateUserRequest(c)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
-	if *userId != requestPath.UserId {
-		utils.ErrorResponse[any](c, http.StatusUnauthorized, "自分のユーザー情報しか更新できません。")
-		return
-	}
-	user, err := userService.updateUser(userId, &requestBody)
+
+	userResponse, err := userService.updateUserService(userId, requestBody)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			utils.ErrorResponse[any](c, http.StatusNotFound, "ユーザーが見つかりません。")
-		} else {
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
 		}
-		return
 	}
 
-	userResponse := UserResponse{
-		Id:           user.ID,
-		Email:        user.Email,
-		Name:         user.Name,
-		Description:  user.Description,
-		ProfileImage: user.ProfileImage,
-	}
-	utils.SuccessResponse[UserResponse](c, http.StatusOK, userResponse, "ユーザー情報の更新に成功しました")
+	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の更新に成功しました")
 }
 
 func NewUserHandler() *UserHandler {

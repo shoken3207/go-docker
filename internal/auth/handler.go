@@ -1,15 +1,11 @@
 package auth
 
 import (
-	"errors"
-	"go-docker/models"
-	"go-docker/pkg/constants"
 	"go-docker/pkg/utils"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthHandler struct{}
@@ -30,53 +26,14 @@ func (h *AuthHandler) EmailVerification(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
-	user, err := authService.findUserByEmail(request.Email)
-	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok && customErr.Code != http.StatusNotFound {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
-			return
-		}
-	}
-	if user != nil {
-		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのメールアドレスです。")
-		return
-	}
 
-	token, err := authService.generateJwtToken(TokenRequest{Email: &request.Email}, constants.EmailVerificationTokenExpDate)
-	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
-	}
-
-	subject := "[ビジターGO] ユーザー登録"
-	registerUrl := constants.RegisteBaserUrl + "/?token=" + *token
-	body := `
-[ビジターGO] メールアドレス確認のご案内とユーザー登録
-
-こんにちは、
-
-この度はビジターGOにご登録いただき、ありがとうございます。
-
-以下のリンクから、ユーザー登録を完了させてください。
-
-確認リンク:
-` + registerUrl + `
-
-※ 上記のリンクは、発行から30分以内にご利用ください。期限が過ぎると、再度新しいリンクをリクエストする必要があります。
-
-もし、ご不明点がございましたら、お気軽にお問い合わせください。
-
-どうぞよろしくお願いいたします。
-
-ビジターGOサポートチーム
-`
-
-	if err := utils.SendEmail(request.Email, subject, body); err != nil {
+	if err := authService.emailVerificationService(&request); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
+
 	utils.SuccessResponse[any](c, http.StatusOK, nil, "入力されたメールアドレス宛に本登録用URLを送信しました。")
 }
 
@@ -95,41 +52,12 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
-	claims, err := utils.ParseJWTToken(request.Token)
-	if err != nil {
+
+	if err := authService.registerService(&request); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
-	}
-	email, ok := claims["email"].(string)
-	if !ok {
-		utils.ErrorResponse[any](c, http.StatusUnauthorized, "トークンデータが不正な値です。")
-		return
-	}
-	user, err := authService.findUserByEmail(email)
-	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok && customErr.Code != http.StatusNotFound {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
-			return
-		}
-	}
-
-	if user != nil {
-		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのメールアドレスです。")
-		return
-	}
-	passHash, err := authService.generateHashedPass(request.Password)
-	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
-	}
-
-	newUser := models.User{Name: request.Name, Email: email, PassHash: *passHash, Description: request.Description, ProfileImage: request.ProfileImage}
-
-	if err := authService.createUser(&newUser); err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
 	}
 	utils.SuccessResponse[any](c, http.StatusOK, nil, "ユーザー登録に成功しました。")
 }
@@ -151,30 +79,13 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := authService.findUserByEmail(request.Email)
+	token, err := authService.loginService(&request)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
-	log.Printf("request: ",request.Password)
-	log.Printf("user:", user.PassHash)
-	if err = authService.comparePassword(request.Password, user.PassHash); err != nil {
-		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			utils.ErrorResponse[any](c, http.StatusNotFound, "認証に失敗しました。")
-		} else {
-			utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		}
-		return
-	}
-
-	token, err := authService.generateJwtToken(TokenRequest{UserID: &user.ID}, constants.LoginTokenExpDate)
-	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
-	}
-
 	utils.SuccessResponse[LoginResponse](c, http.StatusOK, LoginResponse{Token: *token}, "ログインに成功しました。")
 }
 
@@ -203,31 +114,15 @@ func (h *AuthHandler) ResetPass(c *gin.Context) {
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/auth/updatePass/{userId} [put]
 func (h *AuthHandler) UpdatePass(c *gin.Context) {
-	var requestBody UpdatePassRequestBody
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
-	var requestPath UpdateUserRequestPath
-	if err := c.ShouldBindUri(&requestPath); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
-	userId, err := utils.StringToUint(c.GetString("userId"))
+	userId, requestBody, err := authService.validateUpdatePassRequest(c)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
-	if *userId != requestPath.UserId {
-		utils.ErrorResponse[any](c, http.StatusUnauthorized, "自分のパスワードしか更新できません。")
-		return
-	}
 
-	if err := authService.updatePass(userId, &requestBody); err != nil {
+	if err := authService.updatePass(userId, requestBody); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return

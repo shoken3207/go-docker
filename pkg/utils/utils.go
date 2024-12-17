@@ -114,6 +114,7 @@ func SendEmailDev(from string, to string, subject string, body string) error {
 		log.Printf("メール送信エラー: %v", err)
 		return NewCustomError(http.StatusInternalServerError, "メール送信に失敗しました。")
 	}
+	log.Printf("success")
 	return nil
 }
 

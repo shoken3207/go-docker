@@ -415,6 +415,86 @@
                 "responses": {}
             }
         },
+        "/api/stadium/delete": {
+            "delete": {
+                "description": "リクエストボディに削除対象のIDを指定してスタジアムを削除します",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム削除",
+                "parameters": [
+                    {
+                        "description": "スタジアムID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/stadium/stadiumAdd": {
+            "post": {
+                "description": "リクエストからスタジアム情報を追加後、重複確認を行い登録する。",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム追加",
+                "parameters": [
+                    {
+                        "description": "スタジアム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.StadiumAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/teams/teamAdd": {
             "post": {
                 "description": "リクエストからチーム名を取得後、チーム一覧から同一のチームが存在しない場合に登録する。",
@@ -429,7 +509,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/adminTool.teamAddRequest"
+                            "$ref": "#/definitions/adminTool.TeamAddRequest"
                         }
                     }
                 ],
@@ -681,7 +761,49 @@
         }
     },
     "definitions": {
-        "adminTool.teamAddRequest": {
+        "adminTool.DeleteRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "adminTool.StadiumAddRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "capacity",
+                "description",
+                "id",
+                "image",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "adminTool.TeamAddRequest": {
             "type": "object",
             "required": [
                 "LeagueId",

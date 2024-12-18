@@ -1,7 +1,36 @@
 consumes:
 - application/json
 definitions:
-  adminTool.teamAddRequest:
+  adminTool.DeleteRequest:
+    properties:
+      id:
+        type: integer
+    required:
+    - id
+    type: object
+  adminTool.StadiumAddRequest:
+    properties:
+      address:
+        type: string
+      capacity:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    required:
+    - address
+    - capacity
+    - description
+    - id
+    - image
+    - name
+    type: object
+  adminTool.TeamAddRequest:
     properties:
       LeagueId:
         type: integer
@@ -412,6 +441,58 @@ paths:
       summary: サンプルAPI
       tags:
       - sample
+  /api/stadium/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してスタジアムを削除します
+      parameters:
+      - description: スタジアムID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: スタジアム削除
+      tags:
+      - stadium
+  /api/stadium/stadiumAdd:
+    post:
+      description: リクエストからスタジアム情報を追加後、重複確認を行い登録する。
+      parameters:
+      - description: スタジアム情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.StadiumAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: スタジアム追加
+      tags:
+      - stadium
   /api/teams/teamAdd:
     post:
       description: リクエストからチーム名を取得後、チーム一覧から同一のチームが存在しない場合に登録する。
@@ -421,7 +502,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/adminTool.teamAddRequest'
+          $ref: '#/definitions/adminTool.TeamAddRequest'
       responses:
         "200":
           description: 成功

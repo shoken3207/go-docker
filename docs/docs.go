@@ -488,6 +488,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/isUnique/{username}": {
+            "get": {
+                "description": "リクエストと同じuserNameが登録済みかチェックする",
+                "tags": [
+                    "user"
+                ],
+                "summary": "ユーザーネームの重複チェック",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "一意かのフラグ",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-user_IsUniqueUsernameResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/logined": {
             "get": {
                 "security": [
@@ -592,7 +630,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/{userId}": {
+        "/api/user/userId/{userId}": {
             "get": {
                 "security": [
                     {
@@ -603,12 +641,67 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "ユーザー情報取得",
+                "summary": "userIdからユーザー情報取得",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "userId",
                         "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ユーザー情報",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/username/{username}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "usernameからユーザーを1人取得",
+                "tags": [
+                    "user"
+                ],
+                "summary": "usernameからユーザー情報取得",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
                         "in": "path",
                         "required": true
                     }
@@ -679,7 +772,8 @@ const docTemplate = `{
             "required": [
                 "name",
                 "password",
-                "token"
+                "token",
+                "username"
             ],
             "properties": {
                 "description": {
@@ -700,6 +794,11 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 5
                 }
             }
         },
@@ -750,6 +849,14 @@ const docTemplate = `{
                 }
             }
         },
+        "user.IsUniqueUsernameResponse": {
+            "type": "object",
+            "properties": {
+                "isUnique": {
+                    "type": "boolean"
+                }
+            }
+        },
         "user.UpdateUserRequestBody": {
             "type": "object",
             "required": [
@@ -786,6 +893,9 @@ const docTemplate = `{
                 },
                 "profileImage": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -808,6 +918,20 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/upload.UploadImagesResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "utils.ApiResponse-user_IsUniqueUsernameResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/user.IsUniqueUsernameResponse"
                 },
                 "message": {
                     "type": "string"

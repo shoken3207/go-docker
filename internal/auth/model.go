@@ -8,6 +8,7 @@ type EmailVerificationRequest struct {
 
 type RegisterRequest struct {
 	Token        string `json:"token" binding:"required"`
+	Username     string `json:"username" binding:"required,min=5,max=255"`
 	Name         string `json:"name" binding:"required,min=3,max=100"`
 	Password     string `json:"password" binding:"required,min=6,max=50"`
 	Description  string `json:"description"`

@@ -14,6 +14,18 @@ import (
 
 type UserService struct{}
 
+func (s *UserService) createUserResponse(user *models.User) *UserResponse {
+	userResponse := UserResponse{
+		Id:           user.ID,
+		Username:     user.Username,
+		Email:        user.Email,
+		Name:         user.Name,
+		Description:  user.Description,
+		ProfileImage: user.ProfileImage,
+	}
+	return &userResponse
+}
+
 func (s *UserService) findUserById(userId uint) (*models.User, error) {
 	user := models.User{}
 	if err := db.DB.Where("id = ?", userId).First(&user).Error; err != nil {
@@ -38,7 +50,7 @@ func (s *UserService) updateUser(userId *uint, request *UpdateUserRequestBody) (
 	user.ProfileImage = request.ProfileImage
 
 	if err := db.DB.Model(user).Updates(models.User{Name: request.Name, Description: request.Description, ProfileImage: request.ProfileImage}).Error; err != nil {
-		log.Println("ユーザー更新エラー: %v", err)
+		log.Printf("ユーザー更新エラー: %v", err)
 		return nil, utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータがの更新に失敗しました。")
 	}
 
@@ -50,15 +62,19 @@ func (s *UserService) getUserByIdService(request *GetUserByIdRequest) (*UserResp
 	if err != nil {
 		return nil, err
 	}
-	userResponse := UserResponse{
-		Id:           user.ID,
-		Email:        user.Email,
-		Name:         user.Name,
-		Description:  user.Description,
-		ProfileImage: user.ProfileImage,
-	}
+	userResponse := s.createUserResponse(user)
 
-	return &userResponse, nil
+	return userResponse, nil
+}
+
+func (s *UserService) getUserByUsernameService(request *GetUserByUsernameRequest) (*UserResponse, error) {
+	user, err := utils.FindUserByUsername(request.Username)
+	if err != nil {
+		return nil, err
+	}
+	userResponse := s.createUserResponse(user)
+
+	return userResponse, nil
 }
 
 func (s *UserService) validateUpdateUserRequest(c *gin.Context) (*uint, *UpdateUserRequestBody, error) {
@@ -91,6 +107,7 @@ func (s *UserService) updateUserService(userId *uint, requestBody *UpdateUserReq
 
 	userResponse := UserResponse{
 		Id:           user.ID,
+		Username:     user.Username,
 		Email:        user.Email,
 		Name:         user.Name,
 		Description:  user.Description,

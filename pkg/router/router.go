@@ -31,6 +31,11 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 			publicSampleGroup.GET("/helloWorld", sampleHandler.ProtectedHelloWorld)
 		}
 
+		publicUserGroup := publicGroup.Group("/user")
+		{
+			publicUserGroup.GET("/isUnique/:username", userHandler.IsUniqueUsername)
+		}
+
 		publicAuthGroup := publicGroup.Group("/auth")
 		{
 			publicAuthGroup.GET("/emailVerification/:email", authHandler.EmailVerification)
@@ -69,7 +74,8 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 
 		protectedUserGroup := protectedGroup.Group("/user")
 		{
-			protectedUserGroup.GET("/:userId", userHandler.GetUserById)
+			protectedUserGroup.GET("/userId/:userId", userHandler.GetUserById)
+			protectedUserGroup.GET("/username/:username", userHandler.GetUserByUsername)
 			protectedUserGroup.GET("/logined", userHandler.GetMyData)
 			protectedUserGroup.PUT("/update/:userId", userHandler.UpdateUser)
 		}

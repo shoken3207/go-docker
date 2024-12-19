@@ -101,10 +101,15 @@ definitions:
         type: string
       token:
         type: string
+      username:
+        maxLength: 255
+        minLength: 5
+        type: string
     required:
     - name
     - password
     - token
+    - username
     type: object
   auth.ResetPassRequest:
     properties:
@@ -139,6 +144,11 @@ definitions:
           type: string
         type: array
     type: object
+  user.IsUniqueUsernameResponse:
+    properties:
+      isUnique:
+        type: boolean
+    type: object
   user.UpdateUserRequestBody:
     properties:
       description:
@@ -164,6 +174,8 @@ definitions:
         type: string
       profileImage:
         type: string
+      username:
+        type: string
     type: object
   utils.ApiResponse-auth_LoginResponse:
     properties:
@@ -178,6 +190,15 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/upload.UploadImagesResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  utils.ApiResponse-user_IsUniqueUsernameResponse:
+    properties:
+      data:
+        $ref: '#/definitions/user.IsUniqueUsernameResponse'
       message:
         type: string
       success:
@@ -610,39 +631,29 @@ paths:
       summary: 画像をクラウドストレージ(imagekit)にアップロード
       tags:
       - upload
-  /api/user/{userId}:
+  /api/user/isUnique/{username}:
     get:
-      description: userIdからユーザーを1人取得
+      description: リクエストと同じuserNameが登録済みかチェックする
       parameters:
-      - description: userId
+      - description: username
         in: path
-        name: userId
+        name: username
         required: true
-        type: integer
+        type: string
       responses:
         "200":
-          description: ユーザー情報
+          description: 一意かのフラグ
           schema:
-            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+            $ref: '#/definitions/utils.ApiResponse-user_IsUniqueUsernameResponse'
         "400":
           description: リクエストエラー
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "401":
-          description: 認証エラー
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "404":
-          description: not foundエラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "500":
           description: 内部エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
-      security:
-      - BearerAuth: []
-      summary: ユーザー情報取得
+      summary: ユーザーネームの重複チェック
       tags:
       - user
   /api/user/logined:
@@ -709,6 +720,76 @@ paths:
       security:
       - BearerAuth: []
       summary: ユーザー情報変更
+      tags:
+      - user
+  /api/user/userId/{userId}:
+    get:
+      description: userIdからユーザーを1人取得
+      parameters:
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ユーザー情報
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: userIdからユーザー情報取得
+      tags:
+      - user
+  /api/user/username/{username}:
+    get:
+      description: usernameからユーザーを1人取得
+      parameters:
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ユーザー情報
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: usernameからユーザー情報取得
       tags:
       - user
 produces:

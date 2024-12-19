@@ -34,10 +34,15 @@ definitions:
         type: string
       token:
         type: string
+      username:
+        maxLength: 255
+        minLength: 5
+        type: string
     required:
     - name
     - password
     - token
+    - username
     type: object
   auth.ResetPassRequest:
     properties:
@@ -73,6 +78,10 @@ definitions:
         items:
           $ref: '#/definitions/expedition.GameRequest'
         type: array
+      images:
+        items:
+          type: string
+        type: array
       isPublic:
         type: boolean
       memo:
@@ -82,6 +91,8 @@ definitions:
           $ref: '#/definitions/expedition.PaymentRequest'
         type: array
       sportId:
+        type: integer
+      stadiumId:
         type: integer
       startDate:
         type: string
@@ -98,6 +109,7 @@ definitions:
     - memo
     - payments
     - sportId
+    - stadiumId
     - startDate
     - title
     - visitedFacilities
@@ -112,8 +124,6 @@ definitions:
         items:
           $ref: '#/definitions/expedition.GameScoreRequest'
         type: array
-      stadiumId:
-        type: integer
       team1Id:
         type: integer
       team2Id:
@@ -122,7 +132,6 @@ definitions:
     - comment
     - date
     - scores
-    - stadiumId
     - team1Id
     - team2Id
     type: object
@@ -152,9 +161,202 @@ definitions:
     - date
     - title
     type: object
+  expedition.UpdateExpeditionImagesRequest:
+    properties:
+      add:
+        items:
+          type: string
+        type: array
+      delete:
+        items:
+          type: integer
+        type: array
+    type: object
+  expedition.UpdateExpeditionRequestBody:
+    properties:
+      endDate:
+        type: string
+      games:
+        $ref: '#/definitions/expedition.UpdateGamesRequest'
+      id:
+        type: integer
+      images:
+        $ref: '#/definitions/expedition.UpdateExpeditionImagesRequest'
+      isPublic:
+        type: boolean
+      memo:
+        type: string
+      payments:
+        $ref: '#/definitions/expedition.UpdatePaymentsRequest'
+      sportId:
+        type: integer
+      stadiumId:
+        type: integer
+      startDate:
+        type: string
+      title:
+        type: string
+      visitedFacilities:
+        $ref: '#/definitions/expedition.UpdateVisitedFacilitiesRequest'
+    required:
+    - endDate
+    - games
+    - id
+    - isPublic
+    - memo
+    - payments
+    - sportId
+    - stadiumId
+    - startDate
+    - title
+    - visitedFacilities
+    type: object
+  expedition.UpdateGameRequest:
+    properties:
+      comment:
+        type: string
+      date:
+        type: string
+      id:
+        type: integer
+      scores:
+        $ref: '#/definitions/expedition.UpdateGameScoresRequest'
+      team1Id:
+        type: integer
+      team2Id:
+        type: integer
+    required:
+    - comment
+    - date
+    - id
+    - scores
+    - team1Id
+    - team2Id
+    type: object
+  expedition.UpdateGameScoreRequest:
+    properties:
+      id:
+        type: integer
+      order:
+        type: integer
+      score:
+        type: integer
+      teamId:
+        type: integer
+    required:
+    - id
+    - order
+    - score
+    - teamId
+    type: object
+  expedition.UpdateGameScoresRequest:
+    properties:
+      add:
+        items:
+          $ref: '#/definitions/expedition.GameScoreRequest'
+        type: array
+      delete:
+        items:
+          type: integer
+        type: array
+      update:
+        items:
+          $ref: '#/definitions/expedition.UpdateGameScoreRequest'
+        type: array
+    type: object
+  expedition.UpdateGamesRequest:
+    properties:
+      add:
+        items:
+          $ref: '#/definitions/expedition.GameRequest'
+        type: array
+      delete:
+        items:
+          type: integer
+        type: array
+      update:
+        items:
+          $ref: '#/definitions/expedition.UpdateGameRequest'
+        type: array
+    type: object
+  expedition.UpdatePaymentRequest:
+    properties:
+      cost:
+        type: integer
+      date:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    required:
+    - cost
+    - date
+    - id
+    - title
+    type: object
+  expedition.UpdatePaymentsRequest:
+    properties:
+      add:
+        items:
+          $ref: '#/definitions/expedition.PaymentRequest'
+        type: array
+      delete:
+        items:
+          type: integer
+        type: array
+      update:
+        items:
+          $ref: '#/definitions/expedition.UpdatePaymentRequest'
+        type: array
+    type: object
+  expedition.UpdateVisitedFacilitiesRequest:
+    properties:
+      add:
+        items:
+          $ref: '#/definitions/expedition.VisitedFacilityRequest'
+        type: array
+      delete:
+        items:
+          type: integer
+        type: array
+      update:
+        items:
+          $ref: '#/definitions/expedition.UpdateVisitedFacilityRequest'
+        type: array
+    type: object
+  expedition.UpdateVisitedFacilityRequest:
+    properties:
+      address:
+        type: string
+      color:
+        type: string
+      icon:
+        type: string
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    required:
+    - address
+    - color
+    - icon
+    - id
+    - latitude
+    - longitude
+    - name
+    type: object
   expedition.VisitedFacilityRequest:
     properties:
       address:
+        type: string
+      color:
+        type: string
+      icon:
         type: string
       latitude:
         type: number
@@ -164,6 +366,8 @@ definitions:
         type: string
     required:
     - address
+    - color
+    - icon
     - latitude
     - longitude
     - name
@@ -174,6 +378,11 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  user.IsUniqueUsernameResponse:
+    properties:
+      isUnique:
+        type: boolean
     type: object
   user.UpdateUserRequestBody:
     properties:
@@ -200,6 +409,8 @@ definitions:
         type: string
       profileImage:
         type: string
+      username:
+        type: string
     type: object
   utils.ApiResponse-auth_LoginResponse:
     properties:
@@ -214,6 +425,15 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/upload.UploadImagesResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  utils.ApiResponse-user_IsUniqueUsernameResponse:
+    properties:
+      data:
+        $ref: '#/definitions/user.IsUniqueUsernameResponse'
       message:
         type: string
       success:
@@ -410,7 +630,7 @@ paths:
           $ref: '#/definitions/expedition.CreateExpeditionRequest'
       responses:
         "200":
-          description: アップロードした画像のURL
+          description: 成功
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "400":
@@ -418,15 +638,11 @@ paths:
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "403":
-          description: ユーザーが見つかりません
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "404":
-          description: ユーザーが見つかりません
+          description: 認証エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "500":
-          description: ユーザーが見つかりません
+          description: 内部エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
       security:
@@ -466,9 +682,16 @@ paths:
   /api/expedition/update/{id}:
     put:
       description: 遠征、出費、試合、訪れた施設の情報を更新する。
+      parameters:
+      - description: 遠征記録更新リクエスト
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/expedition.UpdateExpeditionRequestBody'
       responses:
         "200":
-          description: アップロードした画像のURL
+          description: 成功
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "400":
@@ -476,7 +699,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "403":
-          description: ユーザーが見つかりません
+          description: 認証エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "404":
@@ -484,7 +707,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "500":
-          description: ユーザーが見つかりません
+          description: 内部エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
       security:
@@ -549,39 +772,29 @@ paths:
       summary: 画像をクラウドストレージ(imagekit)にアップロード
       tags:
       - upload
-  /api/user/{userId}:
+  /api/user/isUnique/{username}:
     get:
-      description: userIdからユーザーを1人取得
+      description: リクエストと同じuserNameが登録済みかチェックする
       parameters:
-      - description: userId
+      - description: username
         in: path
-        name: userId
+        name: username
         required: true
-        type: integer
+        type: string
       responses:
         "200":
-          description: ユーザー情報
+          description: 一意かのフラグ
           schema:
-            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+            $ref: '#/definitions/utils.ApiResponse-user_IsUniqueUsernameResponse'
         "400":
           description: リクエストエラー
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "401":
-          description: 認証エラー
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "404":
-          description: not foundエラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "500":
           description: 内部エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
-      security:
-      - BearerAuth: []
-      summary: ユーザー情報取得
+      summary: ユーザーネームの重複チェック
       tags:
       - user
   /api/user/logined:
@@ -648,6 +861,76 @@ paths:
       security:
       - BearerAuth: []
       summary: ユーザー情報変更
+      tags:
+      - user
+  /api/user/userId/{userId}:
+    get:
+      description: userIdからユーザーを1人取得
+      parameters:
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ユーザー情報
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: userIdからユーザー情報取得
+      tags:
+      - user
+  /api/user/username/{username}:
+    get:
+      description: usernameからユーザーを1人取得
+      parameters:
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ユーザー情報
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: not foundエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: usernameからユーザー情報取得
       tags:
       - user
 produces:

@@ -287,7 +287,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "アップロードした画像のURL",
+                        "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
@@ -299,19 +299,13 @@ const docTemplate = `{
                         }
                     },
                     "403": {
-                        "description": "ユーザーが見つかりません",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "ユーザーが見つかりません",
+                        "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
                     },
                     "500": {
-                        "description": "ユーザーが見つかりません",
+                        "description": "内部エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
@@ -377,9 +371,20 @@ const docTemplate = `{
                     "expedition"
                 ],
                 "summary": "遠征記録を更新",
+                "parameters": [
+                    {
+                        "description": "遠征記録更新リクエスト",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/expedition.UpdateExpeditionRequestBody"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "アップロードした画像のURL",
+                        "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
@@ -391,7 +396,7 @@ const docTemplate = `{
                         }
                     },
                     "403": {
-                        "description": "ユーザーが見つかりません",
+                        "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
@@ -403,7 +408,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "ユーザーが見つかりません",
+                        "description": "内部エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
@@ -486,6 +491,44 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/isUnique/{username}": {
+            "get": {
+                "description": "リクエストと同じuserNameが登録済みかチェックする",
+                "tags": [
+                    "user"
+                ],
+                "summary": "ユーザーネームの重複チェック",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "一意かのフラグ",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-user_IsUniqueUsernameResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }
@@ -603,7 +646,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/{userId}": {
+        "/api/user/userId/{userId}": {
             "get": {
                 "security": [
                     {
@@ -614,12 +657,67 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "ユーザー情報取得",
+                "summary": "userIdからユーザー情報取得",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "userId",
                         "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ユーザー情報",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/username/{username}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "usernameからユーザーを1人取得",
+                "tags": [
+                    "user"
+                ],
+                "summary": "usernameからユーザー情報取得",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
                         "in": "path",
                         "required": true
                     }
@@ -690,7 +788,8 @@ const docTemplate = `{
             "required": [
                 "name",
                 "password",
-                "token"
+                "token",
+                "username"
             ],
             "properties": {
                 "description": {
@@ -711,6 +810,11 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 5
                 }
             }
         },
@@ -759,6 +863,7 @@ const docTemplate = `{
                 "memo",
                 "payments",
                 "sportId",
+                "stadiumId",
                 "startDate",
                 "title",
                 "visitedFacilities"
@@ -771,6 +876,12 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/expedition.GameRequest"
+                    }
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 },
                 "isPublic": {
@@ -786,6 +897,9 @@ const docTemplate = `{
                     }
                 },
                 "sportId": {
+                    "type": "integer"
+                },
+                "stadiumId": {
                     "type": "integer"
                 },
                 "startDate": {
@@ -808,7 +922,6 @@ const docTemplate = `{
                 "comment",
                 "date",
                 "scores",
-                "stadiumId",
                 "team1Id",
                 "team2Id"
             ],
@@ -824,9 +937,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/expedition.GameScoreRequest"
                     }
-                },
-                "stadiumId": {
-                    "type": "integer"
                 },
                 "team1Id": {
                     "type": "integer"
@@ -874,16 +984,299 @@ const docTemplate = `{
                 }
             }
         },
-        "expedition.VisitedFacilityRequest": {
+        "expedition.UpdateExpeditionImagesRequest": {
+            "type": "object",
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "delete": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "expedition.UpdateExpeditionRequestBody": {
+            "type": "object",
+            "required": [
+                "endDate",
+                "games",
+                "id",
+                "isPublic",
+                "memo",
+                "payments",
+                "sportId",
+                "stadiumId",
+                "startDate",
+                "title",
+                "visitedFacilities"
+            ],
+            "properties": {
+                "endDate": {
+                    "type": "string"
+                },
+                "games": {
+                    "$ref": "#/definitions/expedition.UpdateGamesRequest"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "images": {
+                    "$ref": "#/definitions/expedition.UpdateExpeditionImagesRequest"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "memo": {
+                    "type": "string"
+                },
+                "payments": {
+                    "$ref": "#/definitions/expedition.UpdatePaymentsRequest"
+                },
+                "sportId": {
+                    "type": "integer"
+                },
+                "stadiumId": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "visitedFacilities": {
+                    "$ref": "#/definitions/expedition.UpdateVisitedFacilitiesRequest"
+                }
+            }
+        },
+        "expedition.UpdateGameRequest": {
+            "type": "object",
+            "required": [
+                "comment",
+                "date",
+                "id",
+                "scores",
+                "team1Id",
+                "team2Id"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "scores": {
+                    "$ref": "#/definitions/expedition.UpdateGameScoresRequest"
+                },
+                "team1Id": {
+                    "type": "integer"
+                },
+                "team2Id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "expedition.UpdateGameScoreRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "order",
+                "score",
+                "teamId"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "teamId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "expedition.UpdateGameScoresRequest": {
+            "type": "object",
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.GameScoreRequest"
+                    }
+                },
+                "delete": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "update": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.UpdateGameScoreRequest"
+                    }
+                }
+            }
+        },
+        "expedition.UpdateGamesRequest": {
+            "type": "object",
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.GameRequest"
+                    }
+                },
+                "delete": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "update": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.UpdateGameRequest"
+                    }
+                }
+            }
+        },
+        "expedition.UpdatePaymentRequest": {
+            "type": "object",
+            "required": [
+                "cost",
+                "date",
+                "id",
+                "title"
+            ],
+            "properties": {
+                "cost": {
+                    "type": "integer"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "expedition.UpdatePaymentsRequest": {
+            "type": "object",
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.PaymentRequest"
+                    }
+                },
+                "delete": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "update": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.UpdatePaymentRequest"
+                    }
+                }
+            }
+        },
+        "expedition.UpdateVisitedFacilitiesRequest": {
+            "type": "object",
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.VisitedFacilityRequest"
+                    }
+                },
+                "delete": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "update": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.UpdateVisitedFacilityRequest"
+                    }
+                }
+            }
+        },
+        "expedition.UpdateVisitedFacilityRequest": {
             "type": "object",
             "required": [
                 "address",
+                "color",
+                "icon",
+                "id",
                 "latitude",
                 "longitude",
                 "name"
             ],
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "expedition.VisitedFacilityRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "color",
+                "icon",
+                "latitude",
+                "longitude",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "icon": {
                     "type": "string"
                 },
                 "latitude": {
@@ -905,6 +1298,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "user.IsUniqueUsernameResponse": {
+            "type": "object",
+            "properties": {
+                "isUnique": {
+                    "type": "boolean"
                 }
             }
         },
@@ -944,6 +1345,9 @@ const docTemplate = `{
                 },
                 "profileImage": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -966,6 +1370,20 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/upload.UploadImagesResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "utils.ApiResponse-user_IsUniqueUsernameResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/user.IsUniqueUsernameResponse"
                 },
                 "message": {
                     "type": "string"

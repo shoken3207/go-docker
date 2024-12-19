@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
+	"go-docker/internal/db"
+	"go-docker/models"
 	"log"
 	"net/http"
 	"os"
@@ -12,7 +15,9 @@ import (
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"gopkg.in/gomail.v2"
+	"gorm.io/gorm"
 )
+
 func NewCustomError(code int, message string) error {
 	return &CustomError{
 		Code:    code,
@@ -38,8 +43,6 @@ func StringToUint(s string) (*uint, error) {
 	return &parseValue, nil
 }
 
-
-
 func SuccessResponse[T any](c *gin.Context, statusCode int, data T, message string) {
 	c.JSON(statusCode, ApiResponse[T]{
 		Success: true,
@@ -58,7 +61,7 @@ func ErrorResponse[T any](c *gin.Context, statusCode int, message string) {
 func ParseJWTToken(tokenStr string) (jwt.MapClaims, error) {
 	secretKey := os.Getenv("SECRET_KEY")
 	if secretKey == "" {
-		return nil, NewCustomError(http.StatusInternalServerError,"SECRET_KEYが設定されていません。")
+		return nil, NewCustomError(http.StatusInternalServerError, "SECRET_KEYが設定されていません。")
 	}
 	claims := jwt.MapClaims{}
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (any, error) {
@@ -154,4 +157,33 @@ func SendEmail(to string, subject string, body string) error {
 	}
 
 	return nil
+}
+
+func FindUserByUsername(username string) (*models.User, error) {
+	user := models.User{}
+	if err := db.DB.Where("username = ?", username).First(&user).Error; err != nil {
+		log.Printf("ユーザーデータ取得エラー: %v", err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, NewCustomError(http.StatusNotFound, "ユーザーデータが見つかりませんでした。")
+		} else {
+			return nil, NewCustomError(http.StatusInternalServerError, "ユーザーデータ取得に失敗しました。")
+		}
+	}
+
+	return &user, nil
+}
+
+func CheckUsernameUnique(username string) (bool, error) {
+	user, err := FindUserByUsername(username)
+	if err != nil {
+		if customErr, ok := err.(*CustomError); ok && customErr.Code != http.StatusNotFound {
+			return false, err
+		}
+	}
+
+	if user != nil {
+		return false, nil
+	}
+
+	return true, nil
 }

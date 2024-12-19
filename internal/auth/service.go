@@ -35,6 +35,20 @@ func (s *AuthService) findUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
+func (s *AuthService) findUserByUsername(username string) (*models.User, error) {
+	user := models.User{}
+	if err := db.DB.Where("user_name = ?", username).First(&user).Error; err != nil {
+		log.Printf("ユーザーデータ取得エラー: %v", err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utils.NewCustomError(http.StatusNotFound, "ユーザーデータが見つかりませんでした。")
+		} else {
+			return nil, utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータ取得に失敗しました。")
+		}
+	}
+
+	return &user, nil
+}
+
 func (s *AuthService) createUser(newUser *models.User) error {
 	if err := db.DB.Create(&newUser).Error; err != nil {
 		log.Printf("ユーザーデータ追加エラー: %v", err)
@@ -176,12 +190,24 @@ func (s *AuthService) registerService(request *RegisterRequest) error {
 	if user != nil {
 		return utils.NewCustomError(http.StatusConflict, "登録済みのメールアドレスです。")
 	}
+
+	isUnique, err := utils.CheckUsernameUnique(request.Username)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok && customErr.Code != http.StatusNotFound {
+			return err
+		}
+	}
+
+	if !isUnique {
+		return utils.NewCustomError(http.StatusConflict, "ユーザーネームが被っています。")
+	}
+
 	passHash, err := authService.generateHashedPass(request.Password)
 	if err != nil {
 		return err
 	}
 
-	newUser := models.User{Name: request.Name, Email: email, PassHash: *passHash, Description: request.Description, ProfileImage: request.ProfileImage}
+	newUser := models.User{Name: request.Name, Username: request.Username, Email: email, PassHash: *passHash, Description: request.Description, ProfileImage: request.ProfileImage}
 
 	if err := authService.createUser(&newUser); err != nil {
 		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")

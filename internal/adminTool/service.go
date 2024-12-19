@@ -100,9 +100,17 @@ func (s *AdminToolService) UpdateStadiumService(id uint, updatedStadium *models.
 }
 
 // スタジアム削除
-func (s *AdminToolService) deleteStadium(stadium *models.Stadium) error {
+func (s *AdminToolService) deleteStadiumService(request *DeleteRequest) error {
+	stadium, err := adminToolService.stadiumSearch(request.Id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return utils.NewCustomError(http.StatusUnauthorized, "スタジアムが見つかりませんでした")
+		}
+		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました")
+	}
+
 	if err := db.DB.Delete(stadium).Error; err != nil {
-		return err
+		return utils.NewCustomError(http.StatusUnauthorized, "削除に失敗しました")
 	}
 	return nil
 }

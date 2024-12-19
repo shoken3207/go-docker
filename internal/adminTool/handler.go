@@ -128,27 +128,21 @@ func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/stadium/delete [delete]
 func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
-	var request DeleteRequest
+	request := DeleteRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "無効なリクエスト形式です")
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
 
-	stadium, err := adminToolService.stadiumSearch(request.Id)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			utils.ErrorResponse[any](c, http.StatusNotFound, "スタジアムが見つかりませんでした")
+	if err := adminToolService.deleteStadiumService(&request); err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
 	}
 
-	if err := adminToolService.deleteStadium(stadium); err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "削除に失敗しました")
-		return
-	}
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "チームが正常に削除されました")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "スタジアムが正常に削除されました。")
 }
 
 func NewAdminToolHandler() *AdminToolHandler {

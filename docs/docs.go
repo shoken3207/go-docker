@@ -503,6 +503,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/stadium/update": {
+            "put": {
+                "description": "リクエストボディに更新対象のIDを指定してスタジアムを更新します",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム更新",
+                "parameters": [
+                    {
+                        "description": "スタジアム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.StadiumUppdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/teams/teamAdd": {
             "post": {
                 "description": "リクエストからチーム名を取得後、チーム一覧から同一のチームが存在しない場合に登録する。",
@@ -781,6 +821,37 @@ const docTemplate = `{
             }
         },
         "adminTool.StadiumAddRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "capacity",
+                "description",
+                "id",
+                "image",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "adminTool.StadiumUppdateRequest": {
             "type": "object",
             "required": [
                 "address",

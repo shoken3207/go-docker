@@ -31,10 +31,31 @@ func (s *AdminToolService) createTeam(newTeam *models.Team) error {
 }
 
 // スタジアム情報関連
+// スタジアム検索(id)
+func (s *AdminToolService) stadiumSearch(id uint) (*models.Stadium, error) {
+	var stadium models.Stadium
+	if err := db.DB.First(&stadium, id).Error; err != nil {
+		log.Printf("Error: %v", err)
+		return nil, err
+	}
+	return &stadium, nil
+}
+
 // スタジアム重複検索（条件：競技場名、住所）
-func (s *AdminToolService) stadiumCheck(stadiumName, address string) (*models.Stadium, error) {
+// ※スタジアム情報追加時
+func (s *AdminToolService) stadiumAddCheck(stadiumName, address string) (*models.Stadium, error) {
 	stadium := models.Stadium{}
 	if err := db.DB.Select("id", "name", "description", "address", "capacity", "description").Where("name = ?", stadiumName).Or("address = ?", address).First(&stadium).Error; err != nil {
+		log.Printf("Error: %v", err)
+		return nil, err
+	}
+	return &stadium, nil
+}
+
+// ※スタジアム情報更新時
+func (s *AdminToolService) stadiumUppdateCheck(id uint, stadiumName, address string) (*models.Stadium, error) {
+	stadium := models.Stadium{}
+	if err := db.DB.Select("id", "name", "description", "address", "capacity", "description").Where("id != ?", id).Where("name = ?", stadiumName).Or("address = ?", address).First(&stadium).Error; err != nil {
 		log.Printf("Error: %v", err)
 		return nil, err
 	}
@@ -50,14 +71,13 @@ func (s *AdminToolService) createStadium(newStadium *models.Stadium) error {
 	return nil
 }
 
-// スタジアム検索(id)
-func (s *AdminToolService) stadiumSearch(id uint) (*models.Stadium, error) {
-	var stadium models.Stadium
-	if err := db.DB.First(&stadium, id).Error; err != nil {
-		log.Printf("Error: %v", err)
-		return nil, err
+// スタジアム更新
+func (s *AdminToolService) UpdateStadium(id uint, updatedStadium *models.Stadium) error {
+	result := db.DB.Model(&models.Stadium{}).Where("id = ?", id).Updates(updatedStadium)
+	if result.Error != nil {
+		return result.Error
 	}
-	return &stadium, nil
+	return nil
 }
 
 // スタジアム削除

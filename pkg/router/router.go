@@ -48,6 +48,7 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 		publicStadiumGroup := publicGroup.Group("/stadium")
 		{
 			publicStadiumGroup.POST("/stadiumAdd", adminToolHandler.StadiumAdd)
+			publicStadiumGroup.PUT("/update", adminToolHandler.StadiumUppdate)
 			publicStadiumGroup.DELETE("/delete", adminToolHandler.DeleteStadium)
 		}
 

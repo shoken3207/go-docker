@@ -45,15 +45,15 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 
 		}
 
-		publicTeamGroup := publicGroup.Group("/teams")
-		{
-			publicTeamGroup.POST("/teamAdd", adminToolHandler.TeamAdd)
-		}
+		// publicTeamGroup := publicGroup.Group("/teams")
+		// {
+		// 	// publicTeamGroup.POST("/teamAdd", adminToolHandler.TeamAdd)
+		// }
 
 		publicStadiumGroup := publicGroup.Group("/stadium")
 		{
 			publicStadiumGroup.POST("/stadiumAdd", adminToolHandler.StadiumAdd)
-			publicStadiumGroup.PUT("/update", adminToolHandler.StadiumUppdate)
+			// publicStadiumGroup.PUT("/update", adminToolHandler.StadiumUppdate)
 			publicStadiumGroup.DELETE("/delete", adminToolHandler.DeleteStadium)
 		}
 

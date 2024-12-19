@@ -425,6 +425,11 @@ const docTemplate = `{
         },
         "/api/stadium/delete": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "リクエストボディに削除対象のIDを指定してスタジアムを削除します",
                 "tags": [
                     "stadium"
@@ -465,6 +470,11 @@ const docTemplate = `{
         },
         "/api/stadium/stadiumAdd": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "リクエストからスタジアム情報を追加後、重複確認を行い登録する。",
                 "tags": [
                     "stadium"
@@ -505,6 +515,11 @@ const docTemplate = `{
         },
         "/api/stadium/update": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "リクエストボディに更新対象のIDを指定してスタジアムを更新します",
                 "tags": [
                     "stadium"
@@ -518,46 +533,6 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/adminTool.StadiumUppdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/teams/teamAdd": {
-            "post": {
-                "description": "リクエストからチーム名を取得後、チーム一覧から同一のチームが存在しない場合に登録する。",
-                "tags": [
-                    "teams"
-                ],
-                "summary": "チームの追加",
-                "parameters": [
-                    {
-                        "description": "チーム名",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.TeamAddRequest"
                         }
                     }
                 ],
@@ -971,29 +946,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "adminTool.TeamAddRequest": {
-            "type": "object",
-            "required": [
-                "LeagueId",
-                "sportsId",
-                "stadiumId",
-                "teamName"
-            ],
-            "properties": {
-                "LeagueId": {
-                    "type": "integer"
-                },
-                "sportsId": {
-                    "type": "integer"
-                },
-                "stadiumId": {
-                    "type": "integer"
-                },
-                "teamName": {
                     "type": "string"
                 }
             }

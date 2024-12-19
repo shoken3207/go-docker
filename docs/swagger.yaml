@@ -52,22 +52,6 @@ definitions:
     - image
     - name
     type: object
-  adminTool.TeamAddRequest:
-    properties:
-      LeagueId:
-        type: integer
-      sportsId:
-        type: integer
-      stadiumId:
-        type: integer
-      teamName:
-        type: string
-    required:
-    - LeagueId
-    - sportsId
-    - stadiumId
-    - teamName
-    type: object
   auth.LoginRequest:
     properties:
       email:
@@ -507,6 +491,8 @@ paths:
           description: 内部エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
       summary: スタジアム削除
       tags:
       - stadium
@@ -533,6 +519,8 @@ paths:
           description: 内部エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
       summary: スタジアム追加
       tags:
       - stadium
@@ -559,35 +547,11 @@ paths:
           description: 内部エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
       summary: スタジアム更新
       tags:
       - stadium
-  /api/teams/teamAdd:
-    post:
-      description: リクエストからチーム名を取得後、チーム一覧から同一のチームが存在しない場合に登録する。
-      parameters:
-      - description: チーム名
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/adminTool.TeamAddRequest'
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "400":
-          description: リクエストエラー
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "500":
-          description: 内部エラー
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-      summary: チームの追加
-      tags:
-      - teams
   /api/upload/images:
     post:
       consumes:

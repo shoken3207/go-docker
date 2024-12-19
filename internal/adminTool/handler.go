@@ -18,40 +18,50 @@ var adminToolService = NewAdminToolService()
 // @summary チームの追加
 // @Description リクエストからチーム名を取得後、チーム一覧から同一のチームが存在しない場合に登録する。
 // @Tags teams
+// @Security BearerAuth
 // @Param request body TeamAddRequest true "チーム名"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/teams/teamAdd [post]
-func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
-	request := TeamAddRequest{}
-	if err := c.ShouldBindJSON(&request); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
-	team, err := adminToolService.teamCheck(request.TeamName)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
-	}
-	if team != nil {
-		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのチームです。")
-		return
-	}
+// func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
+// 	request := TeamAddRequest{}
+// 	if err := c.ShouldBindJSON(&request); err != nil {
+// 		log.Printf("リクエストエラー: %v", err)
+// 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+// 		return
+// 	}
 
-	newTeam := models.Team{StadiumId: request.StadiumId, SportId: request.SportsId}
+// 	if err := adminToolService.teamCheck(request.TeamName); err != nil {
+// 		if customErr, ok := err.(*utils.CustomError); ok {
+// 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+// 			return
+// 		}
+// 	}
 
-	if err := adminToolService.createTeam(&newTeam); err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
-	}
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "チーム登録に成功しました。")
-}
+// 	newTeam := models.Team{StadiumId: request.StadiumId, SportId: request.SportsId}
+
+// 	if err := adminToolService.createTeam(&newTeam); err != nil {
+// 		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+// 		return
+// 	}
+// 	utils.SuccessResponse[any](c, http.StatusOK, nil, "チーム登録に成功しました。")
+
+// 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+// 		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
+// 		return
+// 	}
+// 	if team != nil {
+// 		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのチームです。")
+// 		return
+// 	}
+
+// }
 
 // @Summary スタジアム追加
 // @Description リクエストからスタジアム情報を追加後、重複確認を行い登録する。
 // @Tags stadium
+// @Security BearerAuth
 // @Param request body StadiumAddRequest true "スタジアム情報"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
@@ -60,37 +70,31 @@ func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 	request := StadiumAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
-	stadium, err := adminToolService.stadiumAddCheck(request.Name, request.Address)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
-	}
-	if stadium != nil {
-		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのスタジアムです")
-		return
+
+	if err := adminToolService.createStadiumService(&request); err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
 	}
 
-	newStadium := models.Stadium{Name: request.Name, Description: request.Description, Address: request.Address, Capacity: int(request.Capacity), Image: request.Image}
-
-	if err := adminToolService.createStadium(&newStadium); err != nil {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
-	}
 	utils.SuccessResponse[any](c, http.StatusOK, nil, "スタジアム登録に成功しました。")
 }
 
 // @Summary スタジアム更新
 // @Description リクエストボディに更新対象のIDを指定してスタジアムを更新します
 // @Tags stadium
+// @Security BearerAuth
 // @Param request body StadiumUppdateRequest true "スタジアム情報"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/stadium/update [put]
-func (h *AdminToolHandler) StadiumUppdate(c *gin.Context) {
+func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 	request := StadiumUppdateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
@@ -108,7 +112,7 @@ func (h *AdminToolHandler) StadiumUppdate(c *gin.Context) {
 
 	updateStadium := models.Stadium{Name: request.Name, Description: request.Description, Address: request.Address, Capacity: int(request.Capacity), Image: request.Image}
 
-	if err := adminToolService.UpdateStadium(uint(request.StadiumId), &updateStadium); err != nil {
+	if err := adminToolService.UpdateStadiumService(uint(request.StadiumId), &updateStadium); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update stadium"})
 		return
 	}
@@ -117,6 +121,7 @@ func (h *AdminToolHandler) StadiumUppdate(c *gin.Context) {
 // @Summary スタジアム削除
 // @Description リクエストボディに削除対象のIDを指定してスタジアムを削除します
 // @Tags stadium
+// @Security BearerAuth
 // @Param request body DeleteRequest true "スタジアムID"
 // @Success 200 {object} utils.BasicResponse "成功"
 // @Failure 400 {object} utils.BasicResponse "リクエストエラー"

@@ -80,7 +80,7 @@ definitions:
         type: array
       images:
         items:
-          type: string
+          $ref: '#/definitions/expedition.ExpeditionImageRequest'
         type: array
       isPublic:
         type: boolean
@@ -113,6 +113,16 @@ definitions:
     - startDate
     - title
     - visitedFacilities
+    type: object
+  expedition.ExpeditionImageRequest:
+    properties:
+      fileId:
+        type: string
+      image:
+        type: string
+    required:
+    - fileId
+    - image
     type: object
   expedition.GameRequest:
     properties:
@@ -161,15 +171,28 @@ definitions:
     - date
     - title
     type: object
+  expedition.UpdateExpeditionImageRequest:
+    properties:
+      fileId:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+    required:
+    - fileId
+    - id
+    - image
+    type: object
   expedition.UpdateExpeditionImagesRequest:
     properties:
       add:
         items:
-          type: string
+          $ref: '#/definitions/expedition.ExpeditionImageRequest'
         type: array
       delete:
         items:
-          type: integer
+          $ref: '#/definitions/expedition.UpdateExpeditionImageRequest'
         type: array
     type: object
   expedition.UpdateExpeditionRequestBody:
@@ -374,10 +397,17 @@ definitions:
     type: object
   upload.UploadImagesResponse:
     properties:
-      urls:
+      images:
         items:
-          type: string
+          $ref: '#/definitions/upload.UploadToImageKitResponse'
         type: array
+    type: object
+  upload.UploadToImageKitResponse:
+    properties:
+      fileId:
+        type: string
+      url:
+        type: string
     type: object
   user.IsUniqueUsernameResponse:
     properties:

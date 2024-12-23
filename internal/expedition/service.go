@@ -19,11 +19,25 @@ func (s *ExpeditionService) CreateExpedition(newExpedition *models.Expedition) e
 	}
 	return nil
 }
+func (s *ExpeditionService) UpdateExpedition(updateExpedition *models.Expedition) error {
+	if err := db.DB.Save(updateExpedition).Error; err != nil {
+		log.Printf("遠征記録更新エラー: %v", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録更新に失敗しました。")
+	}
+	return nil
+}
 
 func (s *ExpeditionService) CreatePayment(newPayment *models.Payment) error {
 	if err := db.DB.Create(newPayment).Error; err != nil {
 		log.Printf("遠征記録出費作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録出費作成に失敗しました。")
+	}
+	return nil
+}
+func (s *ExpeditionService) UpdatePayment(updatePayment *models.Payment) error {
+	if err := db.DB.Save(updatePayment).Error; err != nil {
+		log.Printf("遠征記録出費更新エラー: %v", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録出費更新に失敗しました。")
 	}
 	return nil
 }
@@ -105,7 +119,8 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 	for _, image := range images {
 		newExpeditionImage := models.ExpeditionImage{
 			ExpeditionId: newExpedition.ID,
-			Image:        image,
+			Image:        image.Image,
+			FileId:       image.FileId,
 		}
 		if err := s.CreateExpeditionImage(&newExpeditionImage); err != nil {
 			return err

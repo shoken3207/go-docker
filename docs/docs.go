@@ -881,7 +881,7 @@ const docTemplate = `{
                 "images": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/expedition.ExpeditionImageRequest"
                     }
                 },
                 "isPublic": {
@@ -913,6 +913,21 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/expedition.VisitedFacilityRequest"
                     }
+                }
+            }
+        },
+        "expedition.ExpeditionImageRequest": {
+            "type": "object",
+            "required": [
+                "fileId",
+                "image"
+            ],
+            "properties": {
+                "fileId": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
                 }
             }
         },
@@ -984,19 +999,38 @@ const docTemplate = `{
                 }
             }
         },
+        "expedition.UpdateExpeditionImageRequest": {
+            "type": "object",
+            "required": [
+                "fileId",
+                "id",
+                "image"
+            ],
+            "properties": {
+                "fileId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                }
+            }
+        },
         "expedition.UpdateExpeditionImagesRequest": {
             "type": "object",
             "properties": {
                 "add": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/expedition.ExpeditionImageRequest"
                     }
                 },
                 "delete": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "$ref": "#/definitions/expedition.UpdateExpeditionImageRequest"
                     }
                 }
             }
@@ -1293,11 +1327,22 @@ const docTemplate = `{
         "upload.UploadImagesResponse": {
             "type": "object",
             "properties": {
-                "urls": {
+                "images": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/upload.UploadToImageKitResponse"
                     }
+                }
+            }
+        },
+        "upload.UploadToImageKitResponse": {
+            "type": "object",
+            "properties": {
+                "fileId": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },

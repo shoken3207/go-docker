@@ -416,6 +416,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/expedition/{expeditionId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "遠征記録詳細情報を取得",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "idから遠征記録詳細を取得",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "expeditionId",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-expedition_GetExpeditionDetailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/sample/helloWorld": {
             "get": {
                 "tags": [
@@ -931,6 +986,20 @@ const docTemplate = `{
                 }
             }
         },
+        "expedition.ExpeditionImageResponse": {
+            "type": "object",
+            "properties": {
+                "fileId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                }
+            }
+        },
         "expedition.GameRequest": {
             "type": "object",
             "required": [
@@ -961,6 +1030,32 @@ const docTemplate = `{
                 }
             }
         },
+        "expedition.GameResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "scores": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.GameScoreResponse"
+                    }
+                },
+                "team1Id": {
+                    "type": "integer"
+                },
+                "team2Id": {
+                    "type": "integer"
+                }
+            }
+        },
         "expedition.GameScoreRequest": {
             "type": "object",
             "required": [
@@ -980,6 +1075,76 @@ const docTemplate = `{
                 }
             }
         },
+        "expedition.GameScoreResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "teamId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "expedition.GetExpeditionDetailResponse": {
+            "type": "object",
+            "properties": {
+                "endDate": {
+                    "type": "string"
+                },
+                "expeditionImages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionImageResponse"
+                    }
+                },
+                "games": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.GameResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "memo": {
+                    "type": "string"
+                },
+                "payments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.PaymentResponse"
+                    }
+                },
+                "sportId": {
+                    "type": "integer"
+                },
+                "stadiumId": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "visitedFacilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.VisitedFacilityResponse"
+                    }
+                }
+            }
+        },
         "expedition.PaymentRequest": {
             "type": "object",
             "required": [
@@ -993,6 +1158,23 @@ const docTemplate = `{
                 },
                 "date": {
                     "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "expedition.PaymentResponse": {
+            "type": "object",
+            "properties": {
+                "cost": {
+                    "type": "integer"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "title": {
                     "type": "string"
@@ -1305,6 +1487,32 @@ const docTemplate = `{
                 }
             }
         },
+        "expedition.VisitedFacilityResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "upload.UploadImagesResponse": {
             "type": "object",
             "properties": {
@@ -1382,6 +1590,20 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/auth.LoginResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "utils.ApiResponse-expedition_GetExpeditionDetailResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/expedition.GetExpeditionDetailResponse"
                 },
                 "message": {
                     "type": "string"

@@ -236,6 +236,25 @@ func (s *ExpeditionService) DeleteGameScores(gameScoreIds *[]uint) error {
 	return nil
 }
 
+func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDetailRequest) (*GetExpeditionDetailResponse, error) {
+
+	var expedition models.Expedition
+
+	if err := db.DB.Preload("VisitedFacilities").
+		Preload("Payments").
+		Preload("ExpeditionImages").
+		Preload("ExpeditionLikes").
+		Preload("Games").
+		Preload("Sport").
+		Preload("Stadium").
+		First(&expedition, request.ExpeditionId).Error; err != nil {
+		log.Printf("遠征記録詳細取得エラー: %v", err)
+		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録詳細の取得に失敗しました。")
+	}
+	log.Printf("expedition", expedition)
+	return nil, nil
+}
+
 func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest) error {
 	newExpedition := models.Expedition{
 		SportId:   request.SportId,

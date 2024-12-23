@@ -366,7 +366,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "遠征、出費、試合、訪れた施設の情報を更新する。",
+                "description": "遠征、出費、試合、訪れた施設の情報を更新する。\u003cbr\u003ePayment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはfileId(string)の配列をリクエストで渡してください",
                 "tags": [
                     "expedition"
                 ],
@@ -999,25 +999,6 @@ const docTemplate = `{
                 }
             }
         },
-        "expedition.UpdateExpeditionImageRequest": {
-            "type": "object",
-            "required": [
-                "fileId",
-                "id",
-                "image"
-            ],
-            "properties": {
-                "fileId": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "image": {
-                    "type": "string"
-                }
-            }
-        },
         "expedition.UpdateExpeditionImagesRequest": {
             "type": "object",
             "properties": {
@@ -1030,7 +1011,7 @@ const docTemplate = `{
                 "delete": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/expedition.UpdateExpeditionImageRequest"
+                        "type": "string"
                     }
                 }
             }

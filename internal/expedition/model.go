@@ -59,10 +59,6 @@ type ExpeditionImageRequest struct {
 	FileId string `json:"fileId" binding:"required"`
 	Image  string `json:"image" binding:"required"`
 }
-type UpdateExpeditionImageRequest struct {
-	ID uint `json:"id" binding:"required"`
-	ExpeditionImageRequest
-}
 
 type CreateExpeditionRequest struct {
 	SportId           uint                     `json:"sportId" binding:"required"`
@@ -100,8 +96,8 @@ type UpdateVisitedFacilitiesRequest struct {
 }
 
 type UpdateExpeditionImagesRequest struct {
-	Add    []ExpeditionImageRequest       `json:"add"`
-	Delete []UpdateExpeditionImageRequest `json:"delete"`
+	Add    []ExpeditionImageRequest `json:"add"`
+	Delete []string                 `json:"delete"`
 }
 
 type UpdateExpeditionRequestBody struct {

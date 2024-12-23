@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/imagekit-developer/imagekit-go"
 )
 
 type ExpeditionHandler struct{}
@@ -38,7 +39,7 @@ func (h *ExpeditionHandler) CreateExpedition(c *gin.Context) {
 }
 
 // @Summary 遠征記録を更新
-// @Description 遠征、出費、試合、訪れた施設の情報を更新する。
+// @Description 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはfileId(string)の配列をリクエストで渡してください
 // @Tags expedition
 // @Param request body UpdateExpeditionRequestBody true "遠征記録更新リクエスト"
 // @Security BearerAuth
@@ -48,7 +49,7 @@ func (h *ExpeditionHandler) CreateExpedition(c *gin.Context) {
 // @Failure 404 {object} utils.BasicResponse "ユーザーが見つかりません"
 // @Failure 500 {object} utils.BasicResponse "内部エラー"
 // @Router /api/expedition/update/{id} [put]
-func (h *ExpeditionHandler) UpdateExpedition(c *gin.Context) {
+func (h *ExpeditionHandler) UpdateExpedition(c *gin.Context, ik *imagekit.ImageKit) {
 	expeditionId, requestBody, err := expeditionService.ValidateUpdateExpeditionRequest(c)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
@@ -57,7 +58,7 @@ func (h *ExpeditionHandler) UpdateExpedition(c *gin.Context) {
 		}
 	}
 
-	if err := expeditionService.UpdateExpeditionService(expeditionId, requestBody); err != nil {
+	if err := expeditionService.UpdateExpeditionService(expeditionId, requestBody, ik); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return

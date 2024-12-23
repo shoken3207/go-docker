@@ -171,19 +171,6 @@ definitions:
     - date
     - title
     type: object
-  expedition.UpdateExpeditionImageRequest:
-    properties:
-      fileId:
-        type: string
-      id:
-        type: integer
-      image:
-        type: string
-    required:
-    - fileId
-    - id
-    - image
-    type: object
   expedition.UpdateExpeditionImagesRequest:
     properties:
       add:
@@ -192,7 +179,7 @@ definitions:
         type: array
       delete:
         items:
-          $ref: '#/definitions/expedition.UpdateExpeditionImageRequest'
+          type: string
         type: array
     type: object
   expedition.UpdateExpeditionRequestBody:
@@ -711,7 +698,7 @@ paths:
       - expedition
   /api/expedition/update/{id}:
     put:
-      description: 遠征、出費、試合、訪れた施設の情報を更新する。
+      description: 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはfileId(string)の配列をリクエストで渡してください
       parameters:
       - description: 遠征記録更新リクエスト
         in: body

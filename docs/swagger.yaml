@@ -121,12 +121,331 @@ definitions:
     - afterPassword
     - beforePassword
     type: object
-  upload.UploadImagesResponse:
+  expedition.CreateExpeditionRequest:
     properties:
-      urls:
+      endDate:
+        type: string
+      games:
+        items:
+          $ref: '#/definitions/expedition.GameRequest'
+        type: array
+      images:
+        items:
+          $ref: '#/definitions/expedition.ExpeditionImageRequest'
+        type: array
+      isPublic:
+        type: boolean
+      memo:
+        type: string
+      payments:
+        items:
+          $ref: '#/definitions/expedition.PaymentRequest'
+        type: array
+      sportId:
+        type: integer
+      stadiumId:
+        type: integer
+      startDate:
+        type: string
+      title:
+        type: string
+      visitedFacilities:
+        items:
+          $ref: '#/definitions/expedition.VisitedFacilityRequest'
+        type: array
+    required:
+    - endDate
+    - games
+    - isPublic
+    - memo
+    - payments
+    - sportId
+    - stadiumId
+    - startDate
+    - title
+    - visitedFacilities
+    type: object
+  expedition.ExpeditionImageRequest:
+    properties:
+      fileId:
+        type: string
+      image:
+        type: string
+    required:
+    - fileId
+    - image
+    type: object
+  expedition.GameRequest:
+    properties:
+      comment:
+        type: string
+      date:
+        type: string
+      scores:
+        items:
+          $ref: '#/definitions/expedition.GameScoreRequest'
+        type: array
+      team1Id:
+        type: integer
+      team2Id:
+        type: integer
+    required:
+    - comment
+    - date
+    - scores
+    - team1Id
+    - team2Id
+    type: object
+  expedition.GameScoreRequest:
+    properties:
+      order:
+        type: integer
+      score:
+        type: integer
+      teamId:
+        type: integer
+    required:
+    - order
+    - score
+    - teamId
+    type: object
+  expedition.PaymentRequest:
+    properties:
+      cost:
+        type: integer
+      date:
+        type: string
+      title:
+        type: string
+    required:
+    - cost
+    - date
+    - title
+    type: object
+  expedition.UpdateExpeditionImagesRequest:
+    properties:
+      add:
+        items:
+          $ref: '#/definitions/expedition.ExpeditionImageRequest'
+        type: array
+      delete:
         items:
           type: string
         type: array
+    type: object
+  expedition.UpdateExpeditionRequestBody:
+    properties:
+      endDate:
+        type: string
+      games:
+        $ref: '#/definitions/expedition.UpdateGamesRequest'
+      id:
+        type: integer
+      images:
+        $ref: '#/definitions/expedition.UpdateExpeditionImagesRequest'
+      isPublic:
+        type: boolean
+      memo:
+        type: string
+      payments:
+        $ref: '#/definitions/expedition.UpdatePaymentsRequest'
+      sportId:
+        type: integer
+      stadiumId:
+        type: integer
+      startDate:
+        type: string
+      title:
+        type: string
+      visitedFacilities:
+        $ref: '#/definitions/expedition.UpdateVisitedFacilitiesRequest'
+    required:
+    - endDate
+    - games
+    - id
+    - isPublic
+    - memo
+    - payments
+    - sportId
+    - stadiumId
+    - startDate
+    - title
+    - visitedFacilities
+    type: object
+  expedition.UpdateGameRequest:
+    properties:
+      comment:
+        type: string
+      date:
+        type: string
+      id:
+        type: integer
+      scores:
+        $ref: '#/definitions/expedition.UpdateGameScoresRequest'
+      team1Id:
+        type: integer
+      team2Id:
+        type: integer
+    required:
+    - comment
+    - date
+    - id
+    - scores
+    - team1Id
+    - team2Id
+    type: object
+  expedition.UpdateGameScoreRequest:
+    properties:
+      id:
+        type: integer
+      order:
+        type: integer
+      score:
+        type: integer
+      teamId:
+        type: integer
+    required:
+    - id
+    - order
+    - score
+    - teamId
+    type: object
+  expedition.UpdateGameScoresRequest:
+    properties:
+      add:
+        items:
+          $ref: '#/definitions/expedition.GameScoreRequest'
+        type: array
+      delete:
+        items:
+          type: integer
+        type: array
+      update:
+        items:
+          $ref: '#/definitions/expedition.UpdateGameScoreRequest'
+        type: array
+    type: object
+  expedition.UpdateGamesRequest:
+    properties:
+      add:
+        items:
+          $ref: '#/definitions/expedition.GameRequest'
+        type: array
+      delete:
+        items:
+          type: integer
+        type: array
+      update:
+        items:
+          $ref: '#/definitions/expedition.UpdateGameRequest'
+        type: array
+    type: object
+  expedition.UpdatePaymentRequest:
+    properties:
+      cost:
+        type: integer
+      date:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    required:
+    - cost
+    - date
+    - id
+    - title
+    type: object
+  expedition.UpdatePaymentsRequest:
+    properties:
+      add:
+        items:
+          $ref: '#/definitions/expedition.PaymentRequest'
+        type: array
+      delete:
+        items:
+          type: integer
+        type: array
+      update:
+        items:
+          $ref: '#/definitions/expedition.UpdatePaymentRequest'
+        type: array
+    type: object
+  expedition.UpdateVisitedFacilitiesRequest:
+    properties:
+      add:
+        items:
+          $ref: '#/definitions/expedition.VisitedFacilityRequest'
+        type: array
+      delete:
+        items:
+          type: integer
+        type: array
+      update:
+        items:
+          $ref: '#/definitions/expedition.UpdateVisitedFacilityRequest'
+        type: array
+    type: object
+  expedition.UpdateVisitedFacilityRequest:
+    properties:
+      address:
+        type: string
+      color:
+        type: string
+      icon:
+        type: string
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    required:
+    - address
+    - color
+    - icon
+    - id
+    - latitude
+    - longitude
+    - name
+    type: object
+  expedition.VisitedFacilityRequest:
+    properties:
+      address:
+        type: string
+      color:
+        type: string
+      icon:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    required:
+    - address
+    - color
+    - icon
+    - latitude
+    - longitude
+    - name
+    type: object
+  upload.UploadImagesResponse:
+    properties:
+      images:
+        items:
+          $ref: '#/definitions/upload.UploadToImageKitResponse'
+        type: array
+    type: object
+  upload.UploadToImageKitResponse:
+    properties:
+      fileId:
+        type: string
+      url:
+        type: string
     type: object
   user.IsUniqueUsernameResponse:
     properties:
@@ -370,9 +689,16 @@ paths:
   /api/expedition/create:
     post:
       description: 遠征、出費、試合、訪れた施設の情報を保存する。
+      parameters:
+      - description: 遠征記録作成リクエスト
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/expedition.CreateExpeditionRequest'
       responses:
         "200":
-          description: アップロードした画像のURL
+          description: 成功
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "400":
@@ -380,15 +706,11 @@ paths:
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "403":
-          description: ユーザーが見つかりません
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "404":
-          description: ユーザーが見つかりません
+          description: 認証エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "500":
-          description: ユーザーが見つかりません
+          description: 内部エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
       security:
@@ -427,10 +749,17 @@ paths:
       - expedition
   /api/expedition/update/{id}:
     put:
-      description: 遠征、出費、試合、訪れた施設の情報を更新する。
+      description: 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはfileId(string)の配列をリクエストで渡してください
+      parameters:
+      - description: 遠征記録更新リクエスト
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/expedition.UpdateExpeditionRequestBody'
       responses:
         "200":
-          description: アップロードした画像のURL
+          description: 成功
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "400":
@@ -438,7 +767,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "403":
-          description: ユーザーが見つかりません
+          description: 認証エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "404":
@@ -446,7 +775,7 @@ paths:
           schema:
             $ref: '#/definitions/utils.BasicResponse'
         "500":
-          description: ユーザーが見つかりません
+          description: 内部エラー
           schema:
             $ref: '#/definitions/utils.BasicResponse'
       security:

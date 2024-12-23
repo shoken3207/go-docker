@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"go-docker/internal/db"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/imagekit-developer/imagekit-go"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"gopkg.in/gomail.v2"
@@ -101,6 +103,17 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Set("userId", fmt.Sprintf("%d", userIdUint))
 		c.Next()
 	}
+}
+
+func DeleteUploadImage(ik *imagekit.ImageKit, fileId *string) error {
+	ctx := context.Background()
+	_, err := ik.Media.DeleteFile(ctx, *fileId)
+	if err != nil {
+		log.Printf("画像削除エラー: %v", err)
+		return NewCustomError(http.StatusInternalServerError, "アップロード画像の削除に失敗しました。")
+	}
+
+	return nil
 }
 
 func SendEmailDev(from string, to string, subject string, body string) error {

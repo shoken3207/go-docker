@@ -7,5 +7,10 @@ type UploadImagesRequestQuery struct {
 
 // レスポンス
 type UploadImagesResponse struct {
-	Urls []string `json:"urls"`
+	Images []UploadToImageKitResponse `json:"images"`
+}
+
+type UploadToImageKitResponse struct {
+	Url    string `json:"url"`
+	FileId string `json:"fileId"`
 }

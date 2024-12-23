@@ -1,14 +1,11 @@
 package adminTool
 
 import (
-	"errors"
-	"go-docker/models"
 	"go-docker/pkg/utils"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type AdminToolHandler struct{}
@@ -97,25 +94,20 @@ func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 	request := StadiumUppdateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
-	stadium, err := adminToolService.stadiumUppdateCheck(request.StadiumId, request.Name, request.Address)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		utils.ErrorResponse[any](c, http.StatusInternalServerError, "内部エラーが発生しました。")
-		return
-	}
-	if stadium != nil {
-		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのスタジアムです")
-		return
+	log.Println("重複検索が正常にリターンはされているよ:handler")
+	if err := adminToolService.UpdateStadiumService(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
 	}
 
-	updateStadium := models.Stadium{Name: request.Name, Description: request.Description, Address: request.Address, Capacity: int(request.Capacity), Image: request.Image}
-
-	if err := adminToolService.UpdateStadiumService(uint(request.StadiumId), &updateStadium); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update stadium"})
-		return
-	}
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "スタジアムが正常に更新更新されました。")
 }
 
 // @Summary スタジアム削除

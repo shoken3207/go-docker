@@ -68,6 +68,9 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 		protectedExpeditionGroup := protectedGroup.Group("/expedition")
 		{
 			protectedExpeditionGroup.POST("/create", expeditionHandler.CreateExpedition)
+			protectedExpeditionGroup.PUT("/update/:expeditionId", func(c *gin.Context) {
+				expeditionHandler.UpdateExpedition(c, ik)
+			})
 		}
 
 		protectedUploadGroup := protectedGroup.Group("/upload")

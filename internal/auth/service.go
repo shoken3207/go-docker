@@ -109,7 +109,7 @@ func (s *AuthService) generateJwtToken(req TokenRequest, addExp time.Duration) (
 func (s *AuthService) updatePass(userId *uint, request *UpdatePassRequestBody) error {
 	user := models.User{}
 	if err := db.DB.Where("id = ?", &userId).First(&user).Error; err != nil {
-		log.Println("ユーザー検索エラー: %v", err)
+		log.Printf("ユーザー検索エラー: %v", err)
 		return utils.NewCustomError(http.StatusNotFound, "ユーザー検索に失敗しました。")
 	}
 

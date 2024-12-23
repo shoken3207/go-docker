@@ -33,14 +33,14 @@ func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
 			return
 		}
 	}
-	urls, err := uploadService.UploadImagesService(ik, &query.Folder, files)
+	images, err := uploadService.UploadImagesService(ik, &query.Folder, files)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
-	utils.SuccessResponse[UploadImagesResponse](c, http.StatusOK, UploadImagesResponse{Urls: *urls}, "画像のアップロードに成功しました")
+	utils.SuccessResponse[UploadImagesResponse](c, http.StatusOK, UploadImagesResponse{Images: *images}, "画像のアップロードに成功しました")
 }
 
 func NewUploadHandler() *UploadHandler {

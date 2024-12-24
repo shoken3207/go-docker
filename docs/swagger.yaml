@@ -853,6 +853,30 @@ paths:
       summary: スタジアム追加
       tags:
       - stadium
+  /api/stadium/stadiums:
+    get:
+      description: スタジアム情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: スタジアム全件検索
+      tags:
+      - stadium
   /api/stadium/update:
     put:
       description: リクエストボディに更新対象のIDを指定してスタジアムを更新します

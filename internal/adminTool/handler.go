@@ -1,6 +1,7 @@
 package adminTool
 
 import (
+	"go-docker/models"
 	"go-docker/pkg/utils"
 	"log"
 	"net/http"
@@ -52,8 +53,34 @@ var adminToolService = NewAdminToolService()
 // 		utils.ErrorResponse[any](c, http.StatusConflict, "登録済みのチームです。")
 // 		return
 // 	}
-
 // }
+
+// @Summary スタジアム全件検索
+// @Description スタジアム情報のレコードを全件取得して、一覧として表示する。
+// @Tags stadium
+// @Secrity BearerAuth
+// @Param keyword query string false "キーワード"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/stadium/stadiums [get]
+func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
+	keyword := c.DefaultQuery("keyword", "")
+	log.Println("キーワード:", keyword)
+	stadiums := []models.Stadium{}
+
+	stadiums, err := adminToolService.getStadiumsService(keyword)
+
+	if err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+
+	log.Println(stadiums)
+
+	utils.SuccessResponse[any](c, http.StatusOK, stadiums, "スタジアムの検索に成功しました。")
+}
 
 // @Summary スタジアム追加
 // @Description リクエストからスタジアム情報を追加後、重複確認を行い登録する。

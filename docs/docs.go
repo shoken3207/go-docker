@@ -529,6 +529,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/stadium/stadiums": {
+            "get": {
+                "description": "スタジアム情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/stadium/update": {
             "put": {
                 "security": [

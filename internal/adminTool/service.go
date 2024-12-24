@@ -42,7 +42,7 @@ func (s *AdminToolService) createTeam(newTeam *models.Team) error {
 
 // スタジアム情報関連
 // スタジアム検索(id)
-func (s *AdminToolService) stadiumSearch(id uint) (*models.Stadium, error) {
+func (s *AdminToolService) stadiumSearchId(id uint) (*models.Stadium, error) {
 	var stadium models.Stadium
 	if err := db.DB.First(&stadium, id).Error; err != nil {
 		log.Printf("Error: %v", err)
@@ -53,7 +53,7 @@ func (s *AdminToolService) stadiumSearch(id uint) (*models.Stadium, error) {
 
 // スタジアム重複検索（条件：競技場名、住所）
 // ※スタジアム情報追加時
-func (s *AdminToolService) stadiumAddCheck(stadiumName, address string) (*models.Stadium, error) {
+func (s *AdminToolService) stadiumAddCheck(address string) (*models.Stadium, error) {
 	stadium := models.Stadium{}
 	if err := db.DB.Select("id", "name", "description", "address", "capacity", "description").Where("address = ?", address).First(&stadium).Error; err != nil {
 		return nil, err
@@ -69,18 +69,52 @@ func (s *AdminToolService) stadiumUppdateCheck(id uint, name, address string) er
 		log.Println("SQL実行直後")
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// レコードが見つからなかった場合の処理
-			log.Println("gorm.ErrRecordNotFround処理を検知")
+			log.Println("該当するレコードがないため処理を継続")
 			return nil
 		}
-		log.Printf("ここがエラー!!!: %v", err)
+		log.Printf("エラー： %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")
 	}
 	return utils.NewCustomError(http.StatusInternalServerError, "更新データが他の登録済みデータの競技場名、住所のどちらか、もしくは両方が重複しています。")
 }
 
+// スタジアム情報の取得
+func (s *AdminToolService) getStadiumsService(keyword string) ([]models.Stadium, error) {
+	stadiums, err := adminToolService.stadiumSearchKeyword(keyword)
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, utils.NewCustomError(http.StatusUnauthorized, "検索結果がありませんでした。")
+	}
+
+	return stadiums, nil
+}
+
+// スタジアム検索
+func (s *AdminToolService) stadiumSearchKeyword(keyword string) ([]models.Stadium, error) {
+	stadiums := []models.Stadium{}
+
+	if keyword != "" {
+		if err := db.DB.Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").First(&stadiums).Error; err != nil {
+			return nil, err
+		}
+
+		if err := db.DB.Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&stadiums).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := db.DB.Find(&stadiums).Error; err != nil {
+			return nil, err
+		}
+	}
+	return stadiums, nil
+}
+
 // スタジアム追加
 func (s *AdminToolService) createStadiumService(request *StadiumAddRequest) error {
-	stadium, err := adminToolService.stadiumAddCheck(request.Name, request.Address)
+	stadium, err := adminToolService.stadiumAddCheck(request.Address)
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
@@ -116,7 +150,7 @@ func (s *AdminToolService) UpdateStadiumService(request *StadiumUppdateRequest) 
 
 // スタジアム削除
 func (s *AdminToolService) deleteStadiumService(request *DeleteRequest) error {
-	stadium, err := adminToolService.stadiumSearch(request.Id)
+	stadium, err := adminToolService.stadiumSearchId(request.Id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return utils.NewCustomError(http.StatusUnauthorized, "スタジアムが見つかりませんでした")

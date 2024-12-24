@@ -207,7 +207,7 @@ func (s *AuthService) registerService(request *RegisterRequest) error {
 		return err
 	}
 
-	newUser := models.User{Name: request.Name, Username: request.Username, Email: email, PassHash: *passHash, Description: request.Description, ProfileImage: request.ProfileImage}
+	newUser := models.User{Name: request.Name, Username: request.Username, Email: email, PassHash: *passHash, Description: request.Description, ProfileImage: request.ProfileImage, FileId: request.FileId}
 
 	if err := authService.createUser(&newUser); err != nil {
 		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")

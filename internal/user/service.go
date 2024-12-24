@@ -48,8 +48,9 @@ func (s *UserService) updateUser(userId *uint, request *UpdateUserRequestBody) (
 	user.Name = request.Name
 	user.Description = request.Description
 	user.ProfileImage = request.ProfileImage
+	user.FileId = request.FileId
 
-	if err := db.DB.Model(user).Updates(models.User{Name: request.Name, Description: request.Description, ProfileImage: request.ProfileImage}).Error; err != nil {
+	if err := db.DB.Model(user).Updates(models.User{Name: request.Name, Description: request.Description, ProfileImage: request.ProfileImage, FileId: request.FileId}).Error; err != nil {
 		log.Printf("ユーザー更新エラー: %v", err)
 		return nil, utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータがの更新に失敗しました。")
 	}
@@ -112,6 +113,7 @@ func (s *UserService) updateUserService(userId *uint, requestBody *UpdateUserReq
 		Name:         user.Name,
 		Description:  user.Description,
 		ProfileImage: user.ProfileImage,
+		FileId:       user.FileId,
 	}
 
 	return &userResponse, nil

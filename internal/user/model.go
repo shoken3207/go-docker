@@ -13,6 +13,7 @@ type UpdateUserRequestBody struct {
 	Name         string `json:"name" binding:"required"`
 	Description  string `json:"description" binding:"required"`
 	ProfileImage string `json:"profileImage" binding:"required"`
+	FileId       string `json:"fileId"`
 }
 type UpdateUserRequestPath struct {
 	UserId uint `uri:"userId" binding:"required"`
@@ -30,6 +31,7 @@ type UserResponse struct {
 	Name         string `json:"name"`
 	Description  string `json:"description,omitempty"`
 	ProfileImage string `json:"profileImage,omitempty"`
+	FileId       string `json:"fileId,omitempty"`
 }
 type IsUniqueUsernameResponse struct {
 	IsUnique bool `json:"isUnique"`

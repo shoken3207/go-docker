@@ -13,6 +13,7 @@ type RegisterRequest struct {
 	Password     string `json:"password" binding:"required,min=6,max=50"`
 	Description  string `json:"description"`
 	ProfileImage string `json:"profileImage"`
+	FileId       string `json:"fileId"`
 }
 
 type LoginRequest struct {

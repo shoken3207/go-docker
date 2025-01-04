@@ -8,6 +8,30 @@ definitions:
     required:
     - id
     type: object
+  adminTool.LeagueAddRequest:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      sport_id:
+        type: integer
+    required:
+    - id
+    - sport_id
+    type: object
+  adminTool.LeagueUpdateRequest:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      sport_id:
+        type: integer
+    required:
+    - id
+    - sport_id
+    type: object
   adminTool.SportsAddRequest:
     properties:
       id:
@@ -50,7 +74,7 @@ definitions:
     - image
     - name
     type: object
-  adminTool.StadiumUppdateRequest:
+  adminTool.StadiumUpdateRequest:
     properties:
       address:
         type: string
@@ -803,6 +827,114 @@ paths:
       summary: 遠征記録を更新
       tags:
       - expedition
+  /api/league/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してリーグ情報を削除します
+      parameters:
+      - description: リーグID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: リーグ削除
+      tags:
+      - league
+  /api/league/leagueAdd:
+    post:
+      description: リクエストからリーグ情報を取得後、重複確認を行い登録する。
+      parameters:
+      - description: リーグ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.LeagueAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: リーグの追加
+      tags:
+      - league
+  /api/league/leagues:
+    get:
+      description: リーグ情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: リーグ全件検索
+      tags:
+      - league
+  /api/league/update:
+    put:
+      description: リクエストボディに更新対象のIDを指定してリーグ情報を更新します
+      parameters:
+      - description: リーグ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.LeagueUpdateRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: リーグ更新
+      tags:
+      - league
   /api/sample/helloWorld:
     get:
       responses: {}
@@ -821,7 +953,7 @@ paths:
     delete:
       description: リクエストボディに削除対象のIDを指定してスポーツ情報を削除します
       parameters:
-      - description: スポーツID
+      - description: スポーツ情報
         in: body
         name: request
         required: true
@@ -899,7 +1031,7 @@ paths:
       - sports
   /api/sports/update:
     put:
-      description: リクエストボディに更新対象のIDを指定してスタジアムを更新します
+      description: リクエストボディに更新対象のIDを指定してスポーツ情報を更新します
       parameters:
       - description: スポーツ情報
         in: body
@@ -1014,7 +1146,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/adminTool.StadiumUppdateRequest'
+          $ref: '#/definitions/adminTool.StadiumUpdateRequest'
       responses:
         "200":
           description: 成功

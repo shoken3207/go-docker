@@ -134,7 +134,7 @@ func (s *AdminToolService) createStadiumService(request *StadiumAddRequest) erro
 }
 
 // スタジアム更新
-func (s *AdminToolService) UpdateStadiumService(request *StadiumUppdateRequest) error {
+func (s *AdminToolService) UpdateStadiumService(request *StadiumUpdateRequest) error {
 	err := adminToolService.stadiumUpdateCheck(request.StadiumId, request.Name, request.Address)
 	if err != nil {
 		return err
@@ -288,6 +288,132 @@ func (s *AdminToolService) sportSearchKeyword(keyword string) ([]models.Sport, e
 		}
 	}
 	return sport, nil
+}
+
+// リーグ情報
+// リーグ情報追加
+func (s *AdminToolService) createLeagueService(request *LeagueAddRequest) error {
+	sports, err := adminToolService.LeagueAddCheck(request.Name, request.SportsId)
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
+	}
+	if sports != nil {
+		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのリーグです")
+	}
+
+	newLeague := models.League{Name: request.Name, SportId: request.SportsId}
+
+	if err := db.DB.Create(&newLeague).Error; err != nil {
+		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")
+	}
+
+	return nil
+}
+
+// リーグ情報更新
+func (s *AdminToolService) UpdateLeagueService(request *LeagueUpdateRequest) error {
+	err := adminToolService.LeagueUpdateCheck(request.LeagueId, request.SportsId, request.Name)
+	if err != nil {
+		return err
+	}
+	log.Println(request.LeagueId, request.SportsId, request.Name)
+	updateLeague := models.League{Name: request.Name, SportId: request.SportsId}
+
+	if err := db.DB.Model(&models.League{}).Where("id = ?", request.LeagueId).Updates(updateLeague).Error; err != nil {
+		log.Println("エラー", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "レコードが更新されませんでした")
+	}
+	log.Println("SQLは成功したよ")
+	return nil
+}
+
+// リーグ情報削除
+func (s *AdminToolService) deleteLeagueService(request *DeleteRequest) error {
+	league, err := adminToolService.LeagueSearchId(request.Id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return utils.NewCustomError(http.StatusUnauthorized, "リーグが見つかりませんでした")
+		}
+		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました")
+	}
+
+	if err := db.DB.Delete(league).Error; err != nil {
+		return utils.NewCustomError(http.StatusUnauthorized, "削除に失敗しました")
+	}
+	return nil
+}
+
+// リーグ情報の取得
+func (s *AdminToolService) getLeagueService(keyword string) ([]models.League, error) {
+	league, err := adminToolService.leagueSearchKeyword(keyword)
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, utils.NewCustomError(http.StatusUnauthorized, "検索結果がありませんでした。")
+	}
+
+	return league, nil
+}
+
+// リーグ情報重複検索（条件：競技場名）
+// ※リーグ情報追加時
+func (s *AdminToolService) LeagueAddCheck(name string, sport_id uint) (*models.League, error) {
+	league := models.League{}
+	if err := db.DB.Select("id", "name", "sport_id").Where("name = ? OR sport_id = ?", name, sport_id).First(&league).Error; err != nil {
+		log.Println("エラー:", err)
+		return nil, err
+	}
+	return &league, nil
+}
+
+// 　※リーグ情報更新時
+func (s *AdminToolService) LeagueUpdateCheck(id, sport_id uint, name string) error {
+	league := models.League{}
+	log.Println("モデル生成直後")
+	if err := db.DB.Select("id", "name", "sport_id").Where("id != ?", id).Where("name = ? OR sport_id = ?", name, sport_id).First(&league).Error; err != nil {
+		log.Println("SQL実行直後")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// レコードが見つからなかった場合の処理
+			log.Println("該当するレコードがないため処理を継続")
+			return nil
+		}
+		log.Printf("エラー： %v", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")
+	}
+	return utils.NewCustomError(http.StatusInternalServerError, "更新データが他の登録済みデータと重複しています。")
+}
+
+// リーグ検索(id)
+func (s *AdminToolService) LeagueSearchId(id uint) (*models.League, error) {
+	var league models.League
+	if err := db.DB.First(&league, id).Error; err != nil {
+		log.Printf("Error: %v", err)
+		return nil, err
+	}
+	return &league, nil
+}
+
+// リーグ検索
+func (s *AdminToolService) leagueSearchKeyword(keyword string) ([]models.League, error) {
+	league := []models.League{}
+	log.Println(keyword)
+	if keyword != "" {
+		if err := db.DB.Where("name LIKE ?", "%"+keyword+"%").First(&league).Error; err != nil {
+			return nil, err
+		}
+
+		if err := db.DB.Where("name LIKE ? ", "%"+keyword+"%").Find(&league).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := db.DB.Find(&league).Error; err != nil {
+			return nil, err
+		}
+	}
+	return league, nil
 }
 
 func NewAdminToolService() *AdminToolService {

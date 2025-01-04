@@ -66,6 +66,14 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 			publicSportsGroup.DELETE("/delete", adminToolHandler.DeleteSports)
 		}
 
+		publicLeagueGroup := publicGroup.Group("/league")
+		{
+			publicLeagueGroup.GET("/leagues", adminToolHandler.GetLeagues)
+			publicLeagueGroup.POST("/leagueAdd", adminToolHandler.LeagueAdd)
+			publicLeagueGroup.PUT("/update", adminToolHandler.LeagueUpdate)
+			publicLeagueGroup.DELETE("/delete", adminToolHandler.DeleteLeague)
+		}
+
 	}
 
 	protectedGroup := api.Group("")

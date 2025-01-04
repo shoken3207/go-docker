@@ -416,6 +416,178 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/league/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してリーグ情報を削除します",
+                "tags": [
+                    "league"
+                ],
+                "summary": "リーグ削除",
+                "parameters": [
+                    {
+                        "description": "リーグID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/league/leagueAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからリーグ情報を取得後、重複確認を行い登録する。",
+                "tags": [
+                    "league"
+                ],
+                "summary": "リーグの追加",
+                "parameters": [
+                    {
+                        "description": "リーグ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.LeagueAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/league/leagues": {
+            "get": {
+                "description": "リーグ情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "league"
+                ],
+                "summary": "リーグ全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/league/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してリーグ情報を更新します",
+                "tags": [
+                    "league"
+                ],
+                "summary": "リーグ更新",
+                "parameters": [
+                    {
+                        "description": "リーグ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.LeagueUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/sample/helloWorld": {
             "get": {
                 "tags": [
@@ -453,7 +625,7 @@ const docTemplate = `{
                 "summary": "スポーツ削除",
                 "parameters": [
                     {
-                        "description": "スポーツID",
+                        "description": "スポーツ情報",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -573,7 +745,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "リクエストボディに更新対象のIDを指定してスタジアムを更新します",
+                "description": "リクエストボディに更新対象のIDを指定してスポーツ情報を更新します",
                 "tags": [
                     "sports"
                 ],
@@ -757,7 +929,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/adminTool.StadiumUppdateRequest"
+                            "$ref": "#/definitions/adminTool.StadiumUpdateRequest"
                         }
                     }
                 ],
@@ -1113,6 +1285,42 @@ const docTemplate = `{
                 }
             }
         },
+        "adminTool.LeagueAddRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "sport_id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sport_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "adminTool.LeagueUpdateRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "sport_id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sport_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "adminTool.SportsAddRequest": {
             "type": "object",
             "required": [
@@ -1174,7 +1382,7 @@ const docTemplate = `{
                 }
             }
         },
-        "adminTool.StadiumUppdateRequest": {
+        "adminTool.StadiumUpdateRequest": {
             "type": "object",
             "required": [
                 "address",

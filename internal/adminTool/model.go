@@ -11,7 +11,7 @@ type StadiumAddRequest struct {
 	Image       string `json:"image" binding:"required"`
 }
 
-type StadiumUppdateRequest struct {
+type StadiumUpdateRequest struct {
 	StadiumId   uint   `json:"id" binding:"required"`
 	Name        string `json:"name" binding:"required"`
 	Description string `json:"description" binding:"required"`
@@ -33,7 +33,15 @@ type SportsUpdateRequest struct {
 
 // リーグ情報
 type LeagueAddRequest struct {
-	LeagueId uint `json:"id" binding:requierd"`
+	LeagueId uint   `json:"id" binding:"required"`
+	Name     string `json:"name" bindning:"required"`
+	SportsId uint   `json:"sport_id" binding:"required"`
+}
+
+type LeagueUpdateRequest struct {
+	LeagueId uint   `json:"id" binding:"required"`
+	Name     string `json:"name" bindning:"required"`
+	SportsId uint   `json:"sport_id" binding:"required"`
 }
 
 // チーム関連
@@ -77,4 +85,11 @@ type Stadium struct {
 type Sports struct {
 	SportsId uint   `json:"id" binding:"required"`
 	Name     string `json:"name" binding:"required"`
+}
+
+// リーグ情報
+type League struct {
+	LeagueId uint   `json:"id" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+	SportsId uint   `json:"sport_id" binding:"required"`
 }

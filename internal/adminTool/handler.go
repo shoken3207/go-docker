@@ -164,6 +164,115 @@ func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
 	utils.SuccessResponse[any](c, http.StatusOK, nil, "スタジアムが正常に削除されました。")
 }
 
+// @Summary スポーツ全件検索
+// @Description スポーツ情報のレコードを全件取得して、一覧として表示する。
+// @Tags sports
+// @Secrity BearerAuth
+// @Param keyword query string false "キーワード"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/sports/sports [get]
+func (h *AdminToolHandler) GetSports(c *gin.Context) {
+	keyword := c.DefaultQuery("keyword", "")
+	log.Println("キーワード:", keyword)
+	sport := []models.Sport{}
+
+	sport, err := adminToolService.getSportService(keyword)
+
+	if err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+
+	log.Println(sport)
+
+	utils.SuccessResponse[any](c, http.StatusOK, sport, "スポーツの検索に成功しました。")
+}
+
+// @Summary スポーツの追加
+// @Description リクエストからスポーツ情報を取得後、重複確認を行い登録する。
+// @Tags sports
+// @Security BearerAuth
+// @Param request body SportsAddRequest true "スポーツ情報"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/sports/sportsAdd [post]
+func (h *AdminToolHandler) SportsAdd(c *gin.Context) {
+	request := SportsAddRequest{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+
+	if err := adminToolService.createSportService(&request); err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "スポーツ情報の登録に成功しました。")
+}
+
+// @Summary スポーツ更新
+// @Description リクエストボディに更新対象のIDを指定してスポーツ情報を更新します
+// @Tags sports
+// @Security BearerAuth
+// @Param request body SportsUpdateRequest true "スポーツ情報"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/sports/update [put]
+func (h *AdminToolHandler) SportsUpdate(c *gin.Context) {
+	request := SportsUpdateRequest{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+	log.Println("重複検索が正常にリターンはされているよ:handler")
+	if err := adminToolService.UpdateSportService(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "スポーツが正常に更新されました。")
+}
+
+// @Summary スポーツ削除
+// @Description リクエストボディに削除対象のIDを指定してスポーツ情報を削除します
+// @Tags sports
+// @Security BearerAuth
+// @Param request body DeleteRequest true "スポーツID"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/sports/delete [delete]
+func (h *AdminToolHandler) DeleteSports(c *gin.Context) {
+	request := DeleteRequest{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+
+	if err := adminToolService.deleteSportService(&request); err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "スポーツが正常に削除されました。")
+}
+
 func NewAdminToolHandler() *AdminToolHandler {
 	return &AdminToolHandler{}
 }

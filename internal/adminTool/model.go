@@ -46,15 +46,19 @@ type LeagueUpdateRequest struct {
 
 // チーム関連
 type TeamAddRequest struct {
+	TeamId    uint   `json:"teamId" binding:"required"`
 	StadiumId uint   `json:"stadiumId" binding:"required"`
 	SportsId  uint   `json:"sportsId" binding:"required"`
 	LeagueId  uint   `json:"LeagueId" binding:"required"`
-	TeamName  string `json:"teamName" binding:"required"`
+	Name      string `json:"name" binding:"required"`
 }
 
 type TeamUpdateRequest struct {
-	BeforTeamName string `json:"beforeTeamName" binding:"required,max=50"`
-	AfterTeamName string `json:"afterTeamName" binding:"required,max=50"`
+	TeamId    uint   `json:"teamId" binding:"required"`
+	StadiumId uint   `json:"stadiumId" binding:"required"`
+	SportsId  uint   `json:"sportsId" binding:"required"`
+	LeagueId  uint   `json:"LeagueId" binding:"required"`
+	Name      string `json:"name" binding:"required"`
 }
 
 // 削除は共通してidを利用するため共通のmodelを利用する
@@ -63,14 +67,6 @@ type DeleteRequest struct {
 }
 
 // レスポンス
-// チーム情報
-type Team struct {
-	StadiumId uint   `json:"stadiumId"`
-	SportsId  uint   `json:"sportsId"`
-	LeagueId  uint   `json:"LeagueId"`
-	TeamName  string `json:"teamName"`
-}
-
 // スタジアム情報
 type Stadium struct {
 	StadiumId   uint   `json:"id" binding:"required"`
@@ -92,4 +88,12 @@ type League struct {
 	LeagueId uint   `json:"id" binding:"required"`
 	Name     string `json:"name" binding:"required"`
 	SportsId uint   `json:"sport_id" binding:"required"`
+}
+
+// チーム情報
+type Team struct {
+	StadiumId uint   `json:"stadiumId"`
+	SportsId  uint   `json:"sportsId"`
+	LeagueId  uint   `json:"LeagueId"`
+	TeamName  string `json:"teamName"`
 }

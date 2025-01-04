@@ -96,6 +96,44 @@ definitions:
     - image
     - name
     type: object
+  adminTool.TeamAddRequest:
+    properties:
+      LeagueId:
+        type: integer
+      name:
+        type: string
+      sportsId:
+        type: integer
+      stadiumId:
+        type: integer
+      teamId:
+        type: integer
+    required:
+    - LeagueId
+    - name
+    - sportsId
+    - stadiumId
+    - teamId
+    type: object
+  adminTool.TeamUpdateRequest:
+    properties:
+      LeagueId:
+        type: integer
+      name:
+        type: string
+      sportsId:
+        type: integer
+      stadiumId:
+        type: integer
+      teamId:
+        type: integer
+    required:
+    - LeagueId
+    - name
+    - sportsId
+    - stadiumId
+    - teamId
+    type: object
   auth.LoginRequest:
     properties:
       email:
@@ -1165,6 +1203,114 @@ paths:
       summary: スタジアム更新
       tags:
       - stadium
+  /api/team/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してチーム情報を削除します
+      parameters:
+      - description: チームID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: チーム削除
+      tags:
+      - team
+  /api/team/teamAdd:
+    post:
+      description: リクエストからチーム情報を取得後、重複確認を行い登録する。
+      parameters:
+      - description: チーム情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.TeamAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: チームの追加
+      tags:
+      - team
+  /api/team/teams:
+    get:
+      description: チーム情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: チーム全件検索
+      tags:
+      - team
+  /api/team/update:
+    put:
+      description: リクエストボディに更新対象のIDを指定してチーム情報を更新します
+      parameters:
+      - description: チーム情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.TeamUpdateRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: チーム情報更新
+      tags:
+      - team
   /api/upload/images:
     post:
       consumes:

@@ -947,6 +947,178 @@
                 }
             }
         },
+        "/api/team/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してチーム情報を削除します",
+                "tags": [
+                    "team"
+                ],
+                "summary": "チーム削除",
+                "parameters": [
+                    {
+                        "description": "チームID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/team/teamAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからチーム情報を取得後、重複確認を行い登録する。",
+                "tags": [
+                    "team"
+                ],
+                "summary": "チームの追加",
+                "parameters": [
+                    {
+                        "description": "チーム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.TeamAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/team/teams": {
+            "get": {
+                "description": "チーム情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "team"
+                ],
+                "summary": "チーム全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/team/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してチーム情報を更新します",
+                "tags": [
+                    "team"
+                ],
+                "summary": "チーム情報更新",
+                "parameters": [
+                    {
+                        "description": "チーム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.TeamUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/upload/images": {
             "post": {
                 "security": [
@@ -1402,6 +1574,60 @@
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "adminTool.TeamAddRequest": {
+            "type": "object",
+            "required": [
+                "LeagueId",
+                "name",
+                "sportsId",
+                "stadiumId",
+                "teamId"
+            ],
+            "properties": {
+                "LeagueId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sportsId": {
+                    "type": "integer"
+                },
+                "stadiumId": {
+                    "type": "integer"
+                },
+                "teamId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "adminTool.TeamUpdateRequest": {
+            "type": "object",
+            "required": [
+                "LeagueId",
+                "name",
+                "sportsId",
+                "stadiumId",
+                "teamId"
+            ],
+            "properties": {
+                "LeagueId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sportsId": {
+                    "type": "integer"
+                },
+                "stadiumId": {
+                    "type": "integer"
+                },
+                "teamId": {
+                    "type": "integer"
                 }
             }
         },

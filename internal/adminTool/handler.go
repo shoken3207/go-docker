@@ -382,6 +382,115 @@ func (h *AdminToolHandler) DeleteLeague(c *gin.Context) {
 	utils.SuccessResponse[any](c, http.StatusOK, nil, "リーグが正常に削除されました。")
 }
 
+// @Summary チーム全件検索
+// @Description チーム情報のレコードを全件取得して、一覧として表示する。
+// @Tags team
+// @Secrity BearerAuth
+// @Param keyword query string false "キーワード"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/team/teams [get]
+func (h *AdminToolHandler) GetTeams(c *gin.Context) {
+	keyword := c.DefaultQuery("keyword", "")
+	log.Println("キーワード:", keyword)
+	team := []models.Team{}
+
+	team, err := adminToolService.getTeamService(keyword)
+
+	if err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+
+	log.Println(team)
+
+	utils.SuccessResponse[any](c, http.StatusOK, team, "チームの検索に成功しました。")
+}
+
+// @Summary チームの追加
+// @Description リクエストからチーム情報を取得後、重複確認を行い登録する。
+// @Tags team
+// @Security BearerAuth
+// @Param request body TeamAddRequest true "チーム情報"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/team/teamAdd [post]
+func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
+	request := TeamAddRequest{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Println("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+
+	if err := adminToolService.createTeamService(&request); err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "チーム情報の登録に成功しました。")
+}
+
+// @Summary チーム情報更新
+// @Description リクエストボディに更新対象のIDを指定してチーム情報を更新します
+// @Tags team
+// @Security BearerAuth
+// @Param request body TeamUpdateRequest true "チーム情報"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/team/update [put]
+func (h *AdminToolHandler) TeamUpdate(c *gin.Context) {
+	request := TeamUpdateRequest{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+	log.Println("重複検索が正常にリターンはされているよ:handler")
+	if err := adminToolService.UpdateTeamService(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "チーム情報が正常に更新されました。")
+}
+
+// @Summary チーム削除
+// @Description リクエストボディに削除対象のIDを指定してチーム情報を削除します
+// @Tags team
+// @Security BearerAuth
+// @Param request body DeleteRequest true "チームID"
+// @Success 200 {object} utils.BasicResponse "成功"
+// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Router /api/team/delete [delete]
+func (h *AdminToolHandler) DeleteTeam(c *gin.Context) {
+	request := DeleteRequest{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+
+	if err := adminToolService.deleteTeamService(&request); err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "チームが正常に削除されました。")
+}
+
 func NewAdminToolHandler() *AdminToolHandler {
 	return &AdminToolHandler{}
 }

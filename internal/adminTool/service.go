@@ -13,36 +13,7 @@ import (
 
 type AdminToolService struct{}
 
-// func (s *AdminToolService) test() {
-// }
-
-// チーム情報関連
-// チーム重複検索(条件：チーム名)
-// func (s *AdminToolService) teamCheck(teamName string) (*models.Team, error) {
-// 	team := models.Team{}
-// 	if err := db.DB.Select("name", "league_id", "sport_id").Where("name = ?", teamName).First(&team).Error; err != nil {
-// 		log.Printf("ユーザーデータ取得エラー: %v", err)
-// 		if errors.Is(err, gorm.ErrRecordNotFound) {
-// 			return nil, utils.NewCustomError(http.StatusNotFound, "該当チームが見つかりませんでした。")
-// 		} else {
-// 			return nil, utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータ取得に失敗しました。")
-// 		}
-// 	}
-// 	return nil
-// }
-
-// 新規チーム追加
-func (s *AdminToolService) createTeam(newTeam *models.Team) error {
-	if err := db.DB.Create(&newTeam).Error; err != nil {
-		log.Printf("Error: %v", err)
-		return err
-	}
-	return nil
-}
-
-/*  ==============================
-===== スタジアム情報関連 =======
-============================== */
+// スタジアム情報関連
 // スタジアム検索(id)
 func (s *AdminToolService) stadiumSearchId(id uint) (*models.Stadium, error) {
 	var stadium models.Stadium
@@ -414,6 +385,132 @@ func (s *AdminToolService) leagueSearchKeyword(keyword string) ([]models.League,
 		}
 	}
 	return league, nil
+}
+
+// チーム情報関連
+// チーム情報追加
+func (s *AdminToolService) createTeamService(request *TeamAddRequest) error {
+	sports, err := adminToolService.teamAddCheck(request.Name, request.SportsId)
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
+	}
+	if sports != nil {
+		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのリーグです")
+	}
+
+	newLeague := models.Team{StadiumId: request.StadiumId, SportId: request.SportsId, LeagueId: request.LeagueId, Name: request.Name}
+
+	if err := db.DB.Create(&newLeague).Error; err != nil {
+		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")
+	}
+
+	return nil
+}
+
+// チーム情報更新
+func (s *AdminToolService) UpdateTeamService(request *TeamUpdateRequest) error {
+	err := adminToolService.teamUpdateCheck(request.TeamId, request.SportsId, request.Name)
+	if err != nil {
+		return err
+	}
+	log.Println(request.TeamId, request.StadiumId, request.LeagueId, request.SportsId, request.Name)
+	updateTeam := models.Team{Name: request.Name, StadiumId: request.StadiumId, LeagueId: request.LeagueId, SportId: request.SportsId}
+
+	if err := db.DB.Model(&models.Team{}).Where("id = ?", request.TeamId).Updates(updateTeam).Error; err != nil {
+		log.Println("エラー", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "レコードが更新されませんでした")
+	}
+	log.Println("SQLは成功したよ")
+	return nil
+}
+
+// チーム情報削除
+func (s *AdminToolService) deleteTeamService(request *DeleteRequest) error {
+	team, err := adminToolService.teamSearchId(request.Id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return utils.NewCustomError(http.StatusUnauthorized, "リーグが見つかりませんでした")
+		}
+		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました")
+	}
+
+	if err := db.DB.Delete(team).Error; err != nil {
+		return utils.NewCustomError(http.StatusUnauthorized, "削除に失敗しました")
+	}
+	return nil
+}
+
+// チーム情報の取得
+func (s *AdminToolService) getTeamService(keyword string) ([]models.Team, error) {
+	team, err := adminToolService.teamSearchKeyword(keyword)
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, utils.NewCustomError(http.StatusUnauthorized, "検索結果がありませんでした。")
+	}
+
+	return team, nil
+}
+
+// チーム情報重複検索（条件：競技場名）
+// ※チーム情報追加時
+func (s *AdminToolService) teamAddCheck(name string, sport_id uint) (*models.Team, error) {
+	team := models.Team{}
+	if err := db.DB.Select("id", "name", "stadium_id", "league_id", "sport_id").Where("name = ? OR sport_id = ?", name, sport_id).First(&team).Error; err != nil {
+		log.Println("エラー:", err)
+		return nil, err
+	}
+	return &team, nil
+}
+
+// 　※チーム情報更新時
+func (s *AdminToolService) teamUpdateCheck(id, sport_id uint, name string) error {
+	league := models.Team{}
+	log.Println("モデル生成直後")
+	if err := db.DB.Select("id", "stadium_id", "league_id", "sport_id", "name").Where("id != ?", id).Where("name = ? OR sport_id = ?", name, sport_id).First(&league).Error; err != nil {
+		log.Println("SQL実行直後")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// レコードが見つからなかった場合の処理
+			log.Println("該当するレコードがないため処理を継続")
+			return nil
+		}
+		log.Printf("エラー： %v", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")
+	}
+	return utils.NewCustomError(http.StatusInternalServerError, "更新データが他の登録済みデータと重複しています。")
+}
+
+// チーム検索(id)
+func (s *AdminToolService) teamSearchId(id uint) (*models.Team, error) {
+	var team models.Team
+	if err := db.DB.First(&team, id).Error; err != nil {
+		log.Printf("Error: %v", err)
+		return nil, err
+	}
+	return &team, nil
+}
+
+// チーム検索
+func (s *AdminToolService) teamSearchKeyword(keyword string) ([]models.Team, error) {
+	team := []models.Team{}
+	log.Println(keyword)
+	if keyword != "" {
+		if err := db.DB.Where("name LIKE ?", "%"+keyword+"%").First(&team).Error; err != nil {
+			return nil, err
+		}
+
+		if err := db.DB.Where("name LIKE ? ", "%"+keyword+"%").Find(&team).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := db.DB.Find(&team).Error; err != nil {
+			return nil, err
+		}
+	}
+	return team, nil
 }
 
 func NewAdminToolService() *AdminToolService {

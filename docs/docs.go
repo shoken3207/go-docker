@@ -558,6 +558,178 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/stadium/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してスタジアムを削除します",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム削除",
+                "parameters": [
+                    {
+                        "description": "スタジアムID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/stadium/stadiumAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからスタジアム情報を追加後、重複確認を行い登録する。",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム追加",
+                "parameters": [
+                    {
+                        "description": "スタジアム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.StadiumAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/stadium/stadiums": {
+            "get": {
+                "description": "スタジアム情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/stadium/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してスタジアムを更新します",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム更新",
+                "parameters": [
+                    {
+                        "description": "スタジアム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.StadiumUppdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/upload/images": {
             "post": {
                 "security": [
@@ -877,6 +1049,79 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "adminTool.DeleteRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "adminTool.StadiumAddRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "capacity",
+                "description",
+                "id",
+                "image",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "adminTool.StadiumUppdateRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "capacity",
+                "description",
+                "id",
+                "image",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "auth.LoginRequest": {
             "type": "object",
             "required": [

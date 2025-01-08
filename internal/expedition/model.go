@@ -117,3 +117,17 @@ type UpdateExpeditionRequestBody struct {
 type UpdateExpeditionRequestPath struct {
 	ExpeditionId uint `uri:"expeditionId" binding:"required"`
 }
+
+// ... existing code ...
+
+type LikeExpeditionRequestPath struct {
+    ExpeditionId uint `uri:"id" binding:"required"`
+}
+
+type UnlikeExpeditionRequestPath struct {
+    ExpeditionId uint `uri:"id" binding:"required"`
+}
+
+type DeleteExpeditionRequestPath struct {
+    ExpeditionId uint `uri:"id" binding:"required"`
+}

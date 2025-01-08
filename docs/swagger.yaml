@@ -635,6 +635,111 @@ paths:
       summary: ログイン状態からパスワードを変更
       tags:
       - auth
+  /api/expedition/{id}:
+    delete:
+      description: 遠征記録とそれに関連する全てのデータ（画像、いいね、支払い、試合情報など）を削除する
+      parameters:
+      - description: 遠征記録ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "403":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: 遠征記録が見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録を削除
+      tags:
+      - expedition
+  /api/expedition/{id}/like:
+    post:
+      description: ユーザーが遠征記録にいいねを付ける
+      parameters:
+      - description: 遠征記録ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "403":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: 遠征記録が見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録にいいねする
+      tags:
+      - expedition
+  /api/expedition/{id}/unlike:
+    delete:
+      description: ユーザーが遠征記録のいいねを外す
+      parameters:
+      - description: 遠征記録ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "403":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "404":
+          description: いいねが見つかりません
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録のいいねを外す
+      tags:
+      - expedition
   /api/expedition/create:
     post:
       description: 遠征、出費、試合、訪れた施設の情報を保存する。
@@ -665,35 +770,6 @@ paths:
       security:
       - BearerAuth: []
       summary: 遠征記録を作成
-      tags:
-      - expedition
-  /api/expedition/delete/{id}:
-    delete:
-      description: pathのidをもとに遠征記録を削除する。
-      responses:
-        "200":
-          description: アップロードした画像のURL
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "400":
-          description: リクエストエラー
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "403":
-          description: ユーザーが見つかりません
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "404":
-          description: ユーザーが見つかりません
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-        "500":
-          description: ユーザーが見つかりません
-          schema:
-            $ref: '#/definitions/utils.BasicResponse'
-      security:
-      - BearerAuth: []
-      summary: 遠征記録を削除
       tags:
       - expedition
   /api/expedition/update/{id}:

@@ -8,6 +8,7 @@ import (
 
 type Expedition struct {
 	gorm.Model
+	UserId            uint              `json:"userId" gorm:"column:user_id;not null"`
 	SportId           uint              `json:"sportId" gorm:"not null;column:sport_id"`
 	IsPublic          bool              `json:"isPublic" gorm:"column:is_public;not null"`
 	Title             string            `json:"title" gorm:"size:200;not null"`
@@ -22,4 +23,5 @@ type Expedition struct {
 	Games             []Game            `gorm:"foreignKey:ExpeditionId"`
 	Sport             Sport             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Stadium           Stadium           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	User              User              `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

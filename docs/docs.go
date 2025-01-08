@@ -313,52 +313,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/expedition/delete/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "pathのidをもとに遠征記録を削除する。",
-                "tags": [
-                    "expedition"
-                ],
-                "summary": "遠征記録を削除",
-                "responses": {
-                    "200": {
-                        "description": "アップロードした画像のURL",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "ユーザーが見つかりません",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "ユーザーが見つかりません",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "ユーザーが見つかりません",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/expedition/update/{id}": {
             "put": {
                 "security": [
@@ -403,6 +357,171 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "ユーザーが見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "遠征記録とそれに関連する全てのデータ（画像、いいね、支払い、試合情報など）を削除する",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録を削除",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/{id}/like": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ユーザーが遠征記録にいいねを付ける",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録にいいねする",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/{id}/unlike": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ユーザーが遠征記録のいいねを外す",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録のいいねを外す",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "いいねが見つかりません",
                         "schema": {
                             "$ref": "#/definitions/utils.BasicResponse"
                         }

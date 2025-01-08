@@ -264,12 +264,12 @@ func (s *AdminToolService) sportSearchKeyword(keyword string) ([]models.Sport, e
 // リーグ情報
 // リーグ情報追加
 func (s *AdminToolService) createLeagueService(request *LeagueAddRequest) error {
-	sports, err := adminToolService.LeagueAddCheck(request.Name, request.SportsId)
+	league, err := adminToolService.LeagueAddCheck(request.Name, request.SportsId)
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
 	}
-	if sports != nil {
+	if league != nil {
 		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのリーグです")
 	}
 
@@ -333,7 +333,7 @@ func (s *AdminToolService) getLeagueService(keyword string) ([]models.League, er
 // ※リーグ情報追加時
 func (s *AdminToolService) LeagueAddCheck(name string, sport_id uint) (*models.League, error) {
 	league := models.League{}
-	if err := db.DB.Select("id", "name", "sport_id").Where("name = ? OR sport_id = ?", name, sport_id).First(&league).Error; err != nil {
+	if err := db.DB.Select("id", "name", "sport_id").Where("name = ? ", name).First(&league).Error; err != nil {
 		log.Println("エラー:", err)
 		return nil, err
 	}
@@ -396,7 +396,7 @@ func (s *AdminToolService) createTeamService(request *TeamAddRequest) error {
 		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
 	}
 	if sports != nil {
-		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのリーグです")
+		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのチームです")
 	}
 
 	newLeague := models.Team{StadiumId: request.StadiumId, SportId: request.SportsId, LeagueId: request.LeagueId, Name: request.Name}
@@ -459,7 +459,7 @@ func (s *AdminToolService) getTeamService(keyword string) ([]models.Team, error)
 // ※チーム情報追加時
 func (s *AdminToolService) teamAddCheck(name string, sport_id uint) (*models.Team, error) {
 	team := models.Team{}
-	if err := db.DB.Select("id", "name", "stadium_id", "league_id", "sport_id").Where("name = ? OR sport_id = ?", name, sport_id).First(&team).Error; err != nil {
+	if err := db.DB.Select("id", "name", "stadium_id", "league_id", "sport_id").Where("name = ? ", name).First(&team).Error; err != nil {
 		log.Println("エラー:", err)
 		return nil, err
 	}

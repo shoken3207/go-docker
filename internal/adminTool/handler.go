@@ -18,9 +18,9 @@ var adminToolService = NewAdminToolService()
 // @Tags teams
 // @Security BearerAuth
 // @Param request body TeamAddRequest true "チーム名"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/teams/teamAdd [post]
 // func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 // 	request := TeamAddRequest{}
@@ -60,9 +60,9 @@ var adminToolService = NewAdminToolService()
 // @Tags stadium
 // @Secrity BearerAuth
 // @Param keyword query string false "キーワード"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/stadiums [get]
 func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
@@ -87,9 +87,9 @@ func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 // @Tags stadium
 // @Security BearerAuth
 // @Param request body StadiumAddRequest true "スタジアム情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/stadiumAdd [post]
 func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 	request := StadiumAddRequest{}
@@ -114,9 +114,9 @@ func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 // @Tags stadium
 // @Security BearerAuth
 // @Param request body StadiumUppdateRequest true "スタジアム情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/update [put]
 func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 	request := StadiumUppdateRequest{}
@@ -142,9 +142,9 @@ func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 // @Tags stadium
 // @Security BearerAuth
 // @Param request body DeleteRequest true "スタジアムID"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/delete [delete]
 func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
 	request := DeleteRequest{}

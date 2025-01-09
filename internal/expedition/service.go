@@ -122,7 +122,7 @@ func (s *ExpeditionService) CreateExpeditionImage(newExpeditionImage *models.Exp
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteExpeditionImages(fileIds *[]string) error {
+func (s *ExpeditionService) DeleteExpeditionImages(fileIds []string) error {
 	if err := db.DB.Where("file_id IN ?", fileIds).Delete(&models.ExpeditionImage{}).Error; err != nil {
 		log.Printf("遠征記録画像データ削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -186,6 +186,7 @@ func (s *ExpeditionService) FindGameById(gameId uint) (*models.Game, error) {
 	return &game, nil
 }
 func (s *ExpeditionService) CreateGame(newGame *models.Game) error {
+	log.Printf("newGame: %v", newGame)
 	if err := db.DB.Create(newGame).Error; err != nil {
 		log.Printf("試合記録作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "試合記録作成に失敗しました。")
@@ -256,7 +257,7 @@ func (s *ExpeditionService) DeleteGameScores(gameScoreIds *[]uint) error {
 	return nil
 }
 
-func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest) error {
+func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest, userId *uint) error {
 	newExpedition := models.Expedition{
 		SportId:   request.SportId,
 		IsPublic:  request.IsPublic,
@@ -265,6 +266,7 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 		StartDate: request.StartDate,
 		EndDate:   request.EndDate,
 		StadiumId: request.StadiumId,
+		UserId:    *userId,
 	}
 	if err := s.CreateExpedition(&newExpedition); err != nil {
 		return err
@@ -404,7 +406,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 		}
 	}
 	for _, game := range games.Update {
-		updateGame, err := s.FindGameById(*&game.ID)
+		updateGame, err := s.FindGameById(game.ID)
 		if err != nil {
 			return err
 		}
@@ -444,12 +446,16 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 				return err
 			}
 		}
-		if err := s.DeleteGameScores(&gameScores.Delete); err != nil {
-			return err
+		if len(gameScores.Delete) > 0 {
+			if err := s.DeleteGameScores(&gameScores.Delete); err != nil {
+				return err
+			}
 		}
 	}
-	if err := s.DeleteGames(&games.Delete); err != nil {
-		return err
+	if len(games.Delete) > 0 {
+		if err := s.DeleteGames(&games.Delete); err != nil {
+			return err
+		}
 	}
 
 	images := requestBody.Images
@@ -466,7 +472,11 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 	for _, fileId := range images.Delete {
 		utils.DeleteUploadImage(ik, &fileId)
 	}
-	s.DeleteExpeditionImages(&images.Delete)
+	if len(images.Delete) > 0 {
+		if err := s.DeleteExpeditionImages(images.Delete); err != nil {
+			return err
+		}
+	}
 
 	payments := requestBody.Payments
 	for _, payment := range payments.Add {
@@ -492,7 +502,11 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 			return err
 		}
 	}
-	s.DeletePayments(&payments.Delete)
+	if len(payments.Delete) > 0 {
+		if err := s.DeletePayments(&payments.Delete); err != nil {
+			return err
+		}
+	}
 
 	visitedFacilities := requestBody.VisitedFacilities
 	for _, visitedFacility := range visitedFacilities.Add {
@@ -524,7 +538,11 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 			return err
 		}
 	}
-	s.DeleteVisitedFacilities(&visitedFacilities.Delete)
+	if len(visitedFacilities.Delete) > 0 {
+		if err := s.DeleteVisitedFacilities(&visitedFacilities.Delete); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

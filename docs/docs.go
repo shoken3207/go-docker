@@ -48,19 +48,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -94,19 +94,19 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -134,19 +134,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -174,25 +174,25 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -232,31 +232,31 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -269,7 +269,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "遠征、出費、試合、訪れた施設の情報を保存する。",
+                "description": "遠征、出費、試合、訪れた施設の情報を保存する。fileIdはimagekitのfileIdで、ユニークな値です。",
                 "tags": [
                     "expedition"
                 ],
@@ -289,31 +289,196 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "403": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
             }
         },
-        "/api/expedition/update/{id}": {
+        "/api/expedition/delete/{expeditionId}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "遠征記録とそれに関連する全てのデータ（画像、いいね、支払い、試合情報など）を削除する",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録を削除",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/like/{expeditionId}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ユーザーが遠征記録にいいねを付ける",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録にいいねする",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/unlike/{expeditionId}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ユーザーが遠征記録のいいねを外す",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録のいいねを外す",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "いいねが見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/update/{expeditionId}": {
             "put": {
                 "security": [
                     {
@@ -334,202 +499,44 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/expedition.UpdateExpeditionRequestBody"
                         }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "403": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "ユーザーが見つかりません",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/expedition/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "遠征記録とそれに関連する全てのデータ（画像、いいね、支払い、試合情報など）を削除する",
-                "tags": [
-                    "expedition"
-                ],
-                "summary": "遠征記録を削除",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "遠征記録ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "認証エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "遠征記録が見つかりません",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/expedition/{id}/like": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "ユーザーが遠征記録にいいねを付ける",
-                "tags": [
-                    "expedition"
-                ],
-                "summary": "遠征記録にいいねする",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "遠征記録ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "認証エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "遠征記録が見つかりません",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/expedition/{id}/unlike": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "ユーザーが遠征記録のいいねを外す",
-                "tags": [
-                    "expedition"
-                ],
-                "summary": "遠征記録のいいねを外す",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "遠征記録ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "認証エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "いいねが見つかりません",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -585,19 +592,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -630,19 +637,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -667,19 +674,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -712,19 +719,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -771,25 +778,25 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -821,13 +828,13 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -855,19 +862,19 @@ const docTemplate = `{
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -913,25 +920,25 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -968,25 +975,25 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -1023,25 +1030,25 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -1130,12 +1137,14 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "tanaka@example.com"
                 },
                 "password": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password123"
                 }
             }
         },
@@ -1143,7 +1152,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "token": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 }
             }
         },
@@ -1157,28 +1167,34 @@ const docTemplate = `{
             ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球が好きです！"
                 },
                 "name": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 3
+                    "minLength": 3,
+                    "example": "tanaka taro"
                 },
                 "password": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password123"
                 },
                 "profileImage": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 },
                 "token": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "username": {
                     "type": "string",
                     "maxLength": 255,
-                    "minLength": 5
+                    "minLength": 5,
+                    "example": "user123"
                 }
             }
         },
@@ -1192,10 +1208,12 @@ const docTemplate = `{
                 "afterPassword": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password456"
                 },
                 "token": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 }
             }
         },
@@ -1209,12 +1227,14 @@ const docTemplate = `{
                 "afterPassword": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password456"
                 },
                 "beforePassword": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password123"
                 }
             }
         },
@@ -1223,7 +1243,6 @@ const docTemplate = `{
             "required": [
                 "endDate",
                 "games",
-                "isPublic",
                 "memo",
                 "payments",
                 "sportId",
@@ -1234,7 +1253,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "endDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "games": {
                     "type": "array",
@@ -1249,10 +1269,12 @@ const docTemplate = `{
                     }
                 },
                 "isPublic": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "memo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "初めてのスタジアム訪問。とても楽しかった！"
                 },
                 "payments": {
                     "type": "array",
@@ -1261,16 +1283,20 @@ const docTemplate = `{
                     }
                 },
                 "sportId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "stadiumId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "startDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球観戦の遠征記録"
                 },
                 "visitedFacilities": {
                     "type": "array",
@@ -1288,10 +1314,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "fileId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "file_1234567890"
                 },
                 "image": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -1306,10 +1334,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "comment": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "熱い試合でした！！"
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "scores": {
                     "type": "array",
@@ -1318,10 +1348,12 @@ const docTemplate = `{
                     }
                 },
                 "team1Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "team2Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },
@@ -1334,13 +1366,16 @@ const docTemplate = `{
             ],
             "properties": {
                 "order": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "score": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "teamId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1353,13 +1388,16 @@ const docTemplate = `{
             ],
             "properties": {
                 "cost": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 5000
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "チケット代"
                 }
             }
         },
@@ -1385,8 +1423,7 @@ const docTemplate = `{
             "required": [
                 "endDate",
                 "games",
-                "id",
-                "isPublic",
+                "images",
                 "memo",
                 "payments",
                 "sportId",
@@ -1397,37 +1434,41 @@ const docTemplate = `{
             ],
             "properties": {
                 "endDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "games": {
                     "$ref": "#/definitions/expedition.UpdateGamesRequest"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "images": {
                     "$ref": "#/definitions/expedition.UpdateExpeditionImagesRequest"
                 },
                 "isPublic": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "memo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "初めてのスタジアム訪問。とても楽しかった！"
                 },
                 "payments": {
                     "$ref": "#/definitions/expedition.UpdatePaymentsRequest"
                 },
                 "sportId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "stadiumId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "startDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球観戦の遠征記録"
                 },
                 "visitedFacilities": {
                     "$ref": "#/definitions/expedition.UpdateVisitedFacilitiesRequest"
@@ -1446,22 +1487,27 @@ const docTemplate = `{
             ],
             "properties": {
                 "comment": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "熱い試合でした！！"
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "scores": {
                     "$ref": "#/definitions/expedition.UpdateGameScoresRequest"
                 },
                 "team1Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "team2Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },
@@ -1475,16 +1521,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "order": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "score": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "teamId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1544,16 +1594,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "cost": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 5000
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "チケット代"
                 }
             }
         },
@@ -1616,25 +1670,32 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京都千代田区丸の内1-1-1"
                 },
                 "color": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "#00FF00"
                 },
                 "icon": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "train"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "latitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 35.6812
                 },
                 "longitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 139.7671
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京駅"
                 }
             }
         },
@@ -1650,22 +1711,28 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京都千代田区丸の内1-1-1"
                 },
                 "color": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "#00FF00"
                 },
                 "icon": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "train"
                 },
                 "latitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 35.6812
                 },
                 "longitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 139.7671
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京駅"
                 }
             }
         },
@@ -1684,10 +1751,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "fileId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "file_1234567890"
                 },
                 "url": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -1695,7 +1764,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "isUnique": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1708,13 +1778,16 @@ const docTemplate = `{
             ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球が好きです！"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "tanaka taro"
                 },
                 "profileImage": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -1722,22 +1795,28 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球が好きです！"
                 },
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "tanaka@example.com"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "tanaka taro"
                 },
                 "profileImage": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "user123"
                 }
             }
         },
@@ -1748,10 +1827,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/auth.LoginResponse"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "成功しました！！"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1762,10 +1843,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/upload.UploadImagesResponse"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "成功しました！！"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1776,10 +1859,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/user.IsUniqueUsernameResponse"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "成功しました！！"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1790,21 +1875,38 @@ const docTemplate = `{
                     "$ref": "#/definitions/user.UserResponse"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "成功しました！！"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
-        "utils.BasicResponse": {
+        "utils.ErrorBasicResponse": {
             "type": "object",
             "properties": {
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "エラーメッセージ"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "utils.SuccessBasicResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         }

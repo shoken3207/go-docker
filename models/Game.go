@@ -2,12 +2,10 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Game struct {
-	gorm.Model
+	BaseModel
 	Date         time.Time   `json:"date" gorm:"not null"`
 	Comment      string      `json:"comment" gorm:"type:text;not null"`
 	ExpeditionId uint        `json:"expeditionId" gorm:"column:expedition_id;not null"`
@@ -16,5 +14,5 @@ type Game struct {
 	Expedition   Expedition  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Team1        Team        `gorm:"foreignKey:Team1Id;references:ID;constraint:OnDelete:SET NULL;OnUpdate:CASCADE"`
 	Team2        Team        `gorm:"foreignKey:Team2Id;references:ID;constraint:OnDelete:SET NULL;OnUpdate:CASCADE"`
-	GameScores   []GameScore `gorm:"foreignKey:GameId"`
+	GameScores   []GameScore `gorm:"foreignKey:GameId;constraint:OnDelete:CASCADE"`
 }

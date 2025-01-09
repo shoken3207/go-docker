@@ -2,12 +2,10 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Expedition struct {
-	gorm.Model
+	BaseModel
 	UserId            uint              `json:"userId" gorm:"column:user_id;not null"`
 	SportId           uint              `json:"sportId" gorm:"not null;column:sport_id"`
 	IsPublic          bool              `json:"isPublic" gorm:"column:is_public;not null"`
@@ -16,11 +14,11 @@ type Expedition struct {
 	EndDate           time.Time         `json:"endDate" gorm:"column:end_date;not null"`
 	StadiumId         uint              `json:"stadiumId" gorm:"column:stadium_id;not null"`
 	Memo              string            `json:"memo" gorm:"type:text;not null"`
-	VisitedFacilities []VisitedFacility `gorm:"foreignKey:ExpeditionId"`
-	Payments          []Payment         `gorm:"foreignKey:ExpeditionId"`
-	ExpeditionImages  []ExpeditionImage `gorm:"foreignKey:ExpeditionId"`
-	ExpeditionLikes   []ExpeditionLike  `gorm:"foreignKey:ExpeditionId"`
-	Games             []Game            `gorm:"foreignKey:ExpeditionId"`
+	VisitedFacilities []VisitedFacility `gorm:"foreignKey:ExpeditionId;constraint:OnDelete:CASCADE"`
+	Payments          []Payment         `gorm:"foreignKey:ExpeditionId;constraint:OnDelete:CASCADE"`
+	ExpeditionImages  []ExpeditionImage `gorm:"foreignKey:ExpeditionId;constraint:OnDelete:CASCADE"`
+	ExpeditionLikes   []ExpeditionLike  `gorm:"foreignKey:ExpeditionId;constraint:OnDelete:CASCADE"`
+	Games             []Game            `gorm:"foreignKey:ExpeditionId;constraint:OnDelete:CASCADE"`
 	Sport             Sport             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Stadium           Stadium           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	User              User              `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`

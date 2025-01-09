@@ -1460,13 +1460,9 @@ const docTemplate = `{
         "adminTool.LeagueAddRequest": {
             "type": "object",
             "required": [
-                "id",
                 "sport_id"
             ],
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -1496,13 +1492,9 @@ const docTemplate = `{
         "adminTool.SportsAddRequest": {
             "type": "object",
             "required": [
-                "id",
                 "name"
             ],
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "name": {
                     "type": "string"
                 }
@@ -1529,7 +1521,6 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
-                "id",
                 "image",
                 "name"
             ],
@@ -1542,9 +1533,6 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "image": {
                     "type": "string"
@@ -1591,8 +1579,7 @@ const docTemplate = `{
                 "LeagueId",
                 "name",
                 "sportsId",
-                "stadiumId",
-                "teamId"
+                "stadiumId"
             ],
             "properties": {
                 "LeagueId": {
@@ -1605,9 +1592,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "stadiumId": {
-                    "type": "integer"
-                },
-                "teamId": {
                     "type": "integer"
                 }
             }

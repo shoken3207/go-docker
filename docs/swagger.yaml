@@ -10,14 +10,11 @@ definitions:
     type: object
   adminTool.LeagueAddRequest:
     properties:
-      id:
-        type: integer
       name:
         type: string
       sport_id:
         type: integer
     required:
-    - id
     - sport_id
     type: object
   adminTool.LeagueUpdateRequest:
@@ -34,12 +31,9 @@ definitions:
     type: object
   adminTool.SportsAddRequest:
     properties:
-      id:
-        type: integer
       name:
         type: string
     required:
-    - id
     - name
     type: object
   adminTool.SportsUpdateRequest:
@@ -60,8 +54,6 @@ definitions:
         type: integer
       description:
         type: string
-      id:
-        type: integer
       image:
         type: string
       name:
@@ -70,7 +62,6 @@ definitions:
     - address
     - capacity
     - description
-    - id
     - image
     - name
     type: object
@@ -106,14 +97,11 @@ definitions:
         type: integer
       stadiumId:
         type: integer
-      teamId:
-        type: integer
     required:
     - LeagueId
     - name
     - sportsId
     - stadiumId
-    - teamId
     type: object
   adminTool.TeamUpdateRequest:
     properties:

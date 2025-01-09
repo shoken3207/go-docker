@@ -71,7 +71,7 @@ func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 // @Description リクエストボディに更新対象のIDを指定してスタジアムを更新します
 // @Tags stadium
 // @Security BearerAuth
-// @Param request body StadiumUppdateRequest true "スタジアム情報"
+// @Param request body StadiumUpdateRequest true "スタジアム情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"

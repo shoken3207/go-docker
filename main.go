@@ -4,6 +4,7 @@ import (
 	"go-docker/internal/db"
 	"go-docker/pkg/router"
 	"go-docker/pkg/utils"
+	"os"
 
 	// "github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "go-docker/docs"
@@ -13,9 +14,12 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+
+var swaggerUsername = os.Getenv("SWAGGER_USERNAME")
+var swaggerPassword = os.Getenv("SWAGGER_PASSWORD")
 func BasicAuthMiddleware() gin.HandlerFunc {
 	return gin.BasicAuth(gin.Accounts{
-		"username": "password", // 許可するユーザー名とパスワード
+		swaggerUsername: swaggerPassword, // 許可するユーザー名とパスワード
 	})
 }
 

@@ -38,11 +38,18 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 
 		publicAuthGroup := publicGroup.Group("/auth")
 		{
-			publicAuthGroup.GET("/emailVerification/:email", authHandler.EmailVerification)
+			publicAuthGroup.GET("/emailVerification", authHandler.EmailVerification)
 			publicAuthGroup.POST("/register", authHandler.Register)
 			publicAuthGroup.POST("/login", authHandler.Login)
 			publicAuthGroup.PUT("/resetPass", authHandler.ResetPass)
 
+		}
+
+		publicUploadGroup := publicGroup.Group("/upload")
+		{
+			publicUploadGroup.POST("/images", func(c *gin.Context) {
+				uploadHandler.UploadImages(c, ik)
+			})
 		}
 
 		// publicTeamGroup := publicGroup.Group("/teams")
@@ -119,13 +126,6 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 			})
 			protectedExpeditionGroup.DELETE("/unlike/:expeditionId", func(c *gin.Context) {
 				expeditionHandler.UnlikeExpedition(c)
-			})
-		}
-
-		protectedUploadGroup := protectedGroup.Group("/upload")
-		{
-			protectedUploadGroup.POST("/images", func(c *gin.Context) {
-				uploadHandler.UploadImages(c, ik)
 			})
 		}
 	}

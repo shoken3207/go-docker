@@ -15,7 +15,6 @@ var uploadService = NewUploadService()
 // @Summary 画像をクラウドストレージ(imagekit)にアップロード
 // @Description 画像をアップロードし、URLを返します。<br>プロフィール、スタジアム、遠征など、格納フォルダを指定してください。<br>画像は1枚から10枚アップロードできるが、Swagger UIでは1つしか選択できません。<br>ファイルの拡張子は、[".jpg", ".jpeg", ".png"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。
 // @Tags upload
-// @Security BearerAuth
 // @Accept multipart/form-data
 // @Param folder query string true "格納フォルダ"
 // @Param images formData file true "画像ファイル"

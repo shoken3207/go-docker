@@ -21,7 +21,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/auth/emailVerification/{email}": {
+        "/api/auth/emailVerification": {
             "get": {
                 "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信",
                 "tags": [
@@ -569,19 +569,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -614,19 +614,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -651,19 +651,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -696,19 +696,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -764,19 +764,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -801,19 +801,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -846,19 +846,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -891,19 +891,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -1063,19 +1063,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -1108,19 +1108,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -1153,19 +1153,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -1190,19 +1190,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -1255,11 +1255,6 @@ const docTemplate = `{
         },
         "/api/upload/images": {
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "画像をアップロードし、URLを返します。\u003cbr\u003eプロフィール、スタジアム、遠征など、格納フォルダを指定してください。\u003cbr\u003e画像は1枚から10枚アップロードできるが、Swagger UIでは1つしか選択できません。\u003cbr\u003eファイルの拡張子は、[\".jpg\", \".jpeg\", \".png\"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。",
                 "consumes": [
                     "multipart/form-data"
@@ -1789,6 +1784,10 @@ const docTemplate = `{
                 "description": {
                     "type": "string",
                     "example": "野球が好きです！"
+                },
+                "fileId": {
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "name": {
                     "type": "string",
@@ -2401,6 +2400,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "野球が好きです！"
                 },
+                "fileId": {
+                    "type": "string",
+                    "example": "1234567890"
+                },
                 "name": {
                     "type": "string",
                     "example": "tanaka taro"
@@ -2421,6 +2424,10 @@ const docTemplate = `{
                 "email": {
                     "type": "string",
                     "example": "tanaka@example.com"
+                },
+                "fileId": {
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "id": {
                     "type": "integer",

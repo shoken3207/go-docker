@@ -20,7 +20,7 @@ var authService = NewAuthService()
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/auth/emailVerification/{email} [get]
+// @Router /api/auth/emailVerification [get]
 func (h *AuthHandler) EmailVerification(c *gin.Context) {
 	request := EmailVerificationRequest{}
 	if err := c.ShouldBindQuery(&request); err != nil {

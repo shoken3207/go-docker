@@ -147,6 +147,9 @@ definitions:
       description:
         example: 野球が好きです！
         type: string
+      fileId:
+        example: "1234567890"
+        type: string
       name:
         example: tanaka taro
         maxLength: 100
@@ -591,6 +594,9 @@ definitions:
       description:
         example: 野球が好きです！
         type: string
+      fileId:
+        example: "1234567890"
+        type: string
       name:
         example: tanaka taro
         type: string
@@ -609,6 +615,9 @@ definitions:
         type: string
       email:
         example: tanaka@example.com
+        type: string
+      fileId:
+        example: "1234567890"
         type: string
       id:
         example: 1
@@ -691,7 +700,7 @@ info:
   title: ビジターゴーAPI
   version: "1.0"
 paths:
-  /api/auth/emailVerification/{email}:
+  /api/auth/emailVerification:
     get:
       description: リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信
       parameters:
@@ -1040,15 +1049,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: リーグ削除
@@ -1068,15 +1077,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: リーグの追加
@@ -1094,15 +1103,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       summary: リーグ全件検索
       tags:
       - league
@@ -1120,15 +1129,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: リーグ更新
@@ -1162,15 +1171,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: スポーツ削除
@@ -1188,15 +1197,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       summary: スポーツ全件検索
       tags:
       - sports
@@ -1214,15 +1223,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: スポーツの追加
@@ -1242,15 +1251,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: スポーツ更新
@@ -1378,15 +1387,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: チーム削除
@@ -1406,15 +1415,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: チームの追加
@@ -1432,15 +1441,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       summary: チーム全件検索
       tags:
       - team
@@ -1458,15 +1467,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: チーム情報更新
@@ -1510,8 +1519,6 @@ paths:
           description: 内部エラー
           schema:
             $ref: '#/definitions/utils.ErrorBasicResponse'
-      security:
-      - BearerAuth: []
       summary: 画像をクラウドストレージ(imagekit)にアップロード
       tags:
       - upload

@@ -38,7 +38,7 @@ func BoolPtr(b bool) *bool {
 func StringToUint(s string) (*uint, error) {
 	u, err := strconv.ParseUint(s, 10, 64)
 	if err != nil {
-		log.Printf("変換エラー:", err)
+		log.Printf("変換エラー: %v", err)
 		return nil, NewCustomError(http.StatusInternalServerError, "stringからuintへの変換エラー")
 	}
 	parseValue := uint(u)

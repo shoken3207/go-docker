@@ -1,11 +1,9 @@
 package models
 
-import "gorm.io/gorm"
-
 type Sport struct {
-	gorm.Model
-	Name string `json:"name" gorm:"size:200;unique;not null"`
-	Leagues []League `gorm:"foreignKey:SportId"`
-	Teams []Team `gorm:"foreignKey:SportId"`
-	Expeditions []Expedition `gorm:"foreignKey:SportId"`
+	BaseModel
+	Name        string       `json:"name" gorm:"size:200;unique;not null"`
+	Leagues     []League     `gorm:"foreignKey:SportId;constraint:OnDelete:CASCADE"`
+	Teams       []Team       `gorm:"foreignKey:SportId;constraint:OnDelete:CASCADE"`
+	Expeditions []Expedition `gorm:"foreignKey:SportId;constraint:OnDelete:CASCADE"`
 }

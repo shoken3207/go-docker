@@ -1,9 +1,7 @@
 package models
 
-import "gorm.io/gorm"
-
 type VisitedFacility struct {
-	gorm.Model
+	BaseModel
 	Name         string     `json:"name" gorm:"size:200;not null"`
 	Address      string     `json:"address" gorm:"size:200;not null"`
 	Latitude     float64    `json:"latitude" gorm:"not null"`

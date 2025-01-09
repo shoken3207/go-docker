@@ -18,9 +18,9 @@ var adminToolService = NewAdminToolService()
 // @Tags stadium
 // @Secrity BearerAuth
 // @Param keyword query string false "キーワード"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/stadiums [get]
 func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
@@ -45,9 +45,9 @@ func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 // @Tags stadium
 // @Security BearerAuth
 // @Param request body StadiumAddRequest true "スタジアム情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/stadiumAdd [post]
 func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 	request := StadiumAddRequest{}
@@ -71,10 +71,10 @@ func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 // @Description リクエストボディに更新対象のIDを指定してスタジアムを更新します
 // @Tags stadium
 // @Security BearerAuth
-// @Param request body StadiumUpdateRequest true "スタジアム情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Param request body StadiumUppdateRequest true "スタジアム情報"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/update [put]
 func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 	request := StadiumUpdateRequest{}
@@ -100,9 +100,9 @@ func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 // @Tags stadium
 // @Security BearerAuth
 // @Param request body DeleteRequest true "スタジアムID"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/delete [delete]
 func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
 	request := DeleteRequest{}
@@ -127,9 +127,9 @@ func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
 // @Tags sports
 // @Secrity BearerAuth
 // @Param keyword query string false "キーワード"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/sports/sports [get]
 func (h *AdminToolHandler) GetSports(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
@@ -154,9 +154,9 @@ func (h *AdminToolHandler) GetSports(c *gin.Context) {
 // @Tags sports
 // @Security BearerAuth
 // @Param request body SportsAddRequest true "スポーツ情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/sports/sportsAdd [post]
 func (h *AdminToolHandler) SportsAdd(c *gin.Context) {
 	request := SportsAddRequest{}
@@ -181,9 +181,9 @@ func (h *AdminToolHandler) SportsAdd(c *gin.Context) {
 // @Tags sports
 // @Security BearerAuth
 // @Param request body SportsUpdateRequest true "スポーツ情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/sports/update [put]
 func (h *AdminToolHandler) SportsUpdate(c *gin.Context) {
 	request := SportsUpdateRequest{}
@@ -209,9 +209,9 @@ func (h *AdminToolHandler) SportsUpdate(c *gin.Context) {
 // @Tags sports
 // @Security BearerAuth
 // @Param request body DeleteRequest true "スポーツ情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/sports/delete [delete]
 func (h *AdminToolHandler) DeleteSports(c *gin.Context) {
 	request := DeleteRequest{}
@@ -236,9 +236,9 @@ func (h *AdminToolHandler) DeleteSports(c *gin.Context) {
 // @Tags league
 // @Secrity BearerAuth
 // @Param keyword query string false "キーワード"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/league/leagues [get]
 func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
@@ -263,9 +263,9 @@ func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 // @Tags league
 // @Security BearerAuth
 // @Param request body LeagueAddRequest true "リーグ情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/league/leagueAdd [post]
 func (h *AdminToolHandler) LeagueAdd(c *gin.Context) {
 	request := LeagueAddRequest{}
@@ -290,9 +290,9 @@ func (h *AdminToolHandler) LeagueAdd(c *gin.Context) {
 // @Tags league
 // @Security BearerAuth
 // @Param request body LeagueUpdateRequest true "リーグ情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/league/update [put]
 func (h *AdminToolHandler) LeagueUpdate(c *gin.Context) {
 	request := LeagueUpdateRequest{}
@@ -318,9 +318,9 @@ func (h *AdminToolHandler) LeagueUpdate(c *gin.Context) {
 // @Tags league
 // @Security BearerAuth
 // @Param request body DeleteRequest true "リーグID"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/league/delete [delete]
 func (h *AdminToolHandler) DeleteLeague(c *gin.Context) {
 	request := DeleteRequest{}
@@ -345,9 +345,9 @@ func (h *AdminToolHandler) DeleteLeague(c *gin.Context) {
 // @Tags team
 // @Secrity BearerAuth
 // @Param keyword query string false "キーワード"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/team/teams [get]
 func (h *AdminToolHandler) GetTeams(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
@@ -372,9 +372,9 @@ func (h *AdminToolHandler) GetTeams(c *gin.Context) {
 // @Tags team
 // @Security BearerAuth
 // @Param request body TeamAddRequest true "チーム情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/team/teamAdd [post]
 func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 	request := TeamAddRequest{}
@@ -399,9 +399,9 @@ func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 // @Tags team
 // @Security BearerAuth
 // @Param request body TeamUpdateRequest true "チーム情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/team/update [put]
 func (h *AdminToolHandler) TeamUpdate(c *gin.Context) {
 	request := TeamUpdateRequest{}
@@ -427,9 +427,9 @@ func (h *AdminToolHandler) TeamUpdate(c *gin.Context) {
 // @Tags team
 // @Security BearerAuth
 // @Param request body DeleteRequest true "チームID"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/team/delete [delete]
 func (h *AdminToolHandler) DeleteTeam(c *gin.Context) {
 	request := DeleteRequest{}

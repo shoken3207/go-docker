@@ -17,10 +17,10 @@ var userService = NewUserService()
 // @Security BearerAuth
 // @Param userId path integer true "userId"
 // @Success 200 {object} utils.ApiResponse[UserResponse] "ユーザー情報"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 401 {object} utils.BasicResponse "認証エラー"
-// @Failure 404 {object} utils.BasicResponse "not foundエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/userId/{userId} [get]
 func (h *UserHandler) GetUserById(c *gin.Context) {
 	request := GetUserByIdRequest{}
@@ -45,10 +45,10 @@ func (h *UserHandler) GetUserById(c *gin.Context) {
 // @Security BearerAuth
 // @Param username path string true "username"
 // @Success 200 {object} utils.ApiResponse[UserResponse] "ユーザー情報"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 401 {object} utils.BasicResponse "認証エラー"
-// @Failure 404 {object} utils.BasicResponse "not foundエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/username/{username} [get]
 func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 	request := GetUserByUsernameRequest{}
@@ -72,8 +72,8 @@ func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 // @Tags user
 // @Param username path string true "username"
 // @Success 200 {object} utils.ApiResponse[IsUniqueUsernameResponse] "一意かのフラグ"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/isUnique/{username} [get]
 func (h *UserHandler) IsUniqueUsername(c *gin.Context) {
 	request := IsUniqueUsernameRequest{}
@@ -103,9 +103,9 @@ func (h *UserHandler) IsUniqueUsername(c *gin.Context) {
 // @Tags user
 // @Security BearerAuth
 // @Success 200 {object} utils.ApiResponse[UserResponse] "成功"
-// @Failure 401 {object} utils.BasicResponse "認証エラー"
-// @Failure 404 {object} utils.BasicResponse "not foundエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/logined [get]
 func (h *UserHandler) GetMyData(c *gin.Context) {
 	userId, err := utils.StringToUint(c.GetString("userId"))
@@ -132,11 +132,11 @@ func (h *UserHandler) GetMyData(c *gin.Context) {
 // @param userId path uint true "userId"
 // @param request body UpdateUserRequestBody true "userId"
 // @success 200 {object} utils.ApiResponse[UserResponse] "ユーザー情報"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 401 {object} utils.BasicResponse "認証エラー"
-// @Failure 404 {object} utils.BasicResponse "not foundエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
-// @router /api/user/update/{userId} [put]
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
+// @Router /api/user/update/{userId} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	userId, requestBody, err := userService.validateUpdateUserRequest(c)
 	if err != nil {

@@ -44,14 +44,34 @@ func (s *ExpeditionService) UpdateExpedition(updateExpedition *models.Expedition
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteExpedition(expeditionId *uint) error {
+func (s *ExpeditionService) DeleteExpedition(expeditionId *uint, userId *uint, ik *imagekit.ImageKit) error {
+	expedition, err := s.FindExpeditionById(*expeditionId)
+	if err != nil {
+		return err
+	}
+
+	if expedition.UserId != *userId {
+		return utils.NewCustomError(http.StatusForbidden, "この遠征記録を削除する権限がありません")
+	}
+
+	var expeditionImages []models.ExpeditionImage
+	if err := db.DB.Where("expedition_id = ?", expeditionId).Find(&expeditionImages).Error; err != nil {
+		log.Printf("遠征記録の画像情報取得エラー: %v", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録の画像情報の取得に失敗しました")
+	}
+
+	for _, image := range expeditionImages {
+		utils.DeleteUploadImage(ik, &image.FileId)
+	}
+
 	if err := db.DB.Delete(&models.Expedition{}, expeditionId).Error; err != nil {
 		log.Printf("遠征記録削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return utils.NewCustomError(http.StatusNotFound, "遠征記録が見つかりません。")
+			return utils.NewCustomError(http.StatusNotFound, "遠征記録が見つかりません")
 		}
-		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録削除に失敗しました。")
+		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録削除に失敗しました")
 	}
+
 	return nil
 }
 
@@ -102,7 +122,7 @@ func (s *ExpeditionService) CreateExpeditionImage(newExpeditionImage *models.Exp
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteExpeditionImages(fileIds *[]string) error {
+func (s *ExpeditionService) DeleteExpeditionImages(fileIds []string) error {
 	if err := db.DB.Where("file_id IN ?", fileIds).Delete(&models.ExpeditionImage{}).Error; err != nil {
 		log.Printf("遠征記録画像データ削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -166,6 +186,7 @@ func (s *ExpeditionService) FindGameById(gameId uint) (*models.Game, error) {
 	return &game, nil
 }
 func (s *ExpeditionService) CreateGame(newGame *models.Game) error {
+	log.Printf("newGame: %v", newGame)
 	if err := db.DB.Create(newGame).Error; err != nil {
 		log.Printf("試合記録作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "試合記録作成に失敗しました。")
@@ -236,7 +257,7 @@ func (s *ExpeditionService) DeleteGameScores(gameScoreIds *[]uint) error {
 	return nil
 }
 
-func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest) error {
+func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest, userId *uint) error {
 	newExpedition := models.Expedition{
 		SportId:   request.SportId,
 		IsPublic:  request.IsPublic,
@@ -245,6 +266,7 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 		StartDate: request.StartDate,
 		EndDate:   request.EndDate,
 		StadiumId: request.StadiumId,
+		UserId:    *userId,
 	}
 	if err := s.CreateExpedition(&newExpedition); err != nil {
 		return err
@@ -336,10 +358,14 @@ func (s *ExpeditionService) ValidateUpdateExpeditionRequest(c *gin.Context) (*ui
 	return &requestPath.ExpeditionId, &requestBody, nil
 }
 
-func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestBody *UpdateExpeditionRequestBody, ik *imagekit.ImageKit) error {
+func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *uint, requestBody *UpdateExpeditionRequestBody, ik *imagekit.ImageKit) error {
 	expedition, err := s.FindExpeditionById(*expeditionId)
 	if err != nil {
 		return err
+	}
+
+	if expedition.UserId != *userId {
+		return utils.NewCustomError(http.StatusForbidden, "この遠征記録を更新する権限がありません")
 	}
 
 	expedition.IsPublic = requestBody.IsPublic
@@ -349,7 +375,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 	expedition.EndDate = requestBody.EndDate
 	expedition.StadiumId = requestBody.StadiumId
 
-	if err := expeditionService.UpdateExpedition(expedition); err != nil {
+	if err := s.UpdateExpedition(expedition); err != nil {
 		return err
 	}
 
@@ -380,7 +406,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 		}
 	}
 	for _, game := range games.Update {
-		updateGame, err := s.FindGameById(*&game.ID)
+		updateGame, err := s.FindGameById(game.ID)
 		if err != nil {
 			return err
 		}
@@ -420,12 +446,16 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 				return err
 			}
 		}
-		if err := s.DeleteGameScores(&gameScores.Delete); err != nil {
-			return err
+		if len(gameScores.Delete) > 0 {
+			if err := s.DeleteGameScores(&gameScores.Delete); err != nil {
+				return err
+			}
 		}
 	}
-	if err := s.DeleteGames(&games.Delete); err != nil {
-		return err
+	if len(games.Delete) > 0 {
+		if err := s.DeleteGames(&games.Delete); err != nil {
+			return err
+		}
 	}
 
 	images := requestBody.Images
@@ -442,7 +472,11 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 	for _, fileId := range images.Delete {
 		utils.DeleteUploadImage(ik, &fileId)
 	}
-	s.DeleteExpeditionImages(&images.Delete)
+	if len(images.Delete) > 0 {
+		if err := s.DeleteExpeditionImages(images.Delete); err != nil {
+			return err
+		}
+	}
 
 	payments := requestBody.Payments
 	for _, payment := range payments.Add {
@@ -468,7 +502,11 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 			return err
 		}
 	}
-	s.DeletePayments(&payments.Delete)
+	if len(payments.Delete) > 0 {
+		if err := s.DeletePayments(&payments.Delete); err != nil {
+			return err
+		}
+	}
 
 	visitedFacilities := requestBody.VisitedFacilities
 	for _, visitedFacility := range visitedFacilities.Add {
@@ -500,7 +538,49 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 			return err
 		}
 	}
-	s.DeleteVisitedFacilities(&visitedFacilities.Delete)
+	if len(visitedFacilities.Delete) > 0 {
+		if err := s.DeleteVisitedFacilities(&visitedFacilities.Delete); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *ExpeditionService) CreateExpeditionLike(userId *uint, expeditionId *uint) error {
+	var existingLike models.ExpeditionLike
+	if err := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).First(&existingLike).Error; err == nil {
+		return utils.NewCustomError(http.StatusBadRequest, "既にいいね済みです")
+	}
+
+	if _, err := s.FindExpeditionById(*expeditionId); err != nil {
+		return err
+	}
+
+	newLike := models.ExpeditionLike{
+		UserId:       *userId,
+		ExpeditionId: *expeditionId,
+	}
+
+	if err := db.DB.Create(&newLike).Error; err != nil {
+		log.Printf("いいね作成エラー: %v", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "いいねの作成に失敗しました")
+	}
+
+	return nil
+}
+
+func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uint) error {
+	result := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).Delete(&models.ExpeditionLike{})
+
+	if result.Error != nil {
+		log.Printf("いいね削除エラー: %v", result.Error)
+		return utils.NewCustomError(http.StatusInternalServerError, "いいねの削除に失敗しました")
+	}
+
+	if result.RowsAffected == 0 {
+		return utils.NewCustomError(http.StatusNotFound, "いいねが見つかりません")
+	}
 
 	return nil
 }

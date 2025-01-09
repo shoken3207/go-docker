@@ -13,6 +13,12 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+func BasicAuthMiddleware() gin.HandlerFunc {
+	return gin.BasicAuth(gin.Accounts{
+		"username": "password", // 許可するユーザー名とパスワード
+	})
+}
+
 // @title ビジターゴーAPI
 // @description このapiは、ビジターゴーのAPIで、ユーザー、スタジアム、遠征記録、などについて扱います。
 // @version 1.0
@@ -30,6 +36,6 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.String(200, "Hello, world!")
 	})
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/*any", BasicAuthMiddleware(), ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run()
 }

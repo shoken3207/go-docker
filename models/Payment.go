@@ -2,12 +2,10 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Payment struct {
-	gorm.Model
+	BaseModel
 	Title string `json:"title" gorm:"size:100;not null"`
 	Date time.Time `json:"date" gorm:"not null"`
 	Cost int `json:"cost" gorm:"not null"`

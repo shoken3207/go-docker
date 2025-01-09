@@ -20,10 +20,10 @@ var uploadService = NewUploadService()
 // @Param folder query string true "格納フォルダ"
 // @Param images formData file true "画像ファイル"
 // @Success 200 {object} utils.ApiResponse[UploadImagesResponse] "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 401 {object} utils.BasicResponse "認証エラー"
-// @Failure 404 {object} utils.BasicResponse "not foundエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/upload/images [post]
 func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
 	query, files, err := uploadService.validateUploadImagesRequest(c)

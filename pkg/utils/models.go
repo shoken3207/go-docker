@@ -1,17 +1,21 @@
 package utils
 
 type CustomError struct {
-	Code    int
-	Message string
+	Code    int    `json:"code" example:"400"`
+	Message string `json:"message" example:"Bad Request"`
 }
 
 type ApiResponse[T any] struct {
-	Success bool   `json:"success"`
+	Success bool   `json:"success" example:"true"`
 	Data    T      `json:"data,omitempty"`
-	Message string `json:"message,omitempty"`
+	Message string `json:"message,omitempty" example:"成功しました！！"`
 }
 
-type BasicResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
+type SuccessBasicResponse struct {
+	Success bool   `json:"success" example:"true"`
+	Message string `json:"message" example:"成功しました！！"`
+}
+type ErrorBasicResponse struct {
+	Success bool   `json:"success" example:"false"`
+	Message string `json:"message" example:"エラーメッセージ"`
 }

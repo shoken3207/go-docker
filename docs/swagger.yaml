@@ -8,7 +8,64 @@ definitions:
     required:
     - id
     type: object
+  adminTool.LeagueAddRequest:
+    properties:
+      name:
+        type: string
+      sport_id:
+        type: integer
+    required:
+    - sport_id
+    type: object
+  adminTool.LeagueUpdateRequest:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      sport_id:
+        type: integer
+    required:
+    - id
+    - sport_id
+    type: object
+  adminTool.SportsAddRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  adminTool.SportsUpdateRequest:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - id
+    - name
+    type: object
   adminTool.StadiumAddRequest:
+    properties:
+      address:
+        type: string
+      capacity:
+        type: integer
+      description:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+    required:
+    - address
+    - capacity
+    - description
+    - image
+    - name
+    type: object
+  adminTool.StadiumUpdateRequest:
     properties:
       address:
         type: string
@@ -30,27 +87,40 @@ definitions:
     - image
     - name
     type: object
-  adminTool.StadiumUppdateRequest:
+  adminTool.TeamAddRequest:
     properties:
-      address:
-        type: string
-      capacity:
+      LeagueId:
         type: integer
-      description:
-        type: string
-      id:
-        type: integer
-      image:
-        type: string
       name:
         type: string
+      sportsId:
+        type: integer
+      stadiumId:
+        type: integer
     required:
-    - address
-    - capacity
-    - description
-    - id
-    - image
+    - LeagueId
     - name
+    - sportsId
+    - stadiumId
+    type: object
+  adminTool.TeamUpdateRequest:
+    properties:
+      LeagueId:
+        type: integer
+      name:
+        type: string
+      sportsId:
+        type: integer
+      stadiumId:
+        type: integer
+      teamId:
+        type: integer
+    required:
+    - LeagueId
+    - name
+    - sportsId
+    - stadiumId
+    - teamId
     type: object
   auth.LoginRequest:
     properties:
@@ -956,6 +1026,114 @@ paths:
       summary: 遠征記録を更新
       tags:
       - expedition
+  /api/league/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してリーグ情報を削除します
+      parameters:
+      - description: リーグID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: リーグ削除
+      tags:
+      - league
+  /api/league/leagueAdd:
+    post:
+      description: リクエストからリーグ情報を取得後、重複確認を行い登録する。
+      parameters:
+      - description: リーグ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.LeagueAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: リーグの追加
+      tags:
+      - league
+  /api/league/leagues:
+    get:
+      description: リーグ情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: リーグ全件検索
+      tags:
+      - league
+  /api/league/update:
+    put:
+      description: リクエストボディに更新対象のIDを指定してリーグ情報を更新します
+      parameters:
+      - description: リーグ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.LeagueUpdateRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: リーグ更新
+      tags:
+      - league
   /api/sample/helloWorld:
     get:
       responses: {}
@@ -970,6 +1148,114 @@ paths:
       summary: サンプルAPI
       tags:
       - sample
+  /api/sports/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してスポーツ情報を削除します
+      parameters:
+      - description: スポーツ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: スポーツ削除
+      tags:
+      - sports
+  /api/sports/sports:
+    get:
+      description: スポーツ情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: スポーツ全件検索
+      tags:
+      - sports
+  /api/sports/sportsAdd:
+    post:
+      description: リクエストからスポーツ情報を取得後、重複確認を行い登録する。
+      parameters:
+      - description: スポーツ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.SportsAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: スポーツの追加
+      tags:
+      - sports
+  /api/sports/update:
+    put:
+      description: リクエストボディに更新対象のIDを指定してスポーツ情報を更新します
+      parameters:
+      - description: スポーツ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.SportsUpdateRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: スポーツ更新
+      tags:
+      - sports
   /api/stadium/delete:
     delete:
       description: リクエストボディに削除対象のIDを指定してスタジアムを削除します
@@ -1059,7 +1345,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/adminTool.StadiumUppdateRequest'
+          $ref: '#/definitions/adminTool.StadiumUpdateRequest'
       responses:
         "200":
           description: 成功
@@ -1078,6 +1364,114 @@ paths:
       summary: スタジアム更新
       tags:
       - stadium
+  /api/team/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してチーム情報を削除します
+      parameters:
+      - description: チームID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: チーム削除
+      tags:
+      - team
+  /api/team/teamAdd:
+    post:
+      description: リクエストからチーム情報を取得後、重複確認を行い登録する。
+      parameters:
+      - description: チーム情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.TeamAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: チームの追加
+      tags:
+      - team
+  /api/team/teams:
+    get:
+      description: チーム情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      summary: チーム全件検索
+      tags:
+      - team
+  /api/team/update:
+    put:
+      description: リクエストボディに更新対象のIDを指定してチーム情報を更新します
+      parameters:
+      - description: チーム情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.TeamUpdateRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.BasicResponse'
+      security:
+      - BearerAuth: []
+      summary: チーム情報更新
+      tags:
+      - team
   /api/upload/images:
     post:
       consumes:

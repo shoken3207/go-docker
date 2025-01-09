@@ -7,6 +7,6 @@ type Stadium struct {
 	Address     string       `json:"address" gorm:"size:200;not null"`
 	Capacity    int          `json:"capacity"`
 	Image       string       `json:"image" gorm:"not null"`
-	Teams       []Team       `gorm:"foreignKey:StadiumId;constraint:OnDelete:CASCADE"`
-	Expeditions []Expedition `gorm:"foreignKey:StadiumId;constraint:OnDelete:CASCADE"`
+	Teams       []Team       `gorm:"foreignKey:StadiumId"`
+	Expeditions []Expedition `gorm:"foreignKey:StadiumId"`
 }

@@ -13,8 +13,7 @@ import (
 	"github.com/imagekit-developer/imagekit-go"
 )
 
-func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
-	router := gin.Default()
+func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 	api := router.Group("/api")
 
 	sampleHandler := sample.NewSampleHandler()

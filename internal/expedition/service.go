@@ -259,22 +259,99 @@ func (s *ExpeditionService) DeleteGameScores(gameScoreIds *[]uint) error {
 }
 
 func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDetailRequest) (*GetExpeditionDetailResponse, error) {
-
 	var expedition models.Expedition
 
 	if err := db.DB.Preload("VisitedFacilities").
 		Preload("Payments").
 		Preload("ExpeditionImages").
 		Preload("ExpeditionLikes").
-		Preload("Games").
+		Preload("Games.Team1").
+		Preload("Games.Team2").
+		Preload("Games.GameScores.Team").
+		Preload("Games.GameScores").
 		Preload("Sport").
 		Preload("Stadium").
 		First(&expedition, request.ExpeditionId).Error; err != nil {
 		log.Printf("遠征記録詳細取得エラー: %v", err)
 		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録詳細の取得に失敗しました。")
 	}
-	log.Printf("expedition", expedition)
-	return nil, nil
+
+	var visitedFacilities []VisitedFacilityResponse
+	for _, vf := range expedition.VisitedFacilities {
+		visitedFacilities = append(visitedFacilities, VisitedFacilityResponse{
+			ID:        int(vf.ID),
+			Name:      vf.Name,
+			Address:   vf.Address,
+			Icon:      vf.Icon,
+			Color:     vf.Color,
+			Latitude:  vf.Latitude,
+			Longitude: vf.Longitude,
+		})
+	}
+
+	var payments []PaymentResponse
+	for _, p := range expedition.Payments {
+		payments = append(payments, PaymentResponse{
+			ID:    p.ID,
+			Title: p.Title,
+			Date:  p.Date,
+			Cost:  p.Cost,
+		})
+	}
+
+	var expeditionImages []ExpeditionImageResponse
+	for _, img := range expedition.ExpeditionImages {
+		expeditionImages = append(expeditionImages, ExpeditionImageResponse{
+			ID:     img.ID,
+			FileId: img.FileId,
+			Image:  img.Image,
+		})
+	}
+
+	var games []GameResponse
+	for _, g := range expedition.Games {
+		var scores []GameScoreResponse
+		for _, s := range g.GameScores {
+			scores = append(scores, GameScoreResponse{
+				ID:       s.ID,
+				Order:    s.Order,
+				Score:    s.Score,
+				TeamId:   s.TeamId,
+				TeamName: s.Team.Name,
+			})
+		}
+		games = append(games, GameResponse{
+			ID:        g.ID,
+			Date:      g.Date,
+			Comment:   g.Comment,
+			Team1Id:   g.Team1Id,
+			Team1Name: g.Team1.Name,
+			Team2Id:   g.Team2Id,
+			Team2Name: g.Team2.Name,
+			Scores:    scores,
+		})
+	}
+
+	response := &GetExpeditionDetailResponse{
+		ExpeditionResponse: ExpeditionResponse{
+			ID:          int(expedition.ID),
+			SportId:     expedition.SportId,
+			SportName:   expedition.Sport.Name,
+			IsPublic:    expedition.IsPublic,
+			Title:       expedition.Title,
+			StartDate:   expedition.StartDate,
+			EndDate:     expedition.EndDate,
+			StadiumId:   expedition.StadiumId,
+			StadiumName: expedition.Stadium.Name,
+			Memo:        expedition.Memo,
+		},
+		VisitedFacilities: visitedFacilities,
+		Payments:          payments,
+		ExpeditionImages:  expeditionImages,
+		Games:             games,
+	}
+
+	return response, nil
 }
 
 func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest, userId *uint) error {

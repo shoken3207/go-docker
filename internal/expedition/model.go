@@ -9,10 +9,10 @@ type PaymentRequest struct {
 	Cost  int       `json:"cost" binding:"required" example:"5000"`
 }
 type PaymentResponse struct {
-	ID    uint      `json:"id"`
-	Title string    `json:"title"`
-	Date  time.Time `json:"date"`
-	Cost  int       `json:"cost"`
+	ID    uint      `json:"id" example:"1"`
+	Title string    `json:"title" example:"チケット代"`
+	Date  time.Time `json:"date" example:"2025-01-01T00:00:00Z"`
+	Cost  int       `json:"cost" example:"5000"`
 }
 
 type UpdatePaymentRequest struct {
@@ -31,11 +31,13 @@ type GameRequest struct {
 	Scores []GameScoreRequest `json:"scores" binding:"required"`
 }
 type GameResponse struct {
-	ID      uint                `json:"id"`
-	Date    time.Time           `json:"date"`
-	Comment string              `json:"comment"`
-	Team1Id uint                `json:"team1Id"`
-	Team2Id uint                `json:"team2Id"`
+	ID      uint                `json:"id" example:"1"`
+	Date    time.Time           `json:"date" example:"2025-01-01T00:00:00Z"`
+	Comment string              `json:"comment" example:"熱い試合でした！！"`
+	Team1Id uint                `json:"team1Id" example:"1"`
+	Team1Name string `json:"team1Name" example:"ヤクルト"`
+	Team2Id uint                `json:"team2Id" example:"2"`
+	Team2Name string `json:"team2Name" example:"ソフトバンク"`
 	Scores  []GameScoreResponse `json:"scores"`
 }
 
@@ -50,10 +52,11 @@ type GameScoreRequest struct {
 	TeamId uint `json:"teamId" binding:"required" example:"1"`
 }
 type GameScoreResponse struct {
-	ID     uint `json:"id"`
-	Order  int  `json:"order"`
-	Score  int  `json:"score"`
-	TeamId uint `json:"teamId"`
+	ID     uint `json:"id" example:"1"`
+	Order  int  `json:"order" example:"1"`
+	Score  int  `json:"score" example:"1"`
+	TeamId uint `json:"teamId" example:"1"`
+	TeamName string `json:"teamName" example:"ヤクルト"`
 }
 
 type UpdateGameScoreRequest struct {
@@ -70,13 +73,13 @@ type VisitedFacilityRequest struct {
 	Longitude float64 `json:"longitude" binding:"required" example:"139.7671"`
 }
 type VisitedFacilityResponse struct {
-	ID        int     `json:"id"`
-	Name      string  `json:"name"`
-	Address   string  `json:"address"`
-	Icon      string  `json:"icon"`
-	Color     string  `json:"color"`
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
+	ID        int     `json:"id" example:"1"`
+	Name      string  `json:"name" example:"東京駅"`
+	Address   string  `json:"address" example:"東京都千代田区丸の内1-1-1"`
+	Icon      string  `json:"icon" example:"train"`
+	Color     string  `json:"color" example:"#00FF00"`
+	Latitude  float64 `json:"latitude" example:"35.6812"`
+	Longitude float64 `json:"longitude" example:"139.7671"`
 }
 
 type UpdateVisitedFacilityRequest struct {
@@ -89,29 +92,31 @@ type ExpeditionImageRequest struct {
 	Image  string `json:"image" binding:"required" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
 }
 type ExpeditionImageResponse struct {
-	ID     uint   `json:"id"`
-	FileId string `json:"fileId"`
-	Image  string `json:"image"`
+	ID     uint   `json:"id" example:"1"`
+	FileId string `json:"fileId" example:"file_1234567890"`
+	Image  string `json:"image" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
 }
 
 type BaseExpeditionRequest struct {
-	SportId   uint      `json:"sportId" binding:"required"`
-	IsPublic  bool      `json:"isPublic" binding:"required"`
-	Title     string    `json:"title" binding:"required"`
-	StartDate time.Time `json:"startDate" binding:"required"`
-	EndDate   time.Time `json:"endDate" binding:"required"`
-	StadiumId uint      `json:"stadiumId" binding:"required"`
-	Memo      string    `json:"memo" binding:"required"`
+	SportId   uint      `json:"sportId" binding:"required" example:"1"`
+	IsPublic  bool      `json:"isPublic" binding:"required" example:"true"`
+	Title     string    `json:"title" binding:"required" example:"野球観戦の遠征記録"`
+	StartDate time.Time `json:"startDate" binding:"required" example:"2025-01-01T00:00:00Z"`
+	EndDate   time.Time `json:"endDate" binding:"required" example:"2025-01-01T00:00:00Z"`
+	StadiumId uint      `json:"stadiumId" binding:"required" example:"1"`
+	Memo      string    `json:"memo" binding:"required" example:"初めてのスタジアム訪問。とても楽しかった！"`
 }
 type ExpeditionResponse struct {
-	ID        int       `json:"id"`
-	SportId   uint      `json:"sportId"`
-	IsPublic  bool      `json:"isPublic"`
-	Title     string    `json:"title"`
-	StartDate time.Time `json:"startDate"`
-	EndDate   time.Time `json:"endDate"`
-	StadiumId uint      `json:"stadiumId"`
-	Memo      string    `json:"memo"`
+	ID        int       `json:"id" example:"1"`
+	SportId   uint      `json:"sportId" example:"1"`
+	SportName string    `json:"sportName" example:"野球"`
+	IsPublic  bool      `json:"isPublic" example:"true"`
+	Title     string    `json:"title" example:"野球観戦の遠征記録"`
+	StartDate time.Time `json:"startDate" example:"2025-01-01T00:00:00Z"`
+	EndDate   time.Time `json:"endDate" example:"2025-01-01T00:00:00Z"`
+	StadiumId uint      `json:"stadiumId" example:"1"`
+	StadiumName string `json:"stadiumName" example:"東京ドーム"`
+	Memo      string    `json:"memo" example:"初めてのスタジアム訪問。とても楽しかった！"`
 }
 
 type CreateExpeditionRequest struct {
@@ -123,7 +128,7 @@ type CreateExpeditionRequest struct {
 }
 
 type GetExpeditionDetailRequest struct {
-	ExpeditionId uint `uri:"expeditionId" binding:"required"`
+	ExpeditionId uint `uri:"expeditionId" binding:"required" example:"1"`
 }
 
 type UpdateGamesRequest struct {

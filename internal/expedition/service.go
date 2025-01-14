@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-docker/internal/db"
 	"go-docker/models"
+	"go-docker/pkg/constants"
 	"go-docker/pkg/utils"
 	"log"
 	"net/http"
@@ -583,6 +584,102 @@ func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uin
 	}
 
 	return nil
+}
+
+func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest) ([]ExpeditionListResponse, error) {
+	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
+	var expeditions []ExpeditionListResponse
+
+	query := db.DB.Table("expeditions").
+		Select(`
+			expeditions.id,
+			expeditions.title,
+			expeditions.start_date,
+			expeditions.end_date,
+			stadia.name as stadium_name,
+			expeditions.sport_id,
+			sports.name as sport_name,
+			expeditions.user_id,
+			users.name as user_name,
+			users.profile_image as user_icon,
+			(SELECT COUNT(*) FROM expedition_likes WHERE expedition_likes.expedition_id = expeditions.id) as likes_count,
+			(
+				SELECT t1.name
+				FROM games g
+				JOIN teams t1 ON g.team1_id = t1.id
+				WHERE g.expedition_id = expeditions.id
+				ORDER BY g.created_at
+				LIMIT 1
+			) as team1_name,
+			(
+				SELECT t2.name
+				FROM games g
+				JOIN teams t2 ON g.team2_id = t2.id
+				WHERE g.expedition_id = expeditions.id
+				ORDER BY g.created_at
+				LIMIT 1
+			) as team2_name
+		`).
+		Joins("LEFT JOIN sports ON expeditions.sport_id = sports.id").
+		Joins("LEFT JOIN users ON expeditions.user_id = users.id").
+		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id").
+		Where("expeditions.is_public = ?", true)
+
+	if req.SportId != nil {
+		query = query.Where("expeditions.sport_id = ?", *req.SportId)
+	}
+	if req.TeamId != nil {
+		query = query.Where("EXISTS (SELECT 1 FROM games WHERE games.expedition_id = expeditions.id AND (games.team1_id = ? OR games.team2_id = ?))", *req.TeamId, *req.TeamId)
+	}
+
+	if err := query.
+		Order("expeditions.created_at DESC").
+		Limit(constants.LIMIT_EXPEDITION_LIST).
+		Offset(offset).
+		Find(&expeditions).Error; err != nil {
+		log.Printf("遠征記録一覧の取得に失敗しました: %v", err)
+		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録一覧の取得に失敗しました")
+	}
+
+	if len(expeditions) == 0 {
+		if req.Page == 1 {
+			return nil, utils.NewCustomError(http.StatusNotFound, "遠征記録が登録されていません")
+		} else {
+			return nil, utils.NewCustomError(http.StatusNotFound, "最後のページです")
+		}
+	}
+
+	var expeditionIds []uint
+	for _, exp := range expeditions {
+		expeditionIds = append(expeditionIds, exp.ID)
+	}
+
+	var images []struct {
+		ExpeditionID uint
+		Image        string
+	}
+	if err := db.DB.Model(&models.ExpeditionImage{}).
+		Select("expedition_id, image").
+		Where("expedition_id IN ?", expeditionIds).
+		Order("expedition_id, created_at").
+		Find(&images).Error; err != nil {
+		log.Printf("遠征記録画像の取得に失敗しました: %v", err)
+		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録一覧の取得に失敗しました")
+	}
+
+	imageMap := make(map[uint][]string)
+	for _, img := range images {
+		imageMap[img.ExpeditionID] = append(imageMap[img.ExpeditionID], img.Image)
+	}
+
+	for i := range expeditions {
+		expeditions[i].Images = make([]string, 0)
+		if images, ok := imageMap[expeditions[i].ID]; ok {
+			expeditions[i].Images = images
+		}
+	}
+
+	return expeditions, nil
 }
 
 func NewExpeditionService() *ExpeditionService {

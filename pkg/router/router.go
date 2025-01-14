@@ -127,6 +127,7 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 			protectedExpeditionGroup.DELETE("/unlike/:expeditionId", func(c *gin.Context) {
 				expeditionHandler.UnlikeExpedition(c)
 			})
+			protectedExpeditionGroup.GET("/list", expeditionHandler.GetExpeditionList)
 		}
 	}
 

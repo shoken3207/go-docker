@@ -153,7 +153,7 @@ definitions:
       name:
         example: tanaka taro
         maxLength: 100
-        minLength: 3
+        minLength: 1
         type: string
       password:
         example: password123
@@ -169,7 +169,7 @@ definitions:
       username:
         example: user123
         maxLength: 255
-        minLength: 5
+        minLength: 1
         type: string
     required:
     - name
@@ -268,6 +268,51 @@ definitions:
     required:
     - fileId
     - image
+    type: object
+  expedition.ExpeditionListResponse:
+    properties:
+      endDate:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      images:
+        example:
+        - https://ik.imagekit.io/your_imagekit_id/image.jpg
+        items:
+          type: string
+        type: array
+      likesCount:
+        example: 10
+        type: integer
+      sportId:
+        example: 1
+        type: integer
+      sportName:
+        example: 野球
+        type: string
+      startDate:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      team1Name:
+        example: ヤクルト
+        type: string
+      team2Name:
+        example: ソフトバンク
+        type: string
+      title:
+        example: 野球観戦の遠征記録
+        type: string
+      userIcon:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
+        type: string
+      userId:
+        example: 1
+        type: integer
+      userName:
+        example: ユーザー名
+        type: string
     type: object
   expedition.GameRequest:
     properties:
@@ -632,6 +677,19 @@ definitions:
         example: user123
         type: string
     type: object
+  utils.ApiResponse-array_expedition_ExpeditionListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/expedition.ExpeditionListResponse'
+        type: array
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
   utils.ApiResponse-auth_LoginResponse:
     properties:
       data:
@@ -957,6 +1015,54 @@ paths:
       security:
       - BearerAuth: []
       summary: 遠征記録にいいねする
+      tags:
+      - expedition
+  /api/expedition/list:
+    get:
+      consumes:
+      - application/json
+      description: ページネーション付きで遠征記録一覧を取得します<br>teamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します
+      parameters:
+      - description: ページ番号
+        in: query
+        minimum: 1
+        name: page
+        required: true
+        type: integer
+      - description: スポーツID
+        in: query
+        name: sportId
+        type: integer
+      - description: チームID
+        in: query
+        name: teamId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "403":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "404":
+          description: 遠征記録が見つかりません
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録一覧を取得
       tags:
       - expedition
   /api/expedition/unlike/{expeditionId}:

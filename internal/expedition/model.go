@@ -130,3 +130,25 @@ type UnlikeExpeditionRequestPath struct {
 type DeleteExpeditionRequestPath struct {
 	ExpeditionId uint `uri:"expeditionId" binding:"required" example:"1"`
 }
+
+type ExpeditionListResponse struct {
+	ID          uint                   `json:"id" example:"1"`
+	Title       string                 `json:"title" example:"野球観戦の遠征記録"`
+	StartDate   time.Time             `json:"startDate" example:"2025-01-01T00:00:00Z"`
+	EndDate     time.Time             `json:"endDate" example:"2025-01-01T00:00:00Z"`
+	SportId     uint                   `json:"sportId" example:"1"`
+	SportName   string                 `json:"sportName" example:"野球"`
+	UserID      uint                   `json:"userId" example:"1"`
+	UserName    string                 `json:"userName" example:"ユーザー名"`
+	UserIcon    string                 `json:"userIcon" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	LikesCount  int64                  `json:"likesCount" example:"10"`
+	Images      []string               `json:"images" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	Team1Name   string                 `json:"team1Name" example:"ヤクルト"`
+	Team2Name   string                 `json:"team2Name" example:"ソフトバンク"`
+}
+
+type ExpeditionListRequest struct {
+	Page     int        `form:"page" binding:"required,min=1" example:"1"`
+	SportId  *uint      `form:"sportId" example:"1"`
+	TeamId   *uint      `form:"teamId" example:"1"`
+}

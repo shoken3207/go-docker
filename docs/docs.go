@@ -423,6 +423,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/expedition/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ページネーション付きで遠征記録一覧を取得します\u003cbr\u003eteamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録一覧を取得",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ページ番号",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "sportId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "チームID",
+                        "name": "teamId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/expedition/unlike/{expeditionId}": {
             "delete": {
                 "security": [
@@ -1792,7 +1866,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 3,
+                    "minLength": 1,
                     "example": "tanaka taro"
                 },
                 "password": {
@@ -1812,7 +1886,7 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "maxLength": 255,
-                    "minLength": 5,
+                    "minLength": 1,
                     "example": "user123"
                 }
             }
@@ -1939,6 +2013,68 @@ const docTemplate = `{
                 "image": {
                     "type": "string",
                     "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                }
+            }
+        },
+        "expedition.ExpeditionListResponse": {
+            "type": "object",
+            "properties": {
+                "endDate": {
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                    ]
+                },
+                "likesCount": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "sportId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "sportName": {
+                    "type": "string",
+                    "example": "野球"
+                },
+                "startDate": {
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                },
+                "team1Name": {
+                    "type": "string",
+                    "example": "ヤクルト"
+                },
+                "team2Name": {
+                    "type": "string",
+                    "example": "ソフトバンク"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "野球観戦の遠征記録"
+                },
+                "userIcon": {
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "userId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "userName": {
+                    "type": "string",
+                    "example": "ユーザー名"
                 }
             }
         },
@@ -2444,6 +2580,25 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "user123"
+                }
+            }
+        },
+        "utils.ApiResponse-array_expedition_ExpeditionListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },

@@ -1642,6 +1642,7 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
+                "fileId",
                 "image",
                 "name"
             ],
@@ -1653,6 +1654,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "fileId": {
                     "type": "string"
                 },
                 "image": {
@@ -1669,6 +1673,7 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
+                "fileId",
                 "id",
                 "image",
                 "name"
@@ -1681,6 +1686,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "fileId": {
                     "type": "string"
                 },
                 "id": {

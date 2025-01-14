@@ -54,6 +54,8 @@ definitions:
         type: integer
       description:
         type: string
+      fileId:
+        type: string
       image:
         type: string
       name:
@@ -62,6 +64,7 @@ definitions:
     - address
     - capacity
     - description
+    - fileId
     - image
     - name
     type: object
@@ -73,6 +76,8 @@ definitions:
         type: integer
       description:
         type: string
+      fileId:
+        type: string
       id:
         type: integer
       image:
@@ -83,6 +88,7 @@ definitions:
     - address
     - capacity
     - description
+    - fileId
     - id
     - image
     - name

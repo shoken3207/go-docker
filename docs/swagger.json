@@ -1634,6 +1634,7 @@
                 "address",
                 "capacity",
                 "description",
+                "fileId",
                 "image",
                 "name"
             ],
@@ -1645,6 +1646,9 @@
                     "type": "integer"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "fileId": {
                     "type": "string"
                 },
                 "image": {
@@ -1661,6 +1665,7 @@
                 "address",
                 "capacity",
                 "description",
+                "fileId",
                 "id",
                 "image",
                 "name"
@@ -1673,6 +1678,9 @@
                     "type": "integer"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "fileId": {
                     "type": "string"
                 },
                 "id": {

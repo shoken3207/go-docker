@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/gin-contrib/cors"
 
 	// "github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "go-docker/docs"
@@ -47,6 +50,15 @@ func main() {
 		}
 		c.Next()
 	})
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "capacitor://localhost", "ionic://localhost"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
+		ExposeHeaders:    []string{"Content-Length", "Authorization"},
+		MaxAge:           12 * time.Hour,
+	}))
 
 	router.SetupRouter(r, ik)
 

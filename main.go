@@ -4,7 +4,9 @@ import (
 	"go-docker/internal/db"
 	"go-docker/pkg/router"
 	"go-docker/pkg/utils"
+	"net/http"
 	"os"
+	"strings"
 
 	// "github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "go-docker/docs"
@@ -14,12 +16,11 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-
 var swaggerUsername = os.Getenv("SWAGGER_USERNAME")
 var swaggerPassword = os.Getenv("SWAGGER_PASSWORD")
 func BasicAuthMiddleware() gin.HandlerFunc {
 	return gin.BasicAuth(gin.Accounts{
-		swaggerUsername: swaggerPassword, // 許可するユーザー名とパスワード
+		swaggerUsername: swaggerPassword,
 	})
 }
 
@@ -36,10 +37,24 @@ func BasicAuthMiddleware() gin.HandlerFunc {
 func main() {
 	db.InitDB()
 	ik := utils.NewImageKit()
-	r := router.SetupRouter(ik)
+	r := gin.Default()
+
+    r.Use(func(c *gin.Context) {
+		if strings.Contains(c.Request.Referer(), "/swagger/readonly/") {
+			utils.ErrorResponse[any](c, http.StatusMethodNotAllowed, "読み取り専用モードでは実行できません。APIの実行には管理者モードでアクセスしてください。")
+			c.Abort()
+			return
+		}
+		c.Next()
+	})
+
+	router.SetupRouter(r, ik)
+
 	r.GET("/", func(c *gin.Context) {
 		c.String(200, "Hello, world!")
 	})
-	r.GET("/swagger/*any", BasicAuthMiddleware(), ginSwagger.WrapHandler(swaggerFiles.Handler))
+    r.GET("/swagger/admin/*any", BasicAuthMiddleware(), ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/readonly/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	r.Run()
 }

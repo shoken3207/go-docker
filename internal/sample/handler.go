@@ -24,7 +24,7 @@ func (h *SampleHandler) PublicHelloWorld(c *gin.Context) {
 func (h *SampleHandler) ProtectedHelloWorld(c *gin.Context) {
 	userId := c.GetString("userId")
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Hello World!!!" + userId + "aa",
+		"message": "Hello World!!!" + userId,
 	})
 }
 

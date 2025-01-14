@@ -13,6 +13,33 @@ type ExpeditionHandler struct{}
 
 var expeditionService = NewExpeditionService()
 
+// @Summary idから遠征記録詳細を取得
+// @Description 遠征記録詳細情報を取得
+// @Tags expedition
+// @Security BearerAuth
+// @Param expeditionId path uint true "expeditionId"
+// @Success 200 {object} utils.ApiResponse[GetExpeditionDetailResponse] "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
+// @Router /api/expedition/{expeditionId} [get]
+func (h *ExpeditionHandler) GetExpeditionDetail(c *gin.Context) {
+	var request GetExpeditionDetailRequest
+	if err := c.ShouldBindUri(&request); err != nil {
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+	}
+	expeditionDetail, err := expeditionService.GetExpeditionDetailService(&request)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+
+	utils.SuccessResponse[GetExpeditionDetailResponse](c, http.StatusOK, *expeditionDetail, "遠征記録詳細取得に成功しました")
+}
+
 // @Summary 遠征記録を作成
 // @Description 遠征、出費、試合、訪れた施設の情報を保存する。fileIdはimagekitのfileIdで、ユニークな値です。
 // @Tags expedition
@@ -43,7 +70,6 @@ func (h *ExpeditionHandler) CreateExpedition(c *gin.Context) {
 	}
 
 	utils.SuccessResponse[any](c, http.StatusOK, nil, "遠征記録作成に成功しました")
-
 }
 
 // @Summary 遠征記録を更新
@@ -184,6 +210,40 @@ func (h *ExpeditionHandler) UnlikeExpedition(c *gin.Context) {
 	}
 
 	utils.SuccessResponse[any](c, http.StatusOK, nil, "いいねを外しました")
+}
+
+// @Summary 遠征記録一覧を取得
+// @Description ページネーション付きで遠征記録一覧を取得します<br>teamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します
+// @Tags expedition
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param page query int true "ページ番号" minimum(1)
+// @Param sportId query int false "スポーツID"
+// @Param teamId query int false "チームID"
+// @Success 200 {object} utils.ApiResponse[[]ExpeditionListResponse] "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "遠征記録が見つかりません"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
+// @Router /api/expedition/list [get]
+func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
+    var req ExpeditionListRequest
+    if err := c.ShouldBindQuery(&req); err != nil {
+        log.Printf("リクエストパラメータが不正です: %v", err)
+        utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストパラメータが不正です")
+        return
+    }
+
+    expeditions, err := expeditionService.GetExpeditionList(&req)
+    if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+    }
+
+    utils.SuccessResponse(c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
 }
 
 func NewExpeditionHandler() *ExpeditionHandler {

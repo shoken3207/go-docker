@@ -5,6 +5,7 @@ import (
 )
 
 const (
+	LIMIT_EXPEDITION_LIST = 15
 	EmailVerificationTokenExpDate = time.Minute * 30
 	LoginTokenExpDate             = time.Hour * 24 * 7
 	RegisteBaserUrl               = "visitorgo://verify"

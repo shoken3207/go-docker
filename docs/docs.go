@@ -423,6 +423,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/expedition/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ページネーション付きで遠征記録一覧を取得します\u003cbr\u003eteamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録一覧を取得",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ページ番号",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "sportId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "チームID",
+                        "name": "teamId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/expedition/unlike/{expeditionId}": {
             "delete": {
                 "security": [
@@ -529,6 +603,61 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "ユーザーが見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/{expeditionId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "遠征記録詳細情報を取得",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "idから遠征記録詳細を取得",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "expeditionId",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-expedition_GetExpeditionDetailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
@@ -1792,7 +1921,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 3,
+                    "minLength": 1,
                     "example": "tanaka taro"
                 },
                 "password": {
@@ -1812,7 +1941,7 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "maxLength": 255,
-                    "minLength": 5,
+                    "minLength": 1,
                     "example": "user123"
                 }
             }
@@ -1862,6 +1991,7 @@ const docTemplate = `{
             "required": [
                 "endDate",
                 "games",
+                "isPublic",
                 "memo",
                 "payments",
                 "sportId",
@@ -1872,8 +2002,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "endDate": {
-                    "type": "string",
-                    "example": "2025-01-01T00:00:00Z"
+                    "type": "string"
                 },
                 "games": {
                     "type": "array",
@@ -1888,12 +2017,10 @@ const docTemplate = `{
                     }
                 },
                 "isPublic": {
-                    "type": "boolean",
-                    "example": true
+                    "type": "boolean"
                 },
                 "memo": {
-                    "type": "string",
-                    "example": "初めてのスタジアム訪問。とても楽しかった！"
+                    "type": "string"
                 },
                 "payments": {
                     "type": "array",
@@ -1902,20 +2029,16 @@ const docTemplate = `{
                     }
                 },
                 "sportId": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 },
                 "stadiumId": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 },
                 "startDate": {
-                    "type": "string",
-                    "example": "2025-01-01T00:00:00Z"
+                    "type": "string"
                 },
                 "title": {
-                    "type": "string",
-                    "example": "野球観戦の遠征記録"
+                    "type": "string"
                 },
                 "visitedFacilities": {
                     "type": "array",
@@ -1939,6 +2062,82 @@ const docTemplate = `{
                 "image": {
                     "type": "string",
                     "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                }
+            }
+        },
+        "expedition.ExpeditionImageResponse": {
+            "type": "object",
+            "properties": {
+                "fileId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                }
+            }
+        },
+        "expedition.ExpeditionListResponse": {
+            "type": "object",
+            "properties": {
+                "endDate": {
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                    ]
+                },
+                "likesCount": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "sportId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "sportName": {
+                    "type": "string",
+                    "example": "野球"
+                },
+                "startDate": {
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                },
+                "team1Name": {
+                    "type": "string",
+                    "example": "ヤクルト"
+                },
+                "team2Name": {
+                    "type": "string",
+                    "example": "ソフトバンク"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "野球観戦の遠征記録"
+                },
+                "userIcon": {
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "userId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "userName": {
+                    "type": "string",
+                    "example": "ユーザー名"
                 }
             }
         },
@@ -1976,6 +2175,32 @@ const docTemplate = `{
                 }
             }
         },
+        "expedition.GameResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "scores": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.GameScoreResponse"
+                    }
+                },
+                "team1Id": {
+                    "type": "integer"
+                },
+                "team2Id": {
+                    "type": "integer"
+                }
+            }
+        },
         "expedition.GameScoreRequest": {
             "type": "object",
             "required": [
@@ -1998,6 +2223,76 @@ const docTemplate = `{
                 }
             }
         },
+        "expedition.GameScoreResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "teamId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "expedition.GetExpeditionDetailResponse": {
+            "type": "object",
+            "properties": {
+                "endDate": {
+                    "type": "string"
+                },
+                "expeditionImages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionImageResponse"
+                    }
+                },
+                "games": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.GameResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "memo": {
+                    "type": "string"
+                },
+                "payments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.PaymentResponse"
+                    }
+                },
+                "sportId": {
+                    "type": "integer"
+                },
+                "stadiumId": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "visitedFacilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.VisitedFacilityResponse"
+                    }
+                }
+            }
+        },
         "expedition.PaymentRequest": {
             "type": "object",
             "required": [
@@ -2017,6 +2312,23 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "チケット代"
+                }
+            }
+        },
+        "expedition.PaymentResponse": {
+            "type": "object",
+            "properties": {
+                "cost": {
+                    "type": "integer"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -2355,6 +2667,32 @@ const docTemplate = `{
                 }
             }
         },
+        "expedition.VisitedFacilityResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "upload.UploadImagesResponse": {
             "type": "object",
             "properties": {
@@ -2447,11 +2785,46 @@ const docTemplate = `{
                 }
             }
         },
+        "utils.ApiResponse-array_expedition_ExpeditionListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
         "utils.ApiResponse-auth_LoginResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "$ref": "#/definitions/auth.LoginResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-expedition_GetExpeditionDetailResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/expedition.GetExpeditionDetailResponse"
                 },
                 "message": {
                     "type": "string",

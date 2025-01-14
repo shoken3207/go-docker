@@ -17,10 +17,10 @@ var authService = NewAuthService()
 // @Tags auth
 // @Param email query string true "メールアドレス"
 // @Param tokenType query string true "トークンタイプ register or reset"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
-// @Router /api/auth/emailVerification/{email} [get]
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
+// @Router /api/auth/emailVerification [get]
 func (h *AuthHandler) EmailVerification(c *gin.Context) {
 	request := EmailVerificationRequest{}
 	if err := c.ShouldBindQuery(&request); err != nil {
@@ -42,9 +42,9 @@ func (h *AuthHandler) EmailVerification(c *gin.Context) {
 // @Description メールアドレス確認後にリクエスト内容をユーザーテーブルに保存
 // @Tags auth
 // @Param request body auth.RegisterRequest true "ユーザー情報"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var request RegisterRequest
@@ -68,9 +68,9 @@ func (h *AuthHandler) Register(c *gin.Context) {
 // @Tags auth
 // @Param request body auth.LoginRequest true "ログイン情報"
 // @Success 200 {object} utils.ApiResponse[LoginResponse] "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 404 {object} utils.BasicResponse "not foundエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var request LoginRequest
@@ -94,10 +94,10 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Description メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する
 // @Tags auth
 // @Param request body ResetPassRequest true "tokenと新しいパスワード"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 404 {object} utils.BasicResponse "not foundエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/auth/resetPass [put]
 func (h *AuthHandler) ResetPass(c *gin.Context) {
 	var request ResetPassRequest
@@ -121,11 +121,11 @@ func (h *AuthHandler) ResetPass(c *gin.Context) {
 // @Security BearerAuth
 // @param userId path uint true "userId"
 // @Param request body UpdatePassRequestBody true "メールアドレス"
-// @Success 200 {object} utils.BasicResponse "成功"
-// @Failure 400 {object} utils.BasicResponse "リクエストエラー"
-// @Failure 401 {object} utils.BasicResponse "認証エラー"
-// @Failure 404 {object} utils.BasicResponse "not foundエラー"
-// @Failure 500 {object} utils.BasicResponse "内部エラー"
+// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
+// @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/auth/updatePass/{userId} [put]
 func (h *AuthHandler) UpdatePass(c *gin.Context) {
 	userId, requestBody, err := authService.validateUpdatePassRequest(c)

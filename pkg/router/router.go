@@ -1,6 +1,7 @@
 package router
 
 import (
+	"go-docker/internal/adminTool"
 	"go-docker/internal/auth"
 	"go-docker/internal/expedition"
 	"go-docker/internal/sample"
@@ -21,6 +22,7 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 	userHandler := user.NewUserHandler()
 	expeditionHandler := expedition.NewExpeditionHandler()
 	uploadHandler := upload.NewUploadHandler()
+	adminToolHandler := adminTool.NewAdminToolHandler()
 
 	publicGroup := api.Group("")
 	{
@@ -36,12 +38,57 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 
 		publicAuthGroup := publicGroup.Group("/auth")
 		{
-			publicAuthGroup.GET("/emailVerification/:email", authHandler.EmailVerification)
+			publicAuthGroup.GET("/emailVerification", authHandler.EmailVerification)
 			publicAuthGroup.POST("/register", authHandler.Register)
 			publicAuthGroup.POST("/login", authHandler.Login)
 			publicAuthGroup.PUT("/resetPass", authHandler.ResetPass)
 
 		}
+
+		publicUploadGroup := publicGroup.Group("/upload")
+		{
+			publicUploadGroup.POST("/images", func(c *gin.Context) {
+				uploadHandler.UploadImages(c, ik)
+			})
+		}
+
+		// publicTeamGroup := publicGroup.Group("/teams")
+		// {
+		// 	publicTeamGroup.POST("/teamAdd", adminToolHandler.teamAdd)
+		// }
+
+		publicStadiumGroup := publicGroup.Group("/stadium")
+		{
+			publicStadiumGroup.GET("/stadiums", adminToolHandler.GetStadiums)
+			publicStadiumGroup.POST("/stadiumAdd", adminToolHandler.StadiumAdd)
+			publicStadiumGroup.PUT("/update", adminToolHandler.StadiumUpdate)
+			publicStadiumGroup.DELETE("/delete", adminToolHandler.DeleteStadium)
+		}
+
+		publicSportsGroup := publicGroup.Group("/sports")
+		{
+			publicSportsGroup.GET("/sports", adminToolHandler.GetSports)
+			publicSportsGroup.POST("/sportsAdd", adminToolHandler.SportsAdd)
+			publicSportsGroup.PUT("/update", adminToolHandler.SportsUpdate)
+			publicSportsGroup.DELETE("/delete", adminToolHandler.DeleteSports)
+		}
+
+		publicLeagueGroup := publicGroup.Group("/league")
+		{
+			publicLeagueGroup.GET("/leagues", adminToolHandler.GetLeagues)
+			publicLeagueGroup.POST("/leagueAdd", adminToolHandler.LeagueAdd)
+			publicLeagueGroup.PUT("/update", adminToolHandler.LeagueUpdate)
+			publicLeagueGroup.DELETE("/delete", adminToolHandler.DeleteLeague)
+		}
+
+		publicTeamGroup := publicGroup.Group("/team")
+		{
+			publicTeamGroup.GET("/teams", adminToolHandler.GetTeams)
+			publicTeamGroup.POST("/teamAdd", adminToolHandler.TeamAdd)
+			publicTeamGroup.PUT("/update", adminToolHandler.TeamUpdate)
+			publicTeamGroup.DELETE("/delete", adminToolHandler.DeleteTeam)
+		}
+
 	}
 
 	protectedGroup := api.Group("")
@@ -72,13 +119,16 @@ func SetupRouter(ik *imagekit.ImageKit) *gin.Engine {
 			protectedExpeditionGroup.PUT("/update/:expeditionId", func(c *gin.Context) {
 				expeditionHandler.UpdateExpedition(c, ik)
 			})
-		}
-
-		protectedUploadGroup := protectedGroup.Group("/upload")
-		{
-			protectedUploadGroup.POST("/images", func(c *gin.Context) {
-				uploadHandler.UploadImages(c, ik)
+			protectedExpeditionGroup.DELETE("/delete/:expeditionId", func(c *gin.Context) {
+				expeditionHandler.DeleteExpedition(c, ik)
 			})
+			protectedExpeditionGroup.POST("/like/:expeditionId", func(c *gin.Context) {
+				expeditionHandler.LikeExpedition(c)
+			})
+			protectedExpeditionGroup.DELETE("/unlike/:expeditionId", func(c *gin.Context) {
+				expeditionHandler.UnlikeExpedition(c)
+			})
+			protectedExpeditionGroup.GET("/list", expeditionHandler.GetExpeditionList)
 		}
 	}
 

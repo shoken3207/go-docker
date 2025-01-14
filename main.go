@@ -4,6 +4,7 @@ import (
 	"go-docker/internal/db"
 	"go-docker/pkg/router"
 	"go-docker/pkg/utils"
+	"os"
 
 	// "github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "go-docker/docs"
@@ -12,6 +13,15 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+
+var swaggerUsername = os.Getenv("SWAGGER_USERNAME")
+var swaggerPassword = os.Getenv("SWAGGER_PASSWORD")
+func BasicAuthMiddleware() gin.HandlerFunc {
+	return gin.BasicAuth(gin.Accounts{
+		swaggerUsername: swaggerPassword, // 許可するユーザー名とパスワード
+	})
+}
 
 // @title ビジターゴーAPI
 // @description このapiは、ビジターゴーのAPIで、ユーザー、スタジアム、遠征記録、などについて扱います。
@@ -30,6 +40,6 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.String(200, "Hello, world!")
 	})
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/*any", BasicAuthMiddleware(), ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run()
 }

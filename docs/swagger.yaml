@@ -1,11 +1,134 @@
 consumes:
 - application/json
 definitions:
+  adminTool.DeleteRequest:
+    properties:
+      id:
+        type: integer
+    required:
+    - id
+    type: object
+  adminTool.LeagueAddRequest:
+    properties:
+      name:
+        type: string
+      sport_id:
+        type: integer
+    required:
+    - sport_id
+    type: object
+  adminTool.LeagueUpdateRequest:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      sport_id:
+        type: integer
+    required:
+    - id
+    - sport_id
+    type: object
+  adminTool.SportsAddRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  adminTool.SportsUpdateRequest:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  adminTool.StadiumAddRequest:
+    properties:
+      address:
+        type: string
+      capacity:
+        type: integer
+      description:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+    required:
+    - address
+    - capacity
+    - description
+    - image
+    - name
+    type: object
+  adminTool.StadiumUpdateRequest:
+    properties:
+      address:
+        type: string
+      capacity:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    required:
+    - address
+    - capacity
+    - description
+    - id
+    - image
+    - name
+    type: object
+  adminTool.TeamAddRequest:
+    properties:
+      LeagueId:
+        type: integer
+      name:
+        type: string
+      sportsId:
+        type: integer
+      stadiumId:
+        type: integer
+    required:
+    - LeagueId
+    - name
+    - sportsId
+    - stadiumId
+    type: object
+  adminTool.TeamUpdateRequest:
+    properties:
+      LeagueId:
+        type: integer
+      name:
+        type: string
+      sportsId:
+        type: integer
+      stadiumId:
+        type: integer
+      teamId:
+        type: integer
+    required:
+    - LeagueId
+    - name
+    - sportsId
+    - stadiumId
+    - teamId
+    type: object
   auth.LoginRequest:
     properties:
       email:
+        example: tanaka@example.com
         type: string
       password:
+        example: password123
         maxLength: 50
         minLength: 6
         type: string
@@ -16,27 +139,37 @@ definitions:
   auth.LoginResponse:
     properties:
       token:
+        example: "1234567890"
         type: string
     type: object
   auth.RegisterRequest:
     properties:
       description:
+        example: 野球が好きです！
+        type: string
+      fileId:
+        example: "1234567890"
         type: string
       name:
+        example: tanaka taro
         maxLength: 100
-        minLength: 3
+        minLength: 1
         type: string
       password:
+        example: password123
         maxLength: 50
         minLength: 6
         type: string
       profileImage:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
         type: string
       token:
+        example: "1234567890"
         type: string
       username:
+        example: user123
         maxLength: 255
-        minLength: 5
+        minLength: 1
         type: string
     required:
     - name
@@ -47,10 +180,12 @@ definitions:
   auth.ResetPassRequest:
     properties:
       afterPassword:
+        example: password456
         maxLength: 50
         minLength: 6
         type: string
       token:
+        example: "1234567890"
         type: string
     required:
     - afterPassword
@@ -59,10 +194,12 @@ definitions:
   auth.UpdatePassRequestBody:
     properties:
       afterPassword:
+        example: password456
         maxLength: 50
         minLength: 6
         type: string
       beforePassword:
+        example: password123
         maxLength: 50
         minLength: 6
         type: string
@@ -117,8 +254,10 @@ definitions:
   expedition.ExpeditionImageRequest:
     properties:
       fileId:
+        example: file_1234567890
         type: string
       image:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
         type: string
     required:
     - fileId
@@ -133,19 +272,68 @@ definitions:
       image:
         type: string
     type: object
+  expedition.ExpeditionListResponse:
+    properties:
+      endDate:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      images:
+        example:
+        - https://ik.imagekit.io/your_imagekit_id/image.jpg
+        items:
+          type: string
+        type: array
+      likesCount:
+        example: 10
+        type: integer
+      sportId:
+        example: 1
+        type: integer
+      sportName:
+        example: 野球
+        type: string
+      startDate:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      team1Name:
+        example: ヤクルト
+        type: string
+      team2Name:
+        example: ソフトバンク
+        type: string
+      title:
+        example: 野球観戦の遠征記録
+        type: string
+      userIcon:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
+        type: string
+      userId:
+        example: 1
+        type: integer
+      userName:
+        example: ユーザー名
+        type: string
+    type: object
   expedition.GameRequest:
     properties:
       comment:
+        example: 熱い試合でした！！
         type: string
       date:
+        example: "2025-01-01T00:00:00Z"
         type: string
       scores:
         items:
           $ref: '#/definitions/expedition.GameScoreRequest'
         type: array
       team1Id:
+        example: 1
         type: integer
       team2Id:
+        example: 2
         type: integer
     required:
     - comment
@@ -174,10 +362,13 @@ definitions:
   expedition.GameScoreRequest:
     properties:
       order:
+        example: 1
         type: integer
       score:
+        example: 1
         type: integer
       teamId:
+        example: 1
         type: integer
     required:
     - order
@@ -233,10 +424,13 @@ definitions:
   expedition.PaymentRequest:
     properties:
       cost:
+        example: 5000
         type: integer
       date:
+        example: "2025-01-01T00:00:00Z"
         type: string
       title:
+        example: チケット代
         type: string
     required:
     - cost
@@ -268,34 +462,38 @@ definitions:
   expedition.UpdateExpeditionRequestBody:
     properties:
       endDate:
+        example: "2025-01-01T00:00:00Z"
         type: string
       games:
         $ref: '#/definitions/expedition.UpdateGamesRequest'
-      id:
-        type: integer
       images:
         $ref: '#/definitions/expedition.UpdateExpeditionImagesRequest'
       isPublic:
+        example: true
         type: boolean
       memo:
+        example: 初めてのスタジアム訪問。とても楽しかった！
         type: string
       payments:
         $ref: '#/definitions/expedition.UpdatePaymentsRequest'
       sportId:
+        example: 1
         type: integer
       stadiumId:
+        example: 1
         type: integer
       startDate:
+        example: "2025-01-01T00:00:00Z"
         type: string
       title:
+        example: 野球観戦の遠征記録
         type: string
       visitedFacilities:
         $ref: '#/definitions/expedition.UpdateVisitedFacilitiesRequest'
     required:
     - endDate
     - games
-    - id
-    - isPublic
+    - images
     - memo
     - payments
     - sportId
@@ -307,16 +505,21 @@ definitions:
   expedition.UpdateGameRequest:
     properties:
       comment:
+        example: 熱い試合でした！！
         type: string
       date:
+        example: "2025-01-01T00:00:00Z"
         type: string
       id:
+        example: 1
         type: integer
       scores:
         $ref: '#/definitions/expedition.UpdateGameScoresRequest'
       team1Id:
+        example: 1
         type: integer
       team2Id:
+        example: 2
         type: integer
     required:
     - comment
@@ -329,12 +532,16 @@ definitions:
   expedition.UpdateGameScoreRequest:
     properties:
       id:
+        example: 1
         type: integer
       order:
+        example: 1
         type: integer
       score:
+        example: 1
         type: integer
       teamId:
+        example: 1
         type: integer
     required:
     - id
@@ -375,12 +582,16 @@ definitions:
   expedition.UpdatePaymentRequest:
     properties:
       cost:
+        example: 5000
         type: integer
       date:
+        example: "2025-01-01T00:00:00Z"
         type: string
       id:
+        example: 1
         type: integer
       title:
+        example: チケット代
         type: string
     required:
     - cost
@@ -421,18 +632,25 @@ definitions:
   expedition.UpdateVisitedFacilityRequest:
     properties:
       address:
+        example: 東京都千代田区丸の内1-1-1
         type: string
       color:
+        example: '#00FF00'
         type: string
       icon:
+        example: train
         type: string
       id:
+        example: 1
         type: integer
       latitude:
+        example: 35.6812
         type: number
       longitude:
+        example: 139.7671
         type: number
       name:
+        example: 東京駅
         type: string
     required:
     - address
@@ -446,16 +664,22 @@ definitions:
   expedition.VisitedFacilityRequest:
     properties:
       address:
+        example: 東京都千代田区丸の内1-1-1
         type: string
       color:
+        example: '#00FF00'
         type: string
       icon:
+        example: train
         type: string
       latitude:
+        example: 35.6812
         type: number
       longitude:
+        example: 139.7671
         type: number
       name:
+        example: 東京駅
         type: string
     required:
     - address
@@ -492,22 +716,31 @@ definitions:
   upload.UploadToImageKitResponse:
     properties:
       fileId:
+        example: file_1234567890
         type: string
       url:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
         type: string
     type: object
   user.IsUniqueUsernameResponse:
     properties:
       isUnique:
+        example: true
         type: boolean
     type: object
   user.UpdateUserRequestBody:
     properties:
       description:
+        example: 野球が好きです！
+        type: string
+      fileId:
+        example: "1234567890"
         type: string
       name:
+        example: tanaka taro
         type: string
       profileImage:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
         type: string
     required:
     - description
@@ -517,25 +750,49 @@ definitions:
   user.UserResponse:
     properties:
       description:
+        example: 野球が好きです！
         type: string
       email:
+        example: tanaka@example.com
+        type: string
+      fileId:
+        example: "1234567890"
         type: string
       id:
+        example: 1
         type: integer
       name:
+        example: tanaka taro
         type: string
       profileImage:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
         type: string
       username:
+        example: user123
         type: string
+    type: object
+  utils.ApiResponse-array_expedition_ExpeditionListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/expedition.ExpeditionListResponse'
+        type: array
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
     type: object
   utils.ApiResponse-auth_LoginResponse:
     properties:
       data:
         $ref: '#/definitions/auth.LoginResponse'
       message:
+        example: 成功しました！！
         type: string
       success:
+        example: true
         type: boolean
     type: object
   utils.ApiResponse-expedition_GetExpeditionDetailResponse:
@@ -543,8 +800,10 @@ definitions:
       data:
         $ref: '#/definitions/expedition.GetExpeditionDetailResponse'
       message:
+        example: 成功しました！！
         type: string
       success:
+        example: true
         type: boolean
     type: object
   utils.ApiResponse-upload_UploadImagesResponse:
@@ -552,8 +811,10 @@ definitions:
       data:
         $ref: '#/definitions/upload.UploadImagesResponse'
       message:
+        example: 成功しました！！
         type: string
       success:
+        example: true
         type: boolean
     type: object
   utils.ApiResponse-user_IsUniqueUsernameResponse:
@@ -561,8 +822,10 @@ definitions:
       data:
         $ref: '#/definitions/user.IsUniqueUsernameResponse'
       message:
+        example: 成功しました！！
         type: string
       success:
+        example: true
         type: boolean
     type: object
   utils.ApiResponse-user_UserResponse:
@@ -570,15 +833,28 @@ definitions:
       data:
         $ref: '#/definitions/user.UserResponse'
       message:
+        example: 成功しました！！
         type: string
       success:
+        example: true
         type: boolean
     type: object
-  utils.BasicResponse:
+  utils.ErrorBasicResponse:
     properties:
       message:
+        example: エラーメッセージ
         type: string
       success:
+        example: false
+        type: boolean
+    type: object
+  utils.SuccessBasicResponse:
+    properties:
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
         type: boolean
     type: object
 info:
@@ -587,7 +863,7 @@ info:
   title: ビジターゴーAPI
   version: "1.0"
 paths:
-  /api/auth/emailVerification/{email}:
+  /api/auth/emailVerification:
     get:
       description: リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信
       parameters:
@@ -605,15 +881,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       summary: メールアドレスの本人確認
       tags:
       - auth
@@ -635,15 +911,15 @@ paths:
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: not foundエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       summary: ログイン
       tags:
       - auth
@@ -661,15 +937,15 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       summary: ユーザー登録
       tags:
       - auth
@@ -687,19 +963,19 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: not foundエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       summary: ログアウト状態からパスワードを変更
       tags:
       - auth
@@ -722,23 +998,23 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "401":
           description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: not foundエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: ログイン状態からパスワードを変更
@@ -761,19 +1037,19 @@ paths:
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "403":
           description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: not foundエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: idから遠征記録詳細を取得
@@ -781,7 +1057,7 @@ paths:
       - expedition
   /api/expedition/create:
     post:
-      description: 遠征、出費、試合、訪れた施設の情報を保存する。
+      description: 遠征、出費、試合、訪れた施設の情報を保存する。fileIdはimagekitのfileIdで、ユニークな値です。
       parameters:
       - description: 遠征記録作成リクエスト
         in: body
@@ -793,54 +1069,178 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "403":
           description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: 遠征記録を作成
       tags:
       - expedition
-  /api/expedition/delete/{id}:
+  /api/expedition/delete/{expeditionId}:
     delete:
-      description: pathのidをもとに遠征記録を削除する。
+      description: 遠征記録とそれに関連する全てのデータ（画像、いいね、支払い、試合情報など）を削除する
+      parameters:
+      - description: 遠征記録ID
+        in: path
+        name: expeditionId
+        required: true
+        type: integer
       responses:
         "200":
-          description: アップロードした画像のURL
+          description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "403":
-          description: ユーザーが見つかりません
+          description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
-          description: ユーザーが見つかりません
+          description: 遠征記録が見つかりません
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
-          description: ユーザーが見つかりません
+          description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: 遠征記録を削除
       tags:
       - expedition
-  /api/expedition/update/{id}:
+  /api/expedition/like/{expeditionId}:
+    post:
+      description: ユーザーが遠征記録にいいねを付ける
+      parameters:
+      - description: 遠征記録ID
+        in: path
+        name: expeditionId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "403":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "404":
+          description: 遠征記録が見つかりません
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録にいいねする
+      tags:
+      - expedition
+  /api/expedition/list:
+    get:
+      consumes:
+      - application/json
+      description: ページネーション付きで遠征記録一覧を取得します<br>teamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します
+      parameters:
+      - description: ページ番号
+        in: query
+        minimum: 1
+        name: page
+        required: true
+        type: integer
+      - description: スポーツID
+        in: query
+        name: sportId
+        type: integer
+      - description: チームID
+        in: query
+        name: teamId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "403":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "404":
+          description: 遠征記録が見つかりません
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録一覧を取得
+      tags:
+      - expedition
+  /api/expedition/unlike/{expeditionId}:
+    delete:
+      description: ユーザーが遠征記録のいいねを外す
+      parameters:
+      - description: 遠征記録ID
+        in: path
+        name: expeditionId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "403":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "404":
+          description: いいねが見つかりません
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: 遠征記録のいいねを外す
+      tags:
+      - expedition
+  /api/expedition/update/{expeditionId}:
     put:
       description: 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはfileId(string)の配列をリクエストで渡してください
       parameters:
@@ -850,32 +1250,145 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/expedition.UpdateExpeditionRequestBody'
+      - description: 遠征記録ID
+        in: path
+        name: expeditionId
+        required: true
+        type: integer
       responses:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.SuccessBasicResponse'
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "403":
           description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: ユーザーが見つかりません
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: 遠征記録を更新
       tags:
       - expedition
+  /api/league/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してリーグ情報を削除します
+      parameters:
+      - description: リーグID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: リーグ削除
+      tags:
+      - league
+  /api/league/leagueAdd:
+    post:
+      description: リクエストからリーグ情報を取得後、重複確認を行い登録する。
+      parameters:
+      - description: リーグ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.LeagueAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: リーグの追加
+      tags:
+      - league
+  /api/league/leagues:
+    get:
+      description: リーグ情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: リーグ全件検索
+      tags:
+      - league
+  /api/league/update:
+    put:
+      description: リクエストボディに更新対象のIDを指定してリーグ情報を更新します
+      parameters:
+      - description: リーグ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.LeagueUpdateRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: リーグ更新
+      tags:
+      - league
   /api/sample/helloWorld:
     get:
       responses: {}
@@ -890,6 +1403,330 @@ paths:
       summary: サンプルAPI
       tags:
       - sample
+  /api/sports/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してスポーツ情報を削除します
+      parameters:
+      - description: スポーツ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: スポーツ削除
+      tags:
+      - sports
+  /api/sports/sports:
+    get:
+      description: スポーツ情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: スポーツ全件検索
+      tags:
+      - sports
+  /api/sports/sportsAdd:
+    post:
+      description: リクエストからスポーツ情報を取得後、重複確認を行い登録する。
+      parameters:
+      - description: スポーツ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.SportsAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: スポーツの追加
+      tags:
+      - sports
+  /api/sports/update:
+    put:
+      description: リクエストボディに更新対象のIDを指定してスポーツ情報を更新します
+      parameters:
+      - description: スポーツ情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.SportsUpdateRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: スポーツ更新
+      tags:
+      - sports
+  /api/stadium/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してスタジアムを削除します
+      parameters:
+      - description: スタジアムID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: スタジアム削除
+      tags:
+      - stadium
+  /api/stadium/stadiumAdd:
+    post:
+      description: リクエストからスタジアム情報を追加後、重複確認を行い登録する。
+      parameters:
+      - description: スタジアム情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.StadiumAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: スタジアム追加
+      tags:
+      - stadium
+  /api/stadium/stadiums:
+    get:
+      description: スタジアム情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: スタジアム全件検索
+      tags:
+      - stadium
+  /api/stadium/update:
+    put:
+      description: リクエストボディに更新対象のIDを指定してスタジアムを更新します
+      parameters:
+      - description: スタジアム情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.StadiumUpdateRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: スタジアム更新
+      tags:
+      - stadium
+  /api/team/delete:
+    delete:
+      description: リクエストボディに削除対象のIDを指定してチーム情報を削除します
+      parameters:
+      - description: チームID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.DeleteRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: チーム削除
+      tags:
+      - team
+  /api/team/teamAdd:
+    post:
+      description: リクエストからチーム情報を取得後、重複確認を行い登録する。
+      parameters:
+      - description: チーム情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.TeamAddRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: チームの追加
+      tags:
+      - team
+  /api/team/teams:
+    get:
+      description: チーム情報のレコードを全件取得して、一覧として表示する。
+      parameters:
+      - description: キーワード
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: チーム全件検索
+      tags:
+      - team
+  /api/team/update:
+    put:
+      description: リクエストボディに更新対象のIDを指定してチーム情報を更新します
+      parameters:
+      - description: チーム情報
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/adminTool.TeamUpdateRequest'
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.SuccessBasicResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: チーム情報更新
+      tags:
+      - team
   /api/upload/images:
     post:
       consumes:
@@ -915,21 +1752,19 @@ paths:
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "401":
           description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: not foundエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
-      security:
-      - BearerAuth: []
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       summary: 画像をクラウドストレージ(imagekit)にアップロード
       tags:
       - upload
@@ -950,11 +1785,11 @@ paths:
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       summary: ユーザーネームの重複チェック
       tags:
       - user
@@ -969,15 +1804,15 @@ paths:
         "401":
           description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: not foundエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: ログイン済みの場合、ログインユーザーの情報を取得
@@ -1006,19 +1841,19 @@ paths:
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "401":
           description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: not foundエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: ユーザー情報変更
@@ -1041,19 +1876,19 @@ paths:
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "401":
           description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: not foundエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: userIdからユーザー情報取得
@@ -1076,19 +1911,19 @@ paths:
         "400":
           description: リクエストエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "401":
           description: 認証エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "404":
           description: not foundエラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
         "500":
           description: 内部エラー
           schema:
-            $ref: '#/definitions/utils.BasicResponse'
+            $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
       summary: usernameからユーザー情報取得

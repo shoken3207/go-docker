@@ -21,7 +21,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/auth/emailVerification/{email}": {
+        "/api/auth/emailVerification": {
             "get": {
                 "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信",
                 "tags": [
@@ -48,19 +48,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -94,19 +94,19 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -134,19 +134,19 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -174,25 +174,25 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -232,31 +232,31 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -269,7 +269,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "遠征、出費、試合、訪れた施設の情報を保存する。",
+                "description": "遠征、出費、試合、訪れた施設の情報を保存する。fileIdはimagekitのfileIdで、ユニークな値です。",
                 "tags": [
                     "expedition"
                 ],
@@ -289,77 +289,270 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "403": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
             }
         },
-        "/api/expedition/delete/{id}": {
+        "/api/expedition/delete/{expeditionId}": {
             "delete": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "pathのidをもとに遠征記録を削除する。",
+                "description": "遠征記録とそれに関連する全てのデータ（画像、いいね、支払い、試合情報など）を削除する",
                 "tags": [
                     "expedition"
                 ],
                 "summary": "遠征記録を削除",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "アップロードした画像のURL",
+                        "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "403": {
-                        "description": "ユーザーが見つかりません",
+                        "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
-                        "description": "ユーザーが見つかりません",
+                        "description": "遠征記録が見つかりません",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
-                        "description": "ユーザーが見つかりません",
+                        "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
             }
         },
-        "/api/expedition/update/{id}": {
+        "/api/expedition/like/{expeditionId}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ユーザーが遠征記録にいいねを付ける",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録にいいねする",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ページネーション付きで遠征記録一覧を取得します\u003cbr\u003eteamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録一覧を取得",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ページ番号",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "sportId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "チームID",
+                        "name": "teamId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/unlike/{expeditionId}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ユーザーが遠征記録のいいねを外す",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "遠征記録のいいねを外す",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "いいねが見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/update/{expeditionId}": {
             "put": {
                 "security": [
                     {
@@ -380,37 +573,44 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/expedition.UpdateExpeditionRequestBody"
                         }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "遠征記録ID",
+                        "name": "expeditionId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
                         }
                     },
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "403": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "ユーザーが見つかりません",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -447,25 +647,197 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "403": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/league/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してリーグ情報を削除します",
+                "tags": [
+                    "league"
+                ],
+                "summary": "リーグ削除",
+                "parameters": [
+                    {
+                        "description": "リーグID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/league/leagueAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからリーグ情報を取得後、重複確認を行い登録する。",
+                "tags": [
+                    "league"
+                ],
+                "summary": "リーグの追加",
+                "parameters": [
+                    {
+                        "description": "リーグ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.LeagueAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/league/leagues": {
+            "get": {
+                "description": "リーグ情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "league"
+                ],
+                "summary": "リーグ全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/league/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してリーグ情報を更新します",
+                "tags": [
+                    "league"
+                ],
+                "summary": "リーグ更新",
+                "parameters": [
+                    {
+                        "description": "リーグ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.LeagueUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -494,13 +866,524 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/upload/images": {
+        "/api/sports/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してスポーツ情報を削除します",
+                "tags": [
+                    "sports"
+                ],
+                "summary": "スポーツ削除",
+                "parameters": [
+                    {
+                        "description": "スポーツ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sports/sports": {
+            "get": {
+                "description": "スポーツ情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "sports"
+                ],
+                "summary": "スポーツ全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sports/sportsAdd": {
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
+                "description": "リクエストからスポーツ情報を取得後、重複確認を行い登録する。",
+                "tags": [
+                    "sports"
+                ],
+                "summary": "スポーツの追加",
+                "parameters": [
+                    {
+                        "description": "スポーツ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.SportsAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sports/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してスポーツ情報を更新します",
+                "tags": [
+                    "sports"
+                ],
+                "summary": "スポーツ更新",
+                "parameters": [
+                    {
+                        "description": "スポーツ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.SportsUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/stadium/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してスタジアムを削除します",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム削除",
+                "parameters": [
+                    {
+                        "description": "スタジアムID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/stadium/stadiumAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからスタジアム情報を追加後、重複確認を行い登録する。",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム追加",
+                "parameters": [
+                    {
+                        "description": "スタジアム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.StadiumAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/stadium/stadiums": {
+            "get": {
+                "description": "スタジアム情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/stadium/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してスタジアムを更新します",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム更新",
+                "parameters": [
+                    {
+                        "description": "スタジアム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.StadiumUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/team/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してチーム情報を削除します",
+                "tags": [
+                    "team"
+                ],
+                "summary": "チーム削除",
+                "parameters": [
+                    {
+                        "description": "チームID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/team/teamAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからチーム情報を取得後、重複確認を行い登録する。",
+                "tags": [
+                    "team"
+                ],
+                "summary": "チームの追加",
+                "parameters": [
+                    {
+                        "description": "チーム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.TeamAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/team/teams": {
+            "get": {
+                "description": "チーム情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "team"
+                ],
+                "summary": "チーム全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/team/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してチーム情報を更新します",
+                "tags": [
+                    "team"
+                ],
+                "summary": "チーム情報更新",
+                "parameters": [
+                    {
+                        "description": "チーム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.TeamUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/upload/images": {
+            "post": {
                 "description": "画像をアップロードし、URLを返します。\u003cbr\u003eプロフィール、スタジアム、遠征など、格納フォルダを指定してください。\u003cbr\u003e画像は1枚から10枚アップロードできるが、Swagger UIでは1つしか選択できません。\u003cbr\u003eファイルの拡張子は、[\".jpg\", \".jpeg\", \".png\"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。",
                 "consumes": [
                     "multipart/form-data"
@@ -535,25 +1418,25 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -585,13 +1468,13 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -619,19 +1502,19 @@ const docTemplate = `{
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -677,25 +1560,25 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -732,25 +1615,25 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -787,25 +1670,25 @@ const docTemplate = `{
                     "400": {
                         "description": "リクエストエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "401": {
                         "description": "認証エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
                         "description": "not foundエラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "500": {
                         "description": "内部エラー",
                         "schema": {
-                            "$ref": "#/definitions/utils.BasicResponse"
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     }
                 }
@@ -813,6 +1696,183 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "adminTool.DeleteRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "adminTool.LeagueAddRequest": {
+            "type": "object",
+            "required": [
+                "sport_id"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "sport_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "adminTool.LeagueUpdateRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "sport_id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sport_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "adminTool.SportsAddRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "adminTool.SportsUpdateRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "adminTool.StadiumAddRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "capacity",
+                "description",
+                "image",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "adminTool.StadiumUpdateRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "capacity",
+                "description",
+                "id",
+                "image",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "adminTool.TeamAddRequest": {
+            "type": "object",
+            "required": [
+                "LeagueId",
+                "name",
+                "sportsId",
+                "stadiumId"
+            ],
+            "properties": {
+                "LeagueId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sportsId": {
+                    "type": "integer"
+                },
+                "stadiumId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "adminTool.TeamUpdateRequest": {
+            "type": "object",
+            "required": [
+                "LeagueId",
+                "name",
+                "sportsId",
+                "stadiumId",
+                "teamId"
+            ],
+            "properties": {
+                "LeagueId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sportsId": {
+                    "type": "integer"
+                },
+                "stadiumId": {
+                    "type": "integer"
+                },
+                "teamId": {
+                    "type": "integer"
+                }
+            }
+        },
         "auth.LoginRequest": {
             "type": "object",
             "required": [
@@ -821,12 +1881,14 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "tanaka@example.com"
                 },
                 "password": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password123"
                 }
             }
         },
@@ -834,7 +1896,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "token": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 }
             }
         },
@@ -848,28 +1911,38 @@ const docTemplate = `{
             ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球が好きです！"
+                },
+                "fileId": {
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "name": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 3
+                    "minLength": 1,
+                    "example": "tanaka taro"
                 },
                 "password": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password123"
                 },
                 "profileImage": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 },
                 "token": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "username": {
                     "type": "string",
                     "maxLength": 255,
-                    "minLength": 5
+                    "minLength": 1,
+                    "example": "user123"
                 }
             }
         },
@@ -883,10 +1956,12 @@ const docTemplate = `{
                 "afterPassword": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password456"
                 },
                 "token": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 }
             }
         },
@@ -900,12 +1975,14 @@ const docTemplate = `{
                 "afterPassword": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password456"
                 },
                 "beforePassword": {
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "password123"
                 }
             }
         },
@@ -979,10 +2056,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "fileId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "file_1234567890"
                 },
                 "image": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -1000,6 +2079,68 @@ const docTemplate = `{
                 }
             }
         },
+        "expedition.ExpeditionListResponse": {
+            "type": "object",
+            "properties": {
+                "endDate": {
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                    ]
+                },
+                "likesCount": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "sportId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "sportName": {
+                    "type": "string",
+                    "example": "野球"
+                },
+                "startDate": {
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                },
+                "team1Name": {
+                    "type": "string",
+                    "example": "ヤクルト"
+                },
+                "team2Name": {
+                    "type": "string",
+                    "example": "ソフトバンク"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "野球観戦の遠征記録"
+                },
+                "userIcon": {
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "userId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "userName": {
+                    "type": "string",
+                    "example": "ユーザー名"
+                }
+            }
+        },
         "expedition.GameRequest": {
             "type": "object",
             "required": [
@@ -1011,10 +2152,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "comment": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "熱い試合でした！！"
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "scores": {
                     "type": "array",
@@ -1023,10 +2166,12 @@ const docTemplate = `{
                     }
                 },
                 "team1Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "team2Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },
@@ -1065,13 +2210,16 @@ const docTemplate = `{
             ],
             "properties": {
                 "order": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "score": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "teamId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1154,13 +2302,16 @@ const docTemplate = `{
             ],
             "properties": {
                 "cost": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 5000
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "チケット代"
                 }
             }
         },
@@ -1203,8 +2354,7 @@ const docTemplate = `{
             "required": [
                 "endDate",
                 "games",
-                "id",
-                "isPublic",
+                "images",
                 "memo",
                 "payments",
                 "sportId",
@@ -1215,37 +2365,41 @@ const docTemplate = `{
             ],
             "properties": {
                 "endDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "games": {
                     "$ref": "#/definitions/expedition.UpdateGamesRequest"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "images": {
                     "$ref": "#/definitions/expedition.UpdateExpeditionImagesRequest"
                 },
                 "isPublic": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "memo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "初めてのスタジアム訪問。とても楽しかった！"
                 },
                 "payments": {
                     "$ref": "#/definitions/expedition.UpdatePaymentsRequest"
                 },
                 "sportId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "stadiumId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "startDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球観戦の遠征記録"
                 },
                 "visitedFacilities": {
                     "$ref": "#/definitions/expedition.UpdateVisitedFacilitiesRequest"
@@ -1264,22 +2418,27 @@ const docTemplate = `{
             ],
             "properties": {
                 "comment": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "熱い試合でした！！"
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "scores": {
                     "$ref": "#/definitions/expedition.UpdateGameScoresRequest"
                 },
                 "team1Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "team2Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },
@@ -1293,16 +2452,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "order": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "score": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "teamId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1362,16 +2525,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "cost": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 5000
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "チケット代"
                 }
             }
         },
@@ -1434,25 +2601,32 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京都千代田区丸の内1-1-1"
                 },
                 "color": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "#00FF00"
                 },
                 "icon": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "train"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "latitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 35.6812
                 },
                 "longitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 139.7671
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京駅"
                 }
             }
         },
@@ -1468,22 +2642,28 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京都千代田区丸の内1-1-1"
                 },
                 "color": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "#00FF00"
                 },
                 "icon": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "train"
                 },
                 "latitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 35.6812
                 },
                 "longitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 139.7671
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京駅"
                 }
             }
         },
@@ -1528,10 +2708,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "fileId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "file_1234567890"
                 },
                 "url": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -1539,7 +2721,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "isUnique": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1552,13 +2735,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球が好きです！"
+                },
+                "fileId": {
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "tanaka taro"
                 },
                 "profileImage": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -1566,22 +2756,51 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球が好きです！"
                 },
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "tanaka@example.com"
+                },
+                "fileId": {
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "tanaka taro"
                 },
                 "profileImage": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "user123"
+                }
+            }
+        },
+        "utils.ApiResponse-array_expedition_ExpeditionListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1592,10 +2811,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/auth.LoginResponse"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "成功しました！！"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1606,10 +2827,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/expedition.GetExpeditionDetailResponse"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "成功しました！！"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1620,10 +2843,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/upload.UploadImagesResponse"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "成功しました！！"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1634,10 +2859,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/user.IsUniqueUsernameResponse"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "成功しました！！"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1648,21 +2875,38 @@ const docTemplate = `{
                     "$ref": "#/definitions/user.UserResponse"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "成功しました！！"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
-        "utils.BasicResponse": {
+        "utils.ErrorBasicResponse": {
             "type": "object",
             "properties": {
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "エラーメッセージ"
                 },
                 "success": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "utils.SuccessBasicResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         }

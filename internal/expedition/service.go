@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-docker/internal/db"
 	"go-docker/models"
+	"go-docker/pkg/constants"
 	"go-docker/pkg/utils"
 	"log"
 	"net/http"
@@ -44,14 +45,34 @@ func (s *ExpeditionService) UpdateExpedition(updateExpedition *models.Expedition
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteExpedition(expeditionId *uint) error {
+func (s *ExpeditionService) DeleteExpedition(expeditionId *uint, userId *uint, ik *imagekit.ImageKit) error {
+	expedition, err := s.FindExpeditionById(*expeditionId)
+	if err != nil {
+		return err
+	}
+
+	if expedition.UserId != *userId {
+		return utils.NewCustomError(http.StatusForbidden, "この遠征記録を削除する権限がありません")
+	}
+
+	var expeditionImages []models.ExpeditionImage
+	if err := db.DB.Where("expedition_id = ?", expeditionId).Find(&expeditionImages).Error; err != nil {
+		log.Printf("遠征記録の画像情報取得エラー: %v", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録の画像情報の取得に失敗しました")
+	}
+
+	for _, image := range expeditionImages {
+		utils.DeleteUploadImage(ik, &image.FileId)
+	}
+
 	if err := db.DB.Delete(&models.Expedition{}, expeditionId).Error; err != nil {
 		log.Printf("遠征記録削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return utils.NewCustomError(http.StatusNotFound, "遠征記録が見つかりません。")
+			return utils.NewCustomError(http.StatusNotFound, "遠征記録が見つかりません")
 		}
-		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録削除に失敗しました。")
+		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録削除に失敗しました")
 	}
+
 	return nil
 }
 
@@ -102,7 +123,7 @@ func (s *ExpeditionService) CreateExpeditionImage(newExpeditionImage *models.Exp
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteExpeditionImages(fileIds *[]string) error {
+func (s *ExpeditionService) DeleteExpeditionImages(fileIds []string) error {
 	if err := db.DB.Where("file_id IN ?", fileIds).Delete(&models.ExpeditionImage{}).Error; err != nil {
 		log.Printf("遠征記録画像データ削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -166,6 +187,7 @@ func (s *ExpeditionService) FindGameById(gameId uint) (*models.Game, error) {
 	return &game, nil
 }
 func (s *ExpeditionService) CreateGame(newGame *models.Game) error {
+	log.Printf("newGame: %v", newGame)
 	if err := db.DB.Create(newGame).Error; err != nil {
 		log.Printf("試合記録作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "試合記録作成に失敗しました。")
@@ -255,7 +277,7 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 	return nil, nil
 }
 
-func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest) error {
+func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest, userId *uint) error {
 	newExpedition := models.Expedition{
 		SportId:   request.SportId,
 		IsPublic:  request.IsPublic,
@@ -264,6 +286,7 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 		StartDate: request.StartDate,
 		EndDate:   request.EndDate,
 		StadiumId: request.StadiumId,
+		UserId:    *userId,
 	}
 	if err := s.CreateExpedition(&newExpedition); err != nil {
 		return err
@@ -355,10 +378,14 @@ func (s *ExpeditionService) ValidateUpdateExpeditionRequest(c *gin.Context) (*ui
 	return &requestPath.ExpeditionId, &requestBody, nil
 }
 
-func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestBody *UpdateExpeditionRequestBody, ik *imagekit.ImageKit) error {
+func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *uint, requestBody *UpdateExpeditionRequestBody, ik *imagekit.ImageKit) error {
 	expedition, err := s.FindExpeditionById(*expeditionId)
 	if err != nil {
 		return err
+	}
+
+	if expedition.UserId != *userId {
+		return utils.NewCustomError(http.StatusForbidden, "この遠征記録を更新する権限がありません")
 	}
 
 	expedition.IsPublic = requestBody.IsPublic
@@ -368,7 +395,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 	expedition.EndDate = requestBody.EndDate
 	expedition.StadiumId = requestBody.StadiumId
 
-	if err := expeditionService.UpdateExpedition(expedition); err != nil {
+	if err := s.UpdateExpedition(expedition); err != nil {
 		return err
 	}
 
@@ -399,7 +426,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 		}
 	}
 	for _, game := range games.Update {
-		updateGame, err := s.FindGameById(*&game.ID)
+		updateGame, err := s.FindGameById(game.ID)
 		if err != nil {
 			return err
 		}
@@ -439,12 +466,16 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 				return err
 			}
 		}
-		if err := s.DeleteGameScores(&gameScores.Delete); err != nil {
-			return err
+		if len(gameScores.Delete) > 0 {
+			if err := s.DeleteGameScores(&gameScores.Delete); err != nil {
+				return err
+			}
 		}
 	}
-	if err := s.DeleteGames(&games.Delete); err != nil {
-		return err
+	if len(games.Delete) > 0 {
+		if err := s.DeleteGames(&games.Delete); err != nil {
+			return err
+		}
 	}
 
 	images := requestBody.Images
@@ -461,7 +492,11 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 	for _, fileId := range images.Delete {
 		utils.DeleteUploadImage(ik, &fileId)
 	}
-	s.DeleteExpeditionImages(&images.Delete)
+	if len(images.Delete) > 0 {
+		if err := s.DeleteExpeditionImages(images.Delete); err != nil {
+			return err
+		}
+	}
 
 	payments := requestBody.Payments
 	for _, payment := range payments.Add {
@@ -487,7 +522,11 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 			return err
 		}
 	}
-	s.DeletePayments(&payments.Delete)
+	if len(payments.Delete) > 0 {
+		if err := s.DeletePayments(&payments.Delete); err != nil {
+			return err
+		}
+	}
 
 	visitedFacilities := requestBody.VisitedFacilities
 	for _, visitedFacility := range visitedFacilities.Add {
@@ -519,9 +558,147 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, requestB
 			return err
 		}
 	}
-	s.DeleteVisitedFacilities(&visitedFacilities.Delete)
+	if len(visitedFacilities.Delete) > 0 {
+		if err := s.DeleteVisitedFacilities(&visitedFacilities.Delete); err != nil {
+			return err
+		}
+	}
 
 	return nil
+}
+
+func (s *ExpeditionService) CreateExpeditionLike(userId *uint, expeditionId *uint) error {
+	var existingLike models.ExpeditionLike
+	if err := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).First(&existingLike).Error; err == nil {
+		return utils.NewCustomError(http.StatusBadRequest, "既にいいね済みです")
+	}
+
+	if _, err := s.FindExpeditionById(*expeditionId); err != nil {
+		return err
+	}
+
+	newLike := models.ExpeditionLike{
+		UserId:       *userId,
+		ExpeditionId: *expeditionId,
+	}
+
+	if err := db.DB.Create(&newLike).Error; err != nil {
+		log.Printf("いいね作成エラー: %v", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "いいねの作成に失敗しました")
+	}
+
+	return nil
+}
+
+func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uint) error {
+	result := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).Delete(&models.ExpeditionLike{})
+
+	if result.Error != nil {
+		log.Printf("いいね削除エラー: %v", result.Error)
+		return utils.NewCustomError(http.StatusInternalServerError, "いいねの削除に失敗しました")
+	}
+
+	if result.RowsAffected == 0 {
+		return utils.NewCustomError(http.StatusNotFound, "いいねが見つかりません")
+	}
+
+	return nil
+}
+
+func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest) ([]ExpeditionListResponse, error) {
+	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
+	var expeditions []ExpeditionListResponse
+
+	query := db.DB.Table("expeditions").
+		Select(`
+			expeditions.id,
+			expeditions.title,
+			expeditions.start_date,
+			expeditions.end_date,
+			stadia.name as stadium_name,
+			expeditions.sport_id,
+			sports.name as sport_name,
+			expeditions.user_id,
+			users.name as user_name,
+			users.profile_image as user_icon,
+			(SELECT COUNT(*) FROM expedition_likes WHERE expedition_likes.expedition_id = expeditions.id) as likes_count,
+			(
+				SELECT t1.name
+				FROM games g
+				JOIN teams t1 ON g.team1_id = t1.id
+				WHERE g.expedition_id = expeditions.id
+				ORDER BY g.created_at
+				LIMIT 1
+			) as team1_name,
+			(
+				SELECT t2.name
+				FROM games g
+				JOIN teams t2 ON g.team2_id = t2.id
+				WHERE g.expedition_id = expeditions.id
+				ORDER BY g.created_at
+				LIMIT 1
+			) as team2_name
+		`).
+		Joins("LEFT JOIN sports ON expeditions.sport_id = sports.id").
+		Joins("LEFT JOIN users ON expeditions.user_id = users.id").
+		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id").
+		Where("expeditions.is_public = ?", true)
+
+	if req.SportId != nil {
+		query = query.Where("expeditions.sport_id = ?", *req.SportId)
+	}
+	if req.TeamId != nil {
+		query = query.Where("EXISTS (SELECT 1 FROM games WHERE games.expedition_id = expeditions.id AND (games.team1_id = ? OR games.team2_id = ?))", *req.TeamId, *req.TeamId)
+	}
+
+	if err := query.
+		Order("expeditions.created_at DESC").
+		Limit(constants.LIMIT_EXPEDITION_LIST).
+		Offset(offset).
+		Find(&expeditions).Error; err != nil {
+		log.Printf("遠征記録一覧の取得に失敗しました: %v", err)
+		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録一覧の取得に失敗しました")
+	}
+
+	if len(expeditions) == 0 {
+		if req.Page == 1 {
+			return nil, utils.NewCustomError(http.StatusNotFound, "遠征記録が登録されていません")
+		} else {
+			return nil, utils.NewCustomError(http.StatusNotFound, "最後のページです")
+		}
+	}
+
+	var expeditionIds []uint
+	for _, exp := range expeditions {
+		expeditionIds = append(expeditionIds, exp.ID)
+	}
+
+	var images []struct {
+		ExpeditionID uint
+		Image        string
+	}
+	if err := db.DB.Model(&models.ExpeditionImage{}).
+		Select("expedition_id, image").
+		Where("expedition_id IN ?", expeditionIds).
+		Order("expedition_id, created_at").
+		Find(&images).Error; err != nil {
+		log.Printf("遠征記録画像の取得に失敗しました: %v", err)
+		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録一覧の取得に失敗しました")
+	}
+
+	imageMap := make(map[uint][]string)
+	for _, img := range images {
+		imageMap[img.ExpeditionID] = append(imageMap[img.ExpeditionID], img.Image)
+	}
+
+	for i := range expeditions {
+		expeditions[i].Images = make([]string, 0)
+		if images, ok := imageMap[expeditions[i].ID]; ok {
+			expeditions[i].Images = images
+		}
+	}
+
+	return expeditions, nil
 }
 
 func NewExpeditionService() *ExpeditionService {

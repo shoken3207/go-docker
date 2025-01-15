@@ -329,9 +329,6 @@ definitions:
     type: object
   expedition.GameRequest:
     properties:
-      comment:
-        example: 熱い試合でした！！
-        type: string
       date:
         example: "2025-01-01T00:00:00Z"
         type: string
@@ -346,7 +343,6 @@ definitions:
         example: 2
         type: integer
     required:
-    - comment
     - date
     - scores
     - team1Id
@@ -354,9 +350,6 @@ definitions:
     type: object
   expedition.GameResponse:
     properties:
-      comment:
-        example: 熱い試合でした！！
-        type: string
       date:
         example: "2025-01-01T00:00:00Z"
         type: string
@@ -550,9 +543,6 @@ definitions:
     type: object
   expedition.UpdateGameRequest:
     properties:
-      comment:
-        example: 熱い試合でした！！
-        type: string
       date:
         example: "2025-01-01T00:00:00Z"
         type: string
@@ -568,7 +558,6 @@ definitions:
         example: 2
         type: integer
     required:
-    - comment
     - date
     - id
     - scores

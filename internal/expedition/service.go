@@ -323,7 +323,6 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 		games = append(games, GameResponse{
 			ID:        g.ID,
 			Date:      g.Date,
-			Comment:   g.Comment,
 			Team1Id:   g.Team1Id,
 			Team1Name: g.Team1.Name,
 			Team2Id:   g.Team2Id,
@@ -376,7 +375,6 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 			Date:         game.Date,
 			Team1Id:      game.Team1Id,
 			Team2Id:      game.Team2Id,
-			Comment:      game.Comment,
 		}
 		if err := s.CreateGame(&newGame); err != nil {
 			return err
@@ -483,7 +481,6 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 			Date:         game.Date,
 			Team1Id:      game.Team1Id,
 			Team2Id:      game.Team2Id,
-			Comment:      game.Comment,
 		}
 		if err := s.CreateGame(&newGame); err != nil {
 			return err
@@ -511,7 +508,6 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 		updateGame.Date = game.Date
 		updateGame.Team1Id = game.Team1Id
 		updateGame.Team2Id = game.Team2Id
-		updateGame.Comment = game.Comment
 		if err := s.UpdateGame(updateGame); err != nil {
 			return err
 		}

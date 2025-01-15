@@ -2154,17 +2154,12 @@ const docTemplate = `{
         "expedition.GameRequest": {
             "type": "object",
             "required": [
-                "comment",
                 "date",
                 "scores",
                 "team1Id",
                 "team2Id"
             ],
             "properties": {
-                "comment": {
-                    "type": "string",
-                    "example": "熱い試合でした！！"
-                },
                 "date": {
                     "type": "string",
                     "example": "2025-01-01T00:00:00Z"
@@ -2188,10 +2183,6 @@ const docTemplate = `{
         "expedition.GameResponse": {
             "type": "object",
             "properties": {
-                "comment": {
-                    "type": "string",
-                    "example": "熱い試合でした！！"
-                },
                 "date": {
                     "type": "string",
                     "example": "2025-01-01T00:00:00Z"
@@ -2460,7 +2451,6 @@ const docTemplate = `{
         "expedition.UpdateGameRequest": {
             "type": "object",
             "required": [
-                "comment",
                 "date",
                 "id",
                 "scores",
@@ -2468,10 +2458,6 @@ const docTemplate = `{
                 "team2Id"
             ],
             "properties": {
-                "comment": {
-                    "type": "string",
-                    "example": "熱い試合でした！！"
-                },
                 "date": {
                     "type": "string",
                     "example": "2025-01-01T00:00:00Z"

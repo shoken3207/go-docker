@@ -2010,7 +2010,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "endDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "games": {
                     "type": "array",
@@ -2025,10 +2026,12 @@ const docTemplate = `{
                     }
                 },
                 "isPublic": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "memo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "初めてのスタジアム訪問。とても楽しかった！"
                 },
                 "payments": {
                     "type": "array",
@@ -2037,16 +2040,20 @@ const docTemplate = `{
                     }
                 },
                 "sportId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "stadiumId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "startDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球観戦の遠征記録"
                 },
                 "visitedFacilities": {
                     "type": "array",
@@ -2077,13 +2084,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "fileId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "file_1234567890"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "image": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -2187,13 +2197,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "comment": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "熱い試合でした！！"
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "scores": {
                     "type": "array",
@@ -2202,10 +2215,20 @@ const docTemplate = `{
                     }
                 },
                 "team1Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
+                },
+                "team1Name": {
+                    "type": "string",
+                    "example": "ヤクルト"
                 },
                 "team2Id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
+                },
+                "team2Name": {
+                    "type": "string",
+                    "example": "ソフトバンク"
                 }
             }
         },
@@ -2235,16 +2258,24 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "order": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "score": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "teamId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
+                },
+                "teamName": {
+                    "type": "string",
+                    "example": "ヤクルト"
                 }
             }
         },
@@ -2252,7 +2283,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "endDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "expeditionImages": {
                     "type": "array",
@@ -2267,13 +2299,16 @@ const docTemplate = `{
                     }
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "isPublic": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "memo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "初めてのスタジアム訪問。とても楽しかった！"
                 },
                 "payments": {
                     "type": "array",
@@ -2282,16 +2317,28 @@ const docTemplate = `{
                     }
                 },
                 "sportId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
+                },
+                "sportName": {
+                    "type": "string",
+                    "example": "野球"
                 },
                 "stadiumId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
+                },
+                "stadiumName": {
+                    "type": "string",
+                    "example": "東京ドーム"
                 },
                 "startDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "野球観戦の遠征記録"
                 },
                 "visitedFacilities": {
                     "type": "array",
@@ -2327,16 +2374,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "cost": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 5000
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "チケット代"
                 }
             }
         },
@@ -2679,25 +2730,32 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "address": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京都千代田区丸の内1-1-1"
                 },
                 "color": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "#00FF00"
                 },
                 "icon": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "train"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "latitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 35.6812
                 },
                 "longitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 139.7671
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京駅"
                 }
             }
         },

@@ -216,6 +216,7 @@ definitions:
   expedition.CreateExpeditionRequest:
     properties:
       endDate:
+        example: "2025-01-01T00:00:00Z"
         type: string
       games:
         items:
@@ -226,20 +227,26 @@ definitions:
           $ref: '#/definitions/expedition.ExpeditionImageRequest'
         type: array
       isPublic:
+        example: true
         type: boolean
       memo:
+        example: 初めてのスタジアム訪問。とても楽しかった！
         type: string
       payments:
         items:
           $ref: '#/definitions/expedition.PaymentRequest'
         type: array
       sportId:
+        example: 1
         type: integer
       stadiumId:
+        example: 1
         type: integer
       startDate:
+        example: "2025-01-01T00:00:00Z"
         type: string
       title:
+        example: 野球観戦の遠征記録
         type: string
       visitedFacilities:
         items:
@@ -272,10 +279,13 @@ definitions:
   expedition.ExpeditionImageResponse:
     properties:
       fileId:
+        example: file_1234567890
         type: string
       id:
+        example: 1
         type: integer
       image:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
         type: string
     type: object
   expedition.ExpeditionListResponse:
@@ -351,19 +361,30 @@ definitions:
   expedition.GameResponse:
     properties:
       comment:
+        example: 熱い試合でした！！
         type: string
       date:
+        example: "2025-01-01T00:00:00Z"
         type: string
       id:
+        example: 1
         type: integer
       scores:
         items:
           $ref: '#/definitions/expedition.GameScoreResponse'
         type: array
       team1Id:
+        example: 1
         type: integer
+      team1Name:
+        example: ヤクルト
+        type: string
       team2Id:
+        example: 2
         type: integer
+      team2Name:
+        example: ソフトバンク
+        type: string
     type: object
   expedition.GameScoreRequest:
     properties:
@@ -384,17 +405,25 @@ definitions:
   expedition.GameScoreResponse:
     properties:
       id:
+        example: 1
         type: integer
       order:
+        example: 1
         type: integer
       score:
+        example: 1
         type: integer
       teamId:
+        example: 1
         type: integer
+      teamName:
+        example: ヤクルト
+        type: string
     type: object
   expedition.GetExpeditionDetailResponse:
     properties:
       endDate:
+        example: "2025-01-01T00:00:00Z"
         type: string
       expeditionImages:
         items:
@@ -405,22 +434,35 @@ definitions:
           $ref: '#/definitions/expedition.GameResponse'
         type: array
       id:
+        example: 1
         type: integer
       isPublic:
+        example: true
         type: boolean
       memo:
+        example: 初めてのスタジアム訪問。とても楽しかった！
         type: string
       payments:
         items:
           $ref: '#/definitions/expedition.PaymentResponse'
         type: array
       sportId:
+        example: 1
         type: integer
+      sportName:
+        example: 野球
+        type: string
       stadiumId:
+        example: 1
         type: integer
+      stadiumName:
+        example: 東京ドーム
+        type: string
       startDate:
+        example: "2025-01-01T00:00:00Z"
         type: string
       title:
+        example: 野球観戦の遠征記録
         type: string
       visitedFacilities:
         items:
@@ -446,12 +488,16 @@ definitions:
   expedition.PaymentResponse:
     properties:
       cost:
+        example: 5000
         type: integer
       date:
+        example: "2025-01-01T00:00:00Z"
         type: string
       id:
+        example: 1
         type: integer
       title:
+        example: チケット代
         type: string
     type: object
   expedition.UpdateExpeditionImagesRequest:
@@ -698,18 +744,25 @@ definitions:
   expedition.VisitedFacilityResponse:
     properties:
       address:
+        example: 東京都千代田区丸の内1-1-1
         type: string
       color:
+        example: '#00FF00'
         type: string
       icon:
+        example: train
         type: string
       id:
+        example: 1
         type: integer
       latitude:
+        example: 35.6812
         type: number
       longitude:
+        example: 139.7671
         type: number
       name:
+        example: 東京駅
         type: string
     type: object
   upload.UploadImagesResponse:

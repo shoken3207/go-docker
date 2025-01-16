@@ -21,9 +21,9 @@ func (s *UserService) createUserResponse(user *models.User) *UserResponse {
 		Username:     user.Username,
 		Email:        user.Email,
 		Name:         user.Name,
-		Description:  user.Description,
-		ProfileImage: user.ProfileImage,
-		FileId:       user.FileId,
+		Description:  user.GetDescription(),
+		ProfileImage: user.GetProfileImage(),
+		FileId:       user.GetFileId(),
 	}
 	return &userResponse
 }
@@ -58,16 +58,16 @@ func (s *UserService) updateUser(ik *imagekit.ImageKit, userId *uint, request *U
 		}
 	}
 	return user, db.DB.Transaction(func(tx *gorm.DB) (error) {
-		if user.ProfileImage != request.ProfileImage {
-			if request.ProfileImage == "" && user.ProfileImage != "" {
-				if err := utils.DeleteUploadImage(ik, &user.FileId); err != nil {
+		if user.GetProfileImage() != request.ProfileImage {
+			if request.ProfileImage == "" && user.GetProfileImage() != "" {
+				if err := utils.DeleteUploadImage(ik, user.FileId); err != nil {
 					return err
 				}
-				user.FileId = ""
+				user.SetFileId("")
 			}
 
-			if request.ProfileImage != "" && user.ProfileImage != "" {
-				if err := utils.DeleteUploadImage(ik, &user.FileId); err != nil {
+			if request.ProfileImage != "" && user.GetProfileImage() != "" {
+				if err := utils.DeleteUploadImage(ik, user.FileId); err != nil {
 					return err
 				}
 			}
@@ -78,14 +78,14 @@ func (s *UserService) updateUser(ik *imagekit.ImageKit, userId *uint, request *U
 					return err
 				}
 				if len(validatedImages) > 0 {
-					user.FileId = validatedImages[0].FileId
+					user.SetFileId(validatedImages[0].FileId)
 				}
 			}
 		}
 		user.Username = request.Username
 		user.Name = request.Name
-		user.Description = request.Description
-		user.ProfileImage = request.ProfileImage
+		user.SetDescription(request.Description)
+		user.SetProfileImage(request.ProfileImage)
 		if err := db.DB.Model(user).Select("username", "profile_image", "file_id", "name", "description").Updates(user).Error; err != nil {
 			log.Printf("ユーザー更新エラー: %v", err)
 			return utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータがの更新に失敗しました。")
@@ -148,9 +148,9 @@ func (s *UserService) updateUserService(ik *imagekit.ImageKit, userId *uint, req
 		Username:     user.Username,
 		Email:        user.Email,
 		Name:         user.Name,
-		Description:  user.Description,
-		ProfileImage: user.ProfileImage,
-		FileId:       user.FileId,
+		Description:  user.GetDescription(),
+		ProfileImage: user.GetProfileImage(),
+		FileId:       user.GetFileId(),
 	}
 
 	return &userResponse, nil

@@ -41,7 +41,7 @@ func (h *ExpeditionHandler) GetExpeditionDetail(c *gin.Context) {
 }
 
 // @Summary 遠征記録を作成
-// @Description 遠征、出費、試合、訪れた施設の情報を保存する。fileIdはimagekitのfileIdで、ユニークな値です。
+// @Description 遠征、出費、試合、訪れた施設の情報を保存する。
 // @Tags expedition
 // @Security BearerAuth
 // @Param request body CreateExpeditionRequest true "遠征記録作成リクエスト"
@@ -73,7 +73,7 @@ func (h *ExpeditionHandler) CreateExpedition(c *gin.Context) {
 }
 
 // @Summary 遠征記録を更新
-// @Description 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはfileId(string)の配列をリクエストで渡してください
+// @Description 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはurlの配列をリクエストで渡してください
 // @Tags expedition
 // @Param request body UpdateExpeditionRequestBody true "遠征記録更新リクエスト"
 // @Param expeditionId path int true "遠征記録ID"

@@ -269,7 +269,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "遠征、出費、試合、訪れた施設の情報を保存する。fileIdはimagekitのfileIdで、ユニークな値です。",
+                "description": "遠征、出費、試合、訪れた施設の情報を保存する。",
                 "tags": [
                     "expedition"
                 ],
@@ -559,7 +559,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "遠征、出費、試合、訪れた施設の情報を更新する。\u003cbr\u003ePayment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはfileId(string)の配列をリクエストで渡してください",
+                "description": "遠征、出費、試合、訪れた施設の情報を更新する。\u003cbr\u003ePayment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはurlの配列をリクエストで渡してください",
                 "tags": [
                     "expedition"
                 ],

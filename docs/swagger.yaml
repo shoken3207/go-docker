@@ -1078,7 +1078,7 @@ paths:
       - expedition
   /api/expedition/create:
     post:
-      description: 遠征、出費、試合、訪れた施設の情報を保存する。fileIdはimagekitのfileIdで、ユニークな値です。
+      description: 遠征、出費、試合、訪れた施設の情報を保存する。
       parameters:
       - description: 遠征記録作成リクエスト
         in: body
@@ -1263,7 +1263,7 @@ paths:
       - expedition
   /api/expedition/update/{expeditionId}:
     put:
-      description: 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはfileId(string)の配列をリクエストで渡してください
+      description: 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはurlの配列をリクエストで渡してください
       parameters:
       - description: 遠征記録更新リクエスト
         in: body

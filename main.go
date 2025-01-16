@@ -6,6 +6,7 @@ import (
 	"go-docker/pkg/utils"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 
@@ -25,23 +26,60 @@ func BasicAuthMiddleware() gin.HandlerFunc {
 	})
 }
 
-func customCorsMiddleware() gin.HandlerFunc {
+func checkAdminPermission() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
+		referer := c.Request.Referer()
+		requestPath := c.Request.URL.Path
+		readonlyPath := "/swagger/readonly/"
+		if strings.Contains(requestPath, readonlyPath) {
+			c.Next()
+			return
+		}
+
+		if origin != "" && strings.Contains(origin, readonlyPath) {
+			utils.ErrorResponse[any](c, http.StatusForbidden, "読み取り専用モードではAPIの実行はできません。")
+			log.Printf("読み取り専用UIからのAPIリクエストをOriginでブロック: Origin=%s", origin)
+			c.Abort()
+			return
+		}
+        if origin == "" && strings.Contains(referer, readonlyPath) {
+			utils.ErrorResponse[any](c, http.StatusForbidden, "読み取り専用モードではAPIの実行はできません。")
+			log.Printf("読み取り専用UIからのAPIリクエストをRefererでブロック: Referer=%s", referer)
+			c.Abort()
+			return
+		}
+        c.Next()
+	}
+}
+
+func customCorsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		origin := c.Request.Referer()
 		if origin != "" {
 			allowedOrigins := []string{
 				os.Getenv("BASE_URL"),
 				"http://localhost:3000",
+				"http://localhost:5050",
 				"http://localhost:8080",
 				"capacitor://localhost",
 				"ionic://localhost",
 			}
 
 			allowed := false
+
+			parsedURL, err := url.Parse(origin)
+			if err != nil {
+				utils.ErrorResponse[any](c, http.StatusForbidden, "無効なオリジンです")
+				c.Abort()
+				return
+			}
+			originHost := parsedURL.Scheme + "://" + parsedURL.Host
+
 			for _, allowedOrigin := range allowedOrigins {
-				if origin == allowedOrigin {
+				if originHost == allowedOrigin {
 					allowed = true
-					c.Header("Access-Control-Allow-Origin", origin)
+					c.Header("Access-Control-Allow-Origin", originHost)
 					c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
 					c.Header("Access-Control-Allow-Headers", "*")
 					c.Header("Access-Control-Allow-Credentials", "true")
@@ -82,31 +120,7 @@ func main() {
 	ik := utils.NewImageKit()
 	r := gin.Default()
 
-    r.Use(func(c *gin.Context) {
-        log.Println(c.Request.Referer())
-		log.Println(c.Request.URL.Path)
-		log.Println(strings.HasSuffix(c.Request.URL.Path, ".html"))
-		log.Println(strings.HasSuffix(c.Request.URL.Path, ".css"))
-		log.Println(strings.HasSuffix(c.Request.URL.Path, ".js"))
-		log.Println(strings.HasSuffix(c.Request.URL.Path, ".json"))
-		log.Println(strings.HasSuffix(c.Request.URL.Path, ".png"))
-        if strings.HasPrefix(c.Request.URL.Path, "/swagger/readonly/") && 
-           (strings.HasSuffix(c.Request.URL.Path, ".html") ||
-            strings.HasSuffix(c.Request.URL.Path, ".css") ||
-            strings.HasSuffix(c.Request.URL.Path, ".js") ||
-            strings.HasSuffix(c.Request.URL.Path, ".json") ||
-            strings.HasSuffix(c.Request.URL.Path, ".png")) {
-            c.Next()
-            return
-        }
-		log.Println("APIリクエストのみをブロック")
-        if strings.Contains(c.Request.Referer(), "/swagger/readonly/") {
-            utils.ErrorResponse[any](c, http.StatusMethodNotAllowed, "読み取り専用モードでは実行できません。")
-            c.Abort()
-            return
-        }
-        c.Next()
-    })
+    r.Use(checkAdminPermission())
 
 	r.Use(customCorsMiddleware())
 

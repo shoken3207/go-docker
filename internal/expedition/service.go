@@ -28,15 +28,15 @@ func (s *ExpeditionService) FindExpeditionById(expeditionId uint) (*models.Exped
 	}
 	return &expedition, nil
 }
-func (s *ExpeditionService) CreateExpedition(newExpedition *models.Expedition) error {
-	if err := db.DB.Create(newExpedition).Error; err != nil {
+func (s *ExpeditionService) CreateExpedition(tx *gorm.DB, newExpedition *models.Expedition) error {
+	if err := tx.Create(newExpedition).Error; err != nil {
 		log.Printf("遠征記録作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録作成に失敗しました。")
 	}
 	return nil
 }
-func (s *ExpeditionService) UpdateExpedition(updateExpedition *models.Expedition) error {
-	if err := db.DB.Save(updateExpedition).Error; err != nil {
+func (s *ExpeditionService) UpdateExpedition(tx *gorm.DB, updateExpedition *models.Expedition) error {
+	if err := tx.Save(updateExpedition).Error; err != nil {
 		log.Printf("遠征記録更新エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "遠征記録が見つかりません。")
@@ -45,7 +45,7 @@ func (s *ExpeditionService) UpdateExpedition(updateExpedition *models.Expedition
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteExpedition(expeditionId *uint, userId *uint, ik *imagekit.ImageKit) error {
+func (s *ExpeditionService) DeleteExpeditionService(expeditionId *uint, userId *uint, ik *imagekit.ImageKit) error {
 	expedition, err := s.FindExpeditionById(*expeditionId)
 	if err != nil {
 		return err
@@ -88,15 +88,15 @@ func (s *ExpeditionService) FindPaymentById(paymentId uint) (*models.Payment, er
 	}
 	return &payment, nil
 }
-func (s *ExpeditionService) CreatePayment(newPayment *models.Payment) error {
-	if err := db.DB.Create(newPayment).Error; err != nil {
+func (s *ExpeditionService) CreatePayment(tx *gorm.DB, newPayment *models.Payment) error {
+	if err := tx.Create(newPayment).Error; err != nil {
 		log.Printf("遠征記録出費作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録出費作成に失敗しました。")
 	}
 	return nil
 }
-func (s *ExpeditionService) UpdatePayment(updatePayment *models.Payment) error {
-	if err := db.DB.Save(updatePayment).Error; err != nil {
+func (s *ExpeditionService) UpdatePayment(tx *gorm.DB, updatePayment *models.Payment) error {
+	if err := tx.Save(updatePayment).Error; err != nil {
 		log.Printf("遠征記録出費更新エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "遠征記録出費が見つかりません。")
@@ -105,8 +105,8 @@ func (s *ExpeditionService) UpdatePayment(updatePayment *models.Payment) error {
 	}
 	return nil
 }
-func (s *ExpeditionService) DeletePayments(paymentIds *[]uint) error {
-	if err := db.DB.Delete(&models.Payment{}, paymentIds).Error; err != nil {
+func (s *ExpeditionService) DeletePayments(tx *gorm.DB, paymentIds *[]uint) error {
+	if err := tx.Delete(&models.Payment{}, paymentIds).Error; err != nil {
 		log.Printf("遠征記録出費削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "遠征記録出費が見つかりません。")
@@ -116,15 +116,15 @@ func (s *ExpeditionService) DeletePayments(paymentIds *[]uint) error {
 	return nil
 }
 
-func (s *ExpeditionService) CreateExpeditionImage(newExpeditionImage *models.ExpeditionImage) error {
-	if err := db.DB.Create(newExpeditionImage).Error; err != nil {
+func (s *ExpeditionService) CreateExpeditionImages(tx *gorm.DB, newExpeditionImages *[]models.ExpeditionImage) error {
+	if err := tx.Create(newExpeditionImages).Error; err != nil {
 		log.Printf("遠征記録画像データ作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "遠征記録画像データ作成に失敗しました。")
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteExpeditionImages(fileIds []string) error {
-	if err := db.DB.Where("file_id IN ?", fileIds).Delete(&models.ExpeditionImage{}).Error; err != nil {
+func (s *ExpeditionService) DeleteExpeditionImages(tx *gorm.DB, fileIds []string) error {
+	if err := tx.Where("file_id IN ?", fileIds).Delete(&models.ExpeditionImage{}).Error; err != nil {
 		log.Printf("遠征記録画像データ削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "遠征記録画像データが見つかりません。")
@@ -146,15 +146,15 @@ func (s *ExpeditionService) FindVisitedFacilityById(visitedFacilityId uint) (*mo
 	}
 	return &visitedFacility, nil
 }
-func (s *ExpeditionService) CreateVisitedFacility(newVisitedFacilitiy *models.VisitedFacility) error {
-	if err := db.DB.Create(newVisitedFacilitiy).Error; err != nil {
+func (s *ExpeditionService) CreateVisitedFacility(tx *gorm.DB, newVisitedFacilitiy *models.VisitedFacility) error {
+	if err := tx.Create(newVisitedFacilitiy).Error; err != nil {
 		log.Printf("訪れた施設作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "訪れた施設作成に失敗しました。")
 	}
 	return nil
 }
-func (s *ExpeditionService) UpdateVisitedFacility(updateVisitedFacilitiy *models.VisitedFacility) error {
-	if err := db.DB.Save(updateVisitedFacilitiy).Error; err != nil {
+func (s *ExpeditionService) UpdateVisitedFacility(tx *gorm.DB, updateVisitedFacilitiy *models.VisitedFacility) error {
+	if err := tx.Save(updateVisitedFacilitiy).Error; err != nil {
 		log.Printf("訪れた施設更新エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "訪れた施設が見つかりません。")
@@ -163,8 +163,8 @@ func (s *ExpeditionService) UpdateVisitedFacility(updateVisitedFacilitiy *models
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteVisitedFacilities(visitedFacilityIds *[]uint) error {
-	if err := db.DB.Delete(&models.VisitedFacility{}, visitedFacilityIds).Error; err != nil {
+func (s *ExpeditionService) DeleteVisitedFacilities(tx *gorm.DB, visitedFacilityIds *[]uint) error {
+	if err := tx.Delete(&models.VisitedFacility{}, visitedFacilityIds).Error; err != nil {
 		log.Printf("訪れた施設削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "訪れた施設が見つかりません。")
@@ -186,16 +186,16 @@ func (s *ExpeditionService) FindGameById(gameId uint) (*models.Game, error) {
 	}
 	return &game, nil
 }
-func (s *ExpeditionService) CreateGame(newGame *models.Game) error {
+func (s *ExpeditionService) CreateGame(tx *gorm.DB, newGame *models.Game) error {
 	log.Printf("newGame: %v", newGame)
-	if err := db.DB.Create(newGame).Error; err != nil {
+	if err := tx.Create(newGame).Error; err != nil {
 		log.Printf("試合記録作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "試合記録作成に失敗しました。")
 	}
 	return nil
 }
-func (s *ExpeditionService) UpdateGame(updateGame *models.Game) error {
-	if err := db.DB.Save(updateGame).Error; err != nil {
+func (s *ExpeditionService) UpdateGame(tx *gorm.DB, updateGame *models.Game) error {
+	if err := tx.Save(updateGame).Error; err != nil {
 		log.Printf("試合記録更新エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "試合記録が見つかりません。")
@@ -204,8 +204,8 @@ func (s *ExpeditionService) UpdateGame(updateGame *models.Game) error {
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteGames(gameIds *[]uint) error {
-	if err := db.DB.Delete(&models.Game{}, gameIds).Error; err != nil {
+func (s *ExpeditionService) DeleteGames(tx *gorm.DB, gameIds *[]uint) error {
+	if err := tx.Delete(&models.Game{}, gameIds).Error; err != nil {
 		log.Printf("試合記録削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "試合記録が見つかりません。")
@@ -227,8 +227,8 @@ func (s *ExpeditionService) FindGameScoreById(gameScoreId uint) (*models.GameSco
 	}
 	return &gameScore, nil
 }
-func (s *ExpeditionService) CreateGameScore(newGameScore *models.GameScore) error {
-	if err := db.DB.Create(newGameScore).Error; err != nil {
+func (s *ExpeditionService) CreateGameScore(tx *gorm.DB, newGameScore *models.GameScore) error {
+	if err := tx.Create(newGameScore).Error; err != nil {
 		log.Printf("試合得点作成エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "試合得点が見つかりません。")
@@ -237,8 +237,8 @@ func (s *ExpeditionService) CreateGameScore(newGameScore *models.GameScore) erro
 	}
 	return nil
 }
-func (s *ExpeditionService) UpdateGameScore(updateGameScore *models.GameScore) error {
-	if err := db.DB.Save(updateGameScore).Error; err != nil {
+func (s *ExpeditionService) UpdateGameScore(tx *gorm.DB, updateGameScore *models.GameScore) error {
+	if err := tx.Save(updateGameScore).Error; err != nil {
 		log.Printf("試合得点更新エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "試合得点が見つかりません。")
@@ -247,8 +247,8 @@ func (s *ExpeditionService) UpdateGameScore(updateGameScore *models.GameScore) e
 	}
 	return nil
 }
-func (s *ExpeditionService) DeleteGameScores(gameScoreIds *[]uint) error {
-	if err := db.DB.Delete(&models.GameScore{}, gameScoreIds).Error; err != nil {
+func (s *ExpeditionService) DeleteGameScores(tx *gorm.DB, gameScoreIds *[]uint) error {
+	if err := tx.Delete(&models.GameScore{}, gameScoreIds).Error; err != nil {
 		log.Printf("試合得点削除エラー: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utils.NewCustomError(http.StatusNotFound, "試合得点が見つかりません。")
@@ -354,31 +354,32 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 }
 
 func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest, userId *uint) error {
-	newExpedition := models.Expedition{
-		SportId:   request.SportId,
-		IsPublic:  request.IsPublic,
-		Title:     request.Title,
-		Memo:      request.Memo,
-		StartDate: request.StartDate,
-		EndDate:   request.EndDate,
-		StadiumId: request.StadiumId,
-		UserId:    *userId,
-	}
-	if err := s.CreateExpedition(&newExpedition); err != nil {
-		return err
-	}
-
-	games := request.Games
-	for _, game := range games {
-		newGame := models.Game{
-			ExpeditionId: newExpedition.ID,
-			Date:         game.Date,
-			Team1Id:      game.Team1Id,
-			Team2Id:      game.Team2Id,
+	return db.DB.Transaction(func(tx *gorm.DB) error {
+		newExpedition := models.Expedition{
+			SportId:   request.SportId,
+			IsPublic:  request.IsPublic,
+			Title:     request.Title,
+			Memo:      request.Memo,
+			StartDate: request.StartDate,
+			EndDate:   request.EndDate,
+			StadiumId: request.StadiumId,
+			UserId:    *userId,
 		}
-		if err := s.CreateGame(&newGame); err != nil {
+		if err := s.CreateExpedition(tx, &newExpedition); err != nil {
 			return err
 		}
+
+		games := request.Games
+		for _, game := range games {
+			newGame := models.Game{
+				ExpeditionId: newExpedition.ID,
+				Date:         game.Date,
+				Team1Id:      game.Team1Id,
+				Team2Id:      game.Team2Id,
+			}
+			if err := s.CreateGame(tx, &newGame); err != nil {
+				return err
+			}
 
 		for _, gameScore := range game.Scores {
 			newGameScore := models.GameScore{
@@ -388,54 +389,64 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 				Order:  gameScore.Order,
 			}
 
-			if err := s.CreateGameScore(&newGameScore); err != nil {
+				if err :=s.CreateGameScore(tx, &newGameScore); err != nil {
+					return err
+				}
+			}
+		}
+
+		imageUrls := request.ImageUrls
+		if len(imageUrls) > 0 {
+			tempImages, err := utils.ValidateAndPersistImages(tx, imageUrls)
+			if err != nil {
+				return err
+			}
+
+			var expeditionImages []models.ExpeditionImage
+			for _, tempImage := range tempImages {
+				expeditionImages = append(expeditionImages, models.ExpeditionImage{
+					ExpeditionId: newExpedition.ID,
+					Image:       tempImage.Image,
+					FileId:      tempImage.FileId,
+				})
+			}
+
+			if err := s.CreateExpeditionImages(tx, &expeditionImages); err != nil {
 				return err
 			}
 		}
-	}
 
-	images := request.Images
-	for _, image := range images {
-		newExpeditionImage := models.ExpeditionImage{
-			ExpeditionId: newExpedition.ID,
-			Image:        image.Image,
-			FileId:       image.FileId,
+		payments := request.Payments
+		for _, payment := range payments {
+			newPayment := models.Payment{
+				Title:        payment.Title,
+				Date:         payment.Date,
+				Cost:         payment.Cost,
+				ExpeditionId: newExpedition.ID,
+			}
+			if err := s.CreatePayment(tx, &newPayment); err != nil {
+				return err
+			}
 		}
-		if err := s.CreateExpeditionImage(&newExpeditionImage); err != nil {
-			return err
-		}
-	}
 
-	payments := request.Payments
-	for _, payment := range payments {
-		newPayment := models.Payment{
-			Title:        payment.Title,
-			Date:         payment.Date,
-			Cost:         payment.Cost,
-			ExpeditionId: newExpedition.ID,
+		visitedFacilities := request.VisitedFacilities
+		for _, visitedFacility := range visitedFacilities {
+			newVisitedFacility := models.VisitedFacility{
+				ExpeditionId: newExpedition.ID,
+				Name:         visitedFacility.Name,
+				Address:      visitedFacility.Address,
+				Icon:         visitedFacility.Icon,
+				Color:        visitedFacility.Color,
+				Latitude:     visitedFacility.Latitude,
+				Longitude:    visitedFacility.Longitude,
+			}
+			if err := s.CreateVisitedFacility(tx, &newVisitedFacility); err != nil {
+				return err
+			}
 		}
-		if err := s.CreatePayment(&newPayment); err != nil {
-			return err
-		}
-	}
 
-	visitedFacilities := request.VisitedFacilities
-	for _, visitedFacility := range visitedFacilities {
-		newVisitedFacility := models.VisitedFacility{
-			ExpeditionId: newExpedition.ID,
-			Name:         visitedFacility.Name,
-			Address:      visitedFacility.Address,
-			Icon:         visitedFacility.Icon,
-			Color:        visitedFacility.Color,
-			Latitude:     visitedFacility.Latitude,
-			Longitude:    visitedFacility.Longitude,
-		}
-		if err := s.CreateVisitedFacility(&newVisitedFacility); err != nil {
-			return err
-		}
-	}
-
-	return nil
+		return nil
+	})
 }
 
 func (s *ExpeditionService) ValidateUpdateExpeditionRequest(c *gin.Context) (*uint, *UpdateExpeditionRequestBody, error) {
@@ -470,174 +481,194 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 	expedition.EndDate = requestBody.EndDate
 	expedition.StadiumId = requestBody.StadiumId
 
-	if err := s.UpdateExpedition(expedition); err != nil {
-		return err
-	}
-
-	games := requestBody.Games
-	for _, game := range games.Add {
-		newGame := models.Game{
-			ExpeditionId: *expeditionId,
-			Date:         game.Date,
-			Team1Id:      game.Team1Id,
-			Team2Id:      game.Team2Id,
-		}
-		if err := s.CreateGame(&newGame); err != nil {
+	return db.DB.Transaction(func(tx *gorm.DB) error {
+		if err := s.UpdateExpedition(tx, expedition); err != nil {
 			return err
 		}
 
-		for _, gameScore := range game.Scores {
-			newGameScore := models.GameScore{
-				GameId: newGame.ID,
-				TeamId: gameScore.TeamId,
-				Score:  gameScore.Score,
-				Order:  gameScore.Order,
+		games := requestBody.Games
+		for _, game := range games.Add {
+			newGame := models.Game{
+				ExpeditionId: *expeditionId,
+				Date:         game.Date,
+				Team1Id:      game.Team1Id,
+				Team2Id:      game.Team2Id,
 			}
-
-			if err := s.CreateGameScore(&newGameScore); err != nil {
+			if err := s.CreateGame(tx, &newGame); err != nil {
 				return err
 			}
-		}
-	}
-	for _, game := range games.Update {
-		updateGame, err := s.FindGameById(game.ID)
-		if err != nil {
-			return err
-		}
 
-		updateGame.Date = game.Date
-		updateGame.Team1Id = game.Team1Id
-		updateGame.Team2Id = game.Team2Id
-		if err := s.UpdateGame(updateGame); err != nil {
-			return err
-		}
+			for _, gameScore := range game.Scores {
+				newGameScore := models.GameScore{
+					GameId: newGame.ID,
+					TeamId: gameScore.TeamId,
+					Score:  gameScore.Score,
+					Order:  gameScore.Order,
+				}
 
-		gameScores := game.Scores
-		for _, gameScore := range gameScores.Add {
-			newGameScore := models.GameScore{
-				GameId: updateGame.ID,
-				TeamId: gameScore.TeamId,
-				Score:  gameScore.Score,
-				Order:  gameScore.Order,
-			}
-
-			if err := s.CreateGameScore(&newGameScore); err != nil {
-				return err
+				if err := s.CreateGameScore(tx, &newGameScore); err != nil {
+					return err
+				}
 			}
 		}
-		for _, gameScore := range gameScores.Update {
-			updateGameScore, err := s.FindGameScoreById(gameScore.ID)
+		for _, game := range games.Update {
+			updateGame, err := s.FindGameById(game.ID)
 			if err != nil {
 				return err
 			}
 
-			updateGameScore.TeamId = gameScore.TeamId
-			updateGameScore.Score = gameScore.Score
-			updateGameScore.Order = gameScore.Order
+			updateGame.Date = game.Date
+			updateGame.Team1Id = game.Team1Id
+			updateGame.Team2Id = game.Team2Id
+			if err := s.UpdateGame(tx, updateGame); err != nil {
+				return err
+			}
 
-			if err := s.UpdateGameScore(updateGameScore); err != nil {
+			gameScores := game.Scores
+			for _, gameScore := range gameScores.Add {
+				newGameScore := models.GameScore{
+					GameId: updateGame.ID,
+					TeamId: gameScore.TeamId,
+					Score:  gameScore.Score,
+					Order:  gameScore.Order,
+				}
+
+				if err := s.CreateGameScore(tx, &newGameScore); err != nil {
+					return err
+				}
+			}
+			for _, gameScore := range gameScores.Update {
+				updateGameScore, err := s.FindGameScoreById(gameScore.ID)
+				if err != nil {
+					return err
+				}
+
+				updateGameScore.TeamId = gameScore.TeamId
+				updateGameScore.Score = gameScore.Score
+				updateGameScore.Order = gameScore.Order
+
+				if err := s.UpdateGameScore(tx, updateGameScore); err != nil {
+					return err
+				}
+			}
+			if len(gameScores.Delete) > 0 {
+				if err := s.DeleteGameScores(tx, &gameScores.Delete); err != nil {
+					return err
+				}
+			}
+		}
+		if len(games.Delete) > 0 {
+			if err := s.DeleteGames(tx, &games.Delete); err != nil {
 				return err
 			}
 		}
-		if len(gameScores.Delete) > 0 {
-			if err := s.DeleteGameScores(&gameScores.Delete); err != nil {
+
+		images := requestBody.Images
+		if len(images.Add) > 0 {
+			tempImages, err := utils.ValidateAndPersistImages(tx, images.Add)
+			if err != nil {
+				return err
+			}
+			var expeditionImages []models.ExpeditionImage
+			for _, tempImage := range tempImages {
+				expeditionImages = append(expeditionImages, models.ExpeditionImage{
+					ExpeditionId: *expeditionId,
+					Image:        tempImage.Image,
+					FileId:       tempImage.FileId,
+				})
+			}
+			if err := s.CreateExpeditionImages(tx, &expeditionImages); err != nil {
 				return err
 			}
 		}
-	}
-	if len(games.Delete) > 0 {
-		if err := s.DeleteGames(&games.Delete); err != nil {
-			return err
+		if len(images.Delete) > 0 {
+			expeditionImages := []models.ExpeditionImage{}
+			if err := tx.Where("image IN ?", images.Delete).Find(&expeditionImages).Error; err != nil {
+				log.Printf("fileId取得エラー: %v", err)
+				return utils.NewCustomError(http.StatusInternalServerError, "一fileIdの取得に失敗しました")
+			}
+			var fileIds []string
+			for _, expeditionImage := range expeditionImages {
+				fileIds = append(fileIds, expeditionImage.FileId)
+			}
+			for _, fileId := range fileIds {
+				if err := utils.DeleteUploadImage(ik, &fileId); err != nil {
+					return err
+				}
+			}
+			if err := s.DeleteExpeditionImages(tx, fileIds); err != nil {
+				return err
+			}
 		}
-	}
 
-	images := requestBody.Images
-	for _, image := range images.Add {
-		newExpeditionImage := models.ExpeditionImage{
-			ExpeditionId: *expeditionId,
-			Image:        image.Image,
-			FileId:       image.FileId,
+		payments := requestBody.Payments
+		for _, payment := range payments.Add {
+			newPayment := models.Payment{
+				Title:        payment.Title,
+				Date:         payment.Date,
+				Cost:         payment.Cost,
+				ExpeditionId: *expeditionId,
+			}
+			if err := s.CreatePayment(tx, &newPayment); err != nil {
+				return err
+			}
 		}
-		if err := s.CreateExpeditionImage(&newExpeditionImage); err != nil {
-			return err
+		for _, payment := range payments.Update {
+			updatePayment, err := s.FindPaymentById(payment.ID)
+			if err != nil {
+				return err
+			}
+			updatePayment.Title = payment.Title
+			updatePayment.Date = payment.Date
+			updatePayment.Cost = payment.Cost
+			if err := s.UpdatePayment(tx, updatePayment); err != nil {
+				return err
+			}
 		}
-	}
-	for _, fileId := range images.Delete {
-		utils.DeleteUploadImage(ik, &fileId)
-	}
-	if len(images.Delete) > 0 {
-		if err := s.DeleteExpeditionImages(images.Delete); err != nil {
-			return err
+		if len(payments.Delete) > 0 {
+			if err := s.DeletePayments(tx, &payments.Delete); err != nil {
+				return err
+			}
 		}
-	}
 
-	payments := requestBody.Payments
-	for _, payment := range payments.Add {
-		newPayment := models.Payment{
-			Title:        payment.Title,
-			Date:         payment.Date,
-			Cost:         payment.Cost,
-			ExpeditionId: *expeditionId,
+		visitedFacilities := requestBody.VisitedFacilities
+		for _, visitedFacility := range visitedFacilities.Add {
+			newVisitedFacility := models.VisitedFacility{
+				ExpeditionId: *expeditionId,
+				Name:         visitedFacility.Name,
+				Address:      visitedFacility.Address,
+				Icon:         visitedFacility.Icon,
+				Color:        visitedFacility.Color,
+				Latitude:     visitedFacility.Latitude,
+				Longitude:    visitedFacility.Longitude,
+			}
+			if err := s.CreateVisitedFacility(tx, &newVisitedFacility); err != nil {
+				return err
+			}
 		}
-		if err := s.CreatePayment(&newPayment); err != nil {
-			return err
+		for _, visitedFacility := range visitedFacilities.Update {
+			updateVisitedFacility, err := s.FindVisitedFacilityById(visitedFacility.ID)
+			if err != nil {
+				return err
+			}
+			updateVisitedFacility.Name = visitedFacility.Name
+			updateVisitedFacility.Address = visitedFacility.Address
+			updateVisitedFacility.Icon = visitedFacility.Icon
+			updateVisitedFacility.Color = visitedFacility.Color
+			updateVisitedFacility.Latitude = visitedFacility.Latitude
+			updateVisitedFacility.Longitude = visitedFacility.Longitude
+			if err := s.UpdateVisitedFacility(tx, updateVisitedFacility); err != nil {
+				return err
+			}
 		}
-	}
-	for _, payment := range payments.Update {
-		updatePayment, err := s.FindPaymentById(payment.ID)
-		if err != nil {
-			return err
+		if len(visitedFacilities.Delete) > 0 {
+			if err := s.DeleteVisitedFacilities(tx, &visitedFacilities.Delete); err != nil {
+				return err
+			}
 		}
-		updatePayment.Title = payment.Title
-		updatePayment.Date = payment.Date
-		updatePayment.Cost = payment.Cost
-		if err := s.UpdatePayment(updatePayment); err != nil {
-			return err
-		}
-	}
-	if len(payments.Delete) > 0 {
-		if err := s.DeletePayments(&payments.Delete); err != nil {
-			return err
-		}
-	}
 
-	visitedFacilities := requestBody.VisitedFacilities
-	for _, visitedFacility := range visitedFacilities.Add {
-		newVisitedFacility := models.VisitedFacility{
-			ExpeditionId: *expeditionId,
-			Name:         visitedFacility.Name,
-			Address:      visitedFacility.Address,
-			Icon:         visitedFacility.Icon,
-			Color:        visitedFacility.Color,
-			Latitude:     visitedFacility.Latitude,
-			Longitude:    visitedFacility.Longitude,
-		}
-		if err := s.CreateVisitedFacility(&newVisitedFacility); err != nil {
-			return err
-		}
-	}
-	for _, visitedFacility := range visitedFacilities.Update {
-		updateVisitedFacility, err := s.FindVisitedFacilityById(visitedFacility.ID)
-		if err != nil {
-			return err
-		}
-		updateVisitedFacility.Name = visitedFacility.Name
-		updateVisitedFacility.Address = visitedFacility.Address
-		updateVisitedFacility.Icon = visitedFacility.Icon
-		updateVisitedFacility.Color = visitedFacility.Color
-		updateVisitedFacility.Latitude = visitedFacility.Latitude
-		updateVisitedFacility.Longitude = visitedFacility.Longitude
-		if err := s.UpdateVisitedFacility(updateVisitedFacility); err != nil {
-			return err
-		}
-	}
-	if len(visitedFacilities.Delete) > 0 {
-		if err := s.DeleteVisitedFacilities(&visitedFacilities.Delete); err != nil {
-			return err
-		}
-	}
-
-	return nil
+		return nil
+	})
 }
 
 func (s *ExpeditionService) CreateExpeditionLike(userId *uint, expeditionId *uint) error {

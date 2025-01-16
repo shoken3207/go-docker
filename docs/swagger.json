@@ -1906,10 +1906,6 @@
                     "type": "string",
                     "example": "野球が好きです！"
                 },
-                "fileId": {
-                    "type": "string",
-                    "example": "1234567890"
-                },
                 "name": {
                     "type": "string",
                     "maxLength": 100,
@@ -1983,6 +1979,7 @@
             "required": [
                 "endDate",
                 "games",
+                "imageUrls",
                 "isPublic",
                 "memo",
                 "payments",
@@ -2003,10 +2000,10 @@
                         "$ref": "#/definitions/expedition.GameRequest"
                     }
                 },
-                "images": {
+                "imageUrls": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/expedition.ExpeditionImageRequest"
+                        "type": "string"
                     }
                 },
                 "isPublic": {
@@ -2044,23 +2041,6 @@
                     "items": {
                         "$ref": "#/definitions/expedition.VisitedFacilityRequest"
                     }
-                }
-            }
-        },
-        "expedition.ExpeditionImageRequest": {
-            "type": "object",
-            "required": [
-                "fileId",
-                "image"
-            ],
-            "properties": {
-                "fileId": {
-                    "type": "string",
-                    "example": "file_1234567890"
-                },
-                "image": {
-                    "type": "string",
-                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -2372,7 +2352,7 @@
                 "add": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/expedition.ExpeditionImageRequest"
+                        "type": "string"
                     }
                 },
                 "delete": {
@@ -2732,24 +2712,11 @@
         "upload.UploadImagesResponse": {
             "type": "object",
             "properties": {
-                "images": {
+                "imageUrls": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/upload.UploadToImageKitResponse"
+                        "type": "string"
                     }
-                }
-            }
-        },
-        "upload.UploadToImageKitResponse": {
-            "type": "object",
-            "properties": {
-                "fileId": {
-                    "type": "string",
-                    "example": "file_1234567890"
-                },
-                "url": {
-                    "type": "string",
-                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -2767,16 +2734,12 @@
             "required": [
                 "description",
                 "name",
-                "profileImage"
+                "username"
             ],
             "properties": {
                 "description": {
                     "type": "string",
                     "example": "野球が好きです！"
-                },
-                "fileId": {
-                    "type": "string",
-                    "example": "1234567890"
                 },
                 "name": {
                     "type": "string",
@@ -2785,6 +2748,12 @@
                 "profileImage": {
                     "type": "string",
                     "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "example": "user123"
                 }
             }
         },

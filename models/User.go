@@ -7,8 +7,8 @@ type User struct {
 	PassHash        string           `json:"passHash" gorm:"not null;column:pass_hash"`
 	Name            string           `json:"name" gorm:"size:100;not null"`
 	Description     string           `json:"description" gorm:"type:text;null"`
-	ProfileImage    string           `json:"profileImage" gorm:"column:profile_image;null"`
-	FileId          string           `json:"fileId" gorm:"column:file_id;null;unique"`
+	ProfileImage    string           `json:"profileImage" gorm:"column:profile_image;"`
+	FileId          string           `json:"fileId" gorm:"column:file_id;unique"`
 	FavoriteTeams   []FavoriteTeam   `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE"`
 	ExpeditionLikes []ExpeditionLike `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE"`
 	Expeditions     []Expedition     `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE"`

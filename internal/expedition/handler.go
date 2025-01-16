@@ -53,7 +53,7 @@ func (h *ExpeditionHandler) GetExpeditionDetail(c *gin.Context) {
 func (h *ExpeditionHandler) CreateExpedition(c *gin.Context) {
 	var request CreateExpeditionRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		log.Printf("リクエストに不備があります。: %v", err)
+		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
 		return
 	}
@@ -133,7 +133,7 @@ func (h *ExpeditionHandler) DeleteExpedition(c *gin.Context, ik *imagekit.ImageK
 		return
 	}
 
-	if err := expeditionService.DeleteExpedition(&requestPath.ExpeditionId, userId, ik); err != nil {
+	if err := expeditionService.DeleteExpeditionService(&requestPath.ExpeditionId, userId, ik); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return

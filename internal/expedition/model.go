@@ -122,7 +122,7 @@ type CreateExpeditionRequest struct {
 	Payments          []PaymentRequest         `json:"payments" binding:"required"`
 	Games             []GameRequest            `json:"games" binding:"required"`
 	VisitedFacilities []VisitedFacilityRequest `json:"visitedFacilities" binding:"required"`
-	Images            []ExpeditionImageRequest `json:"images" buinding:"required"`
+	ImageUrls         []string                 `json:"imageUrls" binding:"required"`
 }
 
 type GetExpeditionDetailRequest struct {
@@ -151,8 +151,8 @@ type UpdateVisitedFacilitiesRequest struct {
 }
 
 type UpdateExpeditionImagesRequest struct {
-	Add    []ExpeditionImageRequest `json:"add"`
-	Delete []string                 `json:"delete"`
+	Add    []string `json:"add"`
+	Delete []string `json:"delete"`
 }
 
 type UpdateExpeditionRequestBody struct {

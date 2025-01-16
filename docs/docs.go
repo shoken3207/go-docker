@@ -1914,10 +1914,6 @@ const docTemplate = `{
                     "type": "string",
                     "example": "野球が好きです！"
                 },
-                "fileId": {
-                    "type": "string",
-                    "example": "1234567890"
-                },
                 "name": {
                     "type": "string",
                     "maxLength": 100,
@@ -1991,6 +1987,7 @@ const docTemplate = `{
             "required": [
                 "endDate",
                 "games",
+                "imageUrls",
                 "isPublic",
                 "memo",
                 "payments",
@@ -2011,10 +2008,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/expedition.GameRequest"
                     }
                 },
-                "images": {
+                "imageUrls": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/expedition.ExpeditionImageRequest"
+                        "type": "string"
                     }
                 },
                 "isPublic": {
@@ -2052,23 +2049,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/expedition.VisitedFacilityRequest"
                     }
-                }
-            }
-        },
-        "expedition.ExpeditionImageRequest": {
-            "type": "object",
-            "required": [
-                "fileId",
-                "image"
-            ],
-            "properties": {
-                "fileId": {
-                    "type": "string",
-                    "example": "file_1234567890"
-                },
-                "image": {
-                    "type": "string",
-                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -2154,17 +2134,12 @@ const docTemplate = `{
         "expedition.GameRequest": {
             "type": "object",
             "required": [
-                "comment",
                 "date",
                 "scores",
                 "team1Id",
                 "team2Id"
             ],
             "properties": {
-                "comment": {
-                    "type": "string",
-                    "example": "熱い試合でした！！"
-                },
                 "date": {
                     "type": "string",
                     "example": "2025-01-01T00:00:00Z"
@@ -2188,10 +2163,6 @@ const docTemplate = `{
         "expedition.GameResponse": {
             "type": "object",
             "properties": {
-                "comment": {
-                    "type": "string",
-                    "example": "熱い試合でした！！"
-                },
                 "date": {
                     "type": "string",
                     "example": "2025-01-01T00:00:00Z"
@@ -2389,7 +2360,7 @@ const docTemplate = `{
                 "add": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/expedition.ExpeditionImageRequest"
+                        "type": "string"
                     }
                 },
                 "delete": {
@@ -2460,7 +2431,6 @@ const docTemplate = `{
         "expedition.UpdateGameRequest": {
             "type": "object",
             "required": [
-                "comment",
                 "date",
                 "id",
                 "scores",
@@ -2468,10 +2438,6 @@ const docTemplate = `{
                 "team2Id"
             ],
             "properties": {
-                "comment": {
-                    "type": "string",
-                    "example": "熱い試合でした！！"
-                },
                 "date": {
                     "type": "string",
                     "example": "2025-01-01T00:00:00Z"
@@ -2754,24 +2720,11 @@ const docTemplate = `{
         "upload.UploadImagesResponse": {
             "type": "object",
             "properties": {
-                "images": {
+                "imageUrls": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/upload.UploadToImageKitResponse"
+                        "type": "string"
                     }
-                }
-            }
-        },
-        "upload.UploadToImageKitResponse": {
-            "type": "object",
-            "properties": {
-                "fileId": {
-                    "type": "string",
-                    "example": "file_1234567890"
-                },
-                "url": {
-                    "type": "string",
-                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 }
             }
         },
@@ -2789,16 +2742,12 @@ const docTemplate = `{
             "required": [
                 "description",
                 "name",
-                "profileImage"
+                "username"
             ],
             "properties": {
                 "description": {
                     "type": "string",
                     "example": "野球が好きです！"
-                },
-                "fileId": {
-                    "type": "string",
-                    "example": "1234567890"
                 },
                 "name": {
                     "type": "string",
@@ -2807,6 +2756,12 @@ const docTemplate = `{
                 "profileImage": {
                     "type": "string",
                     "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "example": "user123"
                 }
             }
         },

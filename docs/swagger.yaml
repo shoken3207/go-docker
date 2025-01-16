@@ -147,9 +147,6 @@ definitions:
       description:
         example: 野球が好きです！
         type: string
-      fileId:
-        example: "1234567890"
-        type: string
       name:
         example: tanaka taro
         maxLength: 100
@@ -216,9 +213,9 @@ definitions:
         items:
           $ref: '#/definitions/expedition.GameRequest'
         type: array
-      images:
+      imageUrls:
         items:
-          $ref: '#/definitions/expedition.ExpeditionImageRequest'
+          type: string
         type: array
       isPublic:
         example: true
@@ -249,6 +246,7 @@ definitions:
     required:
     - endDate
     - games
+    - imageUrls
     - isPublic
     - memo
     - payments
@@ -257,18 +255,6 @@ definitions:
     - startDate
     - title
     - visitedFacilities
-    type: object
-  expedition.ExpeditionImageRequest:
-    properties:
-      fileId:
-        example: file_1234567890
-        type: string
-      image:
-        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
-        type: string
-    required:
-    - fileId
-    - image
     type: object
   expedition.ExpeditionImageResponse:
     properties:
@@ -329,9 +315,6 @@ definitions:
     type: object
   expedition.GameRequest:
     properties:
-      comment:
-        example: 熱い試合でした！！
-        type: string
       date:
         example: "2025-01-01T00:00:00Z"
         type: string
@@ -346,7 +329,6 @@ definitions:
         example: 2
         type: integer
     required:
-    - comment
     - date
     - scores
     - team1Id
@@ -354,9 +336,6 @@ definitions:
     type: object
   expedition.GameResponse:
     properties:
-      comment:
-        example: 熱い試合でした！！
-        type: string
       date:
         example: "2025-01-01T00:00:00Z"
         type: string
@@ -498,7 +477,7 @@ definitions:
     properties:
       add:
         items:
-          $ref: '#/definitions/expedition.ExpeditionImageRequest'
+          type: string
         type: array
       delete:
         items:
@@ -550,9 +529,6 @@ definitions:
     type: object
   expedition.UpdateGameRequest:
     properties:
-      comment:
-        example: 熱い試合でした！！
-        type: string
       date:
         example: "2025-01-01T00:00:00Z"
         type: string
@@ -568,7 +544,6 @@ definitions:
         example: 2
         type: integer
     required:
-    - comment
     - date
     - id
     - scores
@@ -761,19 +736,10 @@ definitions:
     type: object
   upload.UploadImagesResponse:
     properties:
-      images:
+      imageUrls:
         items:
-          $ref: '#/definitions/upload.UploadToImageKitResponse'
+          type: string
         type: array
-    type: object
-  upload.UploadToImageKitResponse:
-    properties:
-      fileId:
-        example: file_1234567890
-        type: string
-      url:
-        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
-        type: string
     type: object
   user.IsUniqueUsernameResponse:
     properties:
@@ -786,19 +752,21 @@ definitions:
       description:
         example: 野球が好きです！
         type: string
-      fileId:
-        example: "1234567890"
-        type: string
       name:
         example: tanaka taro
         type: string
       profileImage:
         example: https://ik.imagekit.io/your_imagekit_id/image.jpg
         type: string
+      username:
+        example: user123
+        maxLength: 255
+        minLength: 1
+        type: string
     required:
     - description
     - name
-    - profileImage
+    - username
     type: object
   user.UserResponse:
     properties:

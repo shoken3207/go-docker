@@ -7,7 +7,6 @@ import (
 type Game struct {
 	BaseModel
 	Date         time.Time   `json:"date" gorm:"not null"`
-	Comment      string      `json:"comment" gorm:"type:text;not null"`
 	ExpeditionId uint        `json:"expeditionId" gorm:"column:expedition_id;not null"`
 	Team1Id      uint        `json:"team1Id" gorm:"column:team1_id;not null"`
 	Team2Id      uint        `json:"team2Id" gorm:"column:team2_id;not null"`

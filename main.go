@@ -4,12 +4,10 @@ import (
 	"go-docker/internal/db"
 	"go-docker/pkg/router"
 	"go-docker/pkg/utils"
+	"log"
 	"net/http"
 	"os"
 	"strings"
-	"time"
-
-	"github.com/gin-contrib/cors"
 
 	// "github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "go-docker/docs"
@@ -25,6 +23,48 @@ func BasicAuthMiddleware() gin.HandlerFunc {
 	return gin.BasicAuth(gin.Accounts{
 		swaggerUsername: swaggerPassword,
 	})
+}
+
+func customCorsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		origin := c.Request.Header.Get("Origin")
+		if origin != "" {
+			allowedOrigins := []string{
+				os.Getenv("BASE_URL"),
+				"http://localhost:3000",
+				"http://localhost:8080",
+				"capacitor://localhost",
+				"ionic://localhost",
+			}
+
+			allowed := false
+			for _, allowedOrigin := range allowedOrigins {
+				if origin == allowedOrigin {
+					allowed = true
+					c.Header("Access-Control-Allow-Origin", origin)
+					c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+					c.Header("Access-Control-Allow-Headers", "*")
+					c.Header("Access-Control-Allow-Credentials", "true")
+					c.Header("Access-Control-Expose-Headers", "Content-Length, Authorization")
+					c.Header("Access-Control-Max-Age", "43200")
+					break
+				}
+			}
+
+			if !allowed {
+				utils.ErrorResponse[any](c, http.StatusForbidden, "このオリジンからのアクセスは許可されていません")
+				c.Abort()
+				return
+			}
+		}
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
 
 // @title ビジターゴーAPI
@@ -43,22 +83,32 @@ func main() {
 	r := gin.Default()
 
     r.Use(func(c *gin.Context) {
-		if strings.Contains(c.Request.Referer(), "/swagger/readonly/") {
-			utils.ErrorResponse[any](c, http.StatusMethodNotAllowed, "読み取り専用モードでは実行できません。APIの実行には管理者モードでアクセスしてください。")
-			c.Abort()
-			return
-		}
-		c.Next()
-	})
+        log.Println(c.Request.Referer())
+		log.Println(c.Request.URL.Path)
+		log.Println(strings.HasSuffix(c.Request.URL.Path, ".html"))
+		log.Println(strings.HasSuffix(c.Request.URL.Path, ".css"))
+		log.Println(strings.HasSuffix(c.Request.URL.Path, ".js"))
+		log.Println(strings.HasSuffix(c.Request.URL.Path, ".json"))
+		log.Println(strings.HasSuffix(c.Request.URL.Path, ".png"))
+        if strings.HasPrefix(c.Request.URL.Path, "/swagger/readonly/") && 
+           (strings.HasSuffix(c.Request.URL.Path, ".html") ||
+            strings.HasSuffix(c.Request.URL.Path, ".css") ||
+            strings.HasSuffix(c.Request.URL.Path, ".js") ||
+            strings.HasSuffix(c.Request.URL.Path, ".json") ||
+            strings.HasSuffix(c.Request.URL.Path, ".png")) {
+            c.Next()
+            return
+        }
+		log.Println("APIリクエストのみをブロック")
+        if strings.Contains(c.Request.Referer(), "/swagger/readonly/") {
+            utils.ErrorResponse[any](c, http.StatusMethodNotAllowed, "読み取り専用モードでは実行できません。")
+            c.Abort()
+            return
+        }
+        c.Next()
+    })
 
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "capacitor://localhost", "ionic://localhost"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
-		AllowHeaders:     []string{"*"},
-		AllowCredentials: true,
-		ExposeHeaders:    []string{"Content-Length", "Authorization"},
-		MaxAge:           12 * time.Hour,
-	}))
+	r.Use(customCorsMiddleware())
 
 	router.SetupRouter(r, ik)
 

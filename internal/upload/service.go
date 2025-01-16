@@ -8,6 +8,10 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
+	"time"
+
+	"go-docker/internal/db"
+	"go-docker/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/imagekit-developer/imagekit-go"
@@ -69,8 +73,8 @@ func (s *UploadService) validateUploadImagesRequest(c *gin.Context) (*UploadImag
 	return &query, files, nil
 }
 
-func (s *UploadService) UploadImagesService(ik *imagekit.ImageKit, folder *string, files []*multipart.FileHeader) (*[]UploadToImageKitResponse, error) {
-	var images []UploadToImageKitResponse
+func (s *UploadService) UploadImagesService(ik *imagekit.ImageKit, folder *string, files []*multipart.FileHeader) (*[]string, error) {
+	var imageUrls []string
 	for _, file := range files {
 		src, err := file.Open()
 		if err != nil {
@@ -85,11 +89,19 @@ func (s *UploadService) UploadImagesService(ik *imagekit.ImageKit, folder *strin
 		if err != nil {
 			return nil, err
 		}
+		tempImage := models.TempImage{
+			FileId:    image.FileId,
+			Image:     image.Url,
+			ExpiresAt: time.Now().Add(24 * time.Hour),
+		}
+		if err := db.DB.Create(&tempImage).Error; err != nil {
+			return nil, utils.NewCustomError(http.StatusInternalServerError, "画像情報の保存に失敗しました")
+		}
 
-		images = append(images, *image)
+		imageUrls = append(imageUrls, image.Url)
 	}
 
-	return &images, nil
+	return &imageUrls, nil
 }
 
 func NewUploadService() *UploadService {

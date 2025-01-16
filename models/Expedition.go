@@ -13,7 +13,7 @@ type Expedition struct {
 	StartDate         time.Time         `json:"startDate" gorm:"column:start_date;not null"`
 	EndDate           time.Time         `json:"endDate" gorm:"column:end_date;not null"`
 	StadiumId         uint              `json:"stadiumId" gorm:"column:stadium_id;not null"`
-	Memo              string            `json:"memo" gorm:"type:text;not null"`
+	Memo              *string            `json:"memo" gorm:"type:text;"`
 	VisitedFacilities []VisitedFacility `gorm:"foreignKey:ExpeditionId;constraint:OnDelete:CASCADE"`
 	Payments          []Payment         `gorm:"foreignKey:ExpeditionId;constraint:OnDelete:CASCADE"`
 	ExpeditionImages  []ExpeditionImage `gorm:"foreignKey:ExpeditionId;constraint:OnDelete:CASCADE"`
@@ -22,4 +22,19 @@ type Expedition struct {
 	Sport             Sport             `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Stadium           Stadium           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	User              User              `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+}
+
+func (e *Expedition) GetMemo() string {
+	if e.Memo != nil {
+		return *e.Memo
+	}
+	return ""
+}
+
+func (e *Expedition) SetMemo(memo string) {
+	if memo == "" {
+		e.Memo = nil
+	} else {
+		e.Memo = &memo
+	}
 }

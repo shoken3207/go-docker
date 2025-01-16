@@ -223,10 +223,10 @@ func (s *AuthService) registerService(request *RegisterRequest) error {
 			Username:     request.Username,
 			Email:        email,
 			PassHash:     *passHash,
-			Description:  request.Description,
-			ProfileImage: request.ProfileImage,
-			FileId:      fileId,
 		}
+		newUser.SetDescription(request.Description)
+		newUser.SetProfileImage(request.ProfileImage)
+		newUser.SetFileId(fileId)
 
 		if err := authService.createUser(tx, &newUser); err != nil {
 			return err

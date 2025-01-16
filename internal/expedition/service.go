@@ -342,7 +342,7 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 			EndDate:     expedition.EndDate,
 			StadiumId:   expedition.StadiumId,
 			StadiumName: expedition.Stadium.Name,
-			Memo:        expedition.Memo,
+			Memo:        expedition.GetMemo(),
 		},
 		VisitedFacilities: visitedFacilities,
 		Payments:          payments,
@@ -359,12 +359,12 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 			SportId:   request.SportId,
 			IsPublic:  request.IsPublic,
 			Title:     request.Title,
-			Memo:      request.Memo,
 			StartDate: request.StartDate,
 			EndDate:   request.EndDate,
 			StadiumId: request.StadiumId,
 			UserId:    *userId,
 		}
+		newExpedition.SetMemo(request.Memo)
 		if err := s.CreateExpedition(tx, &newExpedition); err != nil {
 			return err
 		}
@@ -476,7 +476,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 
 	expedition.IsPublic = requestBody.IsPublic
 	expedition.Title = requestBody.Title
-	expedition.Memo = requestBody.Memo
+	expedition.SetMemo(requestBody.Memo)
 	expedition.StartDate = requestBody.StartDate
 	expedition.EndDate = requestBody.EndDate
 	expedition.StadiumId = requestBody.StadiumId

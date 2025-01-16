@@ -60,7 +60,7 @@ func customCorsMiddleware() gin.HandlerFunc {
 			allowedOrigins := []string{
 				os.Getenv("BASE_URL"),
 				"http://localhost:3000",
-				"http://localhost:5050",
+				"http://127.0.0.1:5050",
 				"http://localhost:8080",
 				"capacitor://localhost",
 				"ionic://localhost",

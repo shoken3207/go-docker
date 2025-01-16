@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/imagekit-developer/imagekit-go"
 )
 
 type UserHandler struct{}
@@ -137,7 +138,7 @@ func (h *UserHandler) GetMyData(c *gin.Context) {
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/update/{userId} [put]
-func (h *UserHandler) UpdateUser(c *gin.Context) {
+func (h *UserHandler) UpdateUser(c *gin.Context, ik *imagekit.ImageKit) {
 	userId, requestBody, err := userService.validateUpdateUserRequest(c)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
@@ -146,7 +147,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		}
 	}
 
-	userResponse, err := userService.updateUserService(userId, requestBody)
+	userResponse, err := userService.updateUserService(ik, userId, requestBody)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())

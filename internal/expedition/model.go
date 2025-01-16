@@ -22,7 +22,6 @@ type UpdatePaymentRequest struct {
 
 type BaseGameRequest struct {
 	Date    time.Time `json:"date" binding:"required" example:"2025-01-01T00:00:00Z"`
-	Comment string    `json:"comment" binding:"required" example:"熱い試合でした！！"`
 	Team1Id uint      `json:"team1Id" binding:"required" example:"1"`
 	Team2Id uint      `json:"team2Id" binding:"required" example:"2"`
 }
@@ -33,7 +32,6 @@ type GameRequest struct {
 type GameResponse struct {
 	ID      uint                `json:"id" example:"1"`
 	Date    time.Time           `json:"date" example:"2025-01-01T00:00:00Z"`
-	Comment string              `json:"comment" example:"熱い試合でした！！"`
 	Team1Id uint                `json:"team1Id" example:"1"`
 	Team1Name string `json:"team1Name" example:"ヤクルト"`
 	Team2Id uint                `json:"team2Id" example:"2"`
@@ -124,7 +122,7 @@ type CreateExpeditionRequest struct {
 	Payments          []PaymentRequest         `json:"payments" binding:"required"`
 	Games             []GameRequest            `json:"games" binding:"required"`
 	VisitedFacilities []VisitedFacilityRequest `json:"visitedFacilities" binding:"required"`
-	Images            []ExpeditionImageRequest `json:"images" buinding:"required"`
+	ImageUrls         []string                 `json:"imageUrls" binding:"required"`
 }
 
 type GetExpeditionDetailRequest struct {
@@ -153,8 +151,8 @@ type UpdateVisitedFacilitiesRequest struct {
 }
 
 type UpdateExpeditionImagesRequest struct {
-	Add    []ExpeditionImageRequest `json:"add"`
-	Delete []string                 `json:"delete"`
+	Add    []string `json:"add"`
+	Delete []string `json:"delete"`
 }
 
 type UpdateExpeditionRequestBody struct {

@@ -49,12 +49,11 @@ func (s *AuthService) findUserByUsername(username string) (*models.User, error) 
 	return &user, nil
 }
 
-func (s *AuthService) createUser(newUser *models.User) error {
-	if err := db.DB.Create(&newUser).Error; err != nil {
+func (s *AuthService) createUser(tx *gorm.DB, newUser *models.User) error {
+	if err := tx.Create(&newUser).Error; err != nil {
 		log.Printf("ユーザーデータ追加エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータ追加に失敗しました。")
 	}
-
 	return nil
 }
 
@@ -207,13 +206,34 @@ func (s *AuthService) registerService(request *RegisterRequest) error {
 		return err
 	}
 
-	newUser := models.User{Name: request.Name, Username: request.Username, Email: email, PassHash: *passHash, Description: request.Description, ProfileImage: request.ProfileImage, FileId: request.FileId}
+	return db.DB.Transaction(func(tx *gorm.DB) error {
+		var fileId string
+		if request.ProfileImage != "" {
+			tempImages, err := utils.ValidateAndPersistImages(tx, []string{request.ProfileImage})
+			if err != nil {
+				return err
+			}
+			if len(tempImages) > 0 {
+				fileId = tempImages[0].FileId
+			}
+		}
 
-	if err := authService.createUser(&newUser); err != nil {
-		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")
-	}
+		newUser := models.User{
+			Name:         request.Name,
+			Username:     request.Username,
+			Email:        email,
+			PassHash:     *passHash,
+			Description:  request.Description,
+			ProfileImage: request.ProfileImage,
+			FileId:      fileId,
+		}
 
-	return nil
+		if err := authService.createUser(tx, &newUser); err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (s *AuthService) loginService(request *LoginRequest) (*string, error) {

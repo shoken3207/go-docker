@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/imagekit-developer/imagekit-go"
 	"gorm.io/gorm"
 )
 
@@ -40,23 +41,58 @@ func (s *UserService) findUserById(userId uint) (*models.User, error) {
 	return &user, nil
 }
 
-func (s *UserService) updateUser(userId *uint, request *UpdateUserRequestBody) (*models.User, error) {
+func (s *UserService) updateUser(ik *imagekit.ImageKit, userId *uint, request *UpdateUserRequestBody) (*models.User, error) {
 	user, err := s.findUserById(*userId)
 	if err != nil {
 		return nil, err
 	}
-
-	user.Name = request.Name
-	user.Description = request.Description
-	user.ProfileImage = request.ProfileImage
-	user.FileId = request.FileId
-
-	if err := db.DB.Model(user).Updates(models.User{Name: request.Name, Description: request.Description, ProfileImage: request.ProfileImage, FileId: request.FileId}).Error; err != nil {
-		log.Printf("ユーザー更新エラー: %v", err)
-		return nil, utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータがの更新に失敗しました。")
+	if request.Username != user.Username {
+		isUnique, err := utils.CheckUsernameUnique(request.Username)
+		if err != nil {
+			if customErr, ok := err.(*utils.CustomError); ok && customErr.Code != http.StatusNotFound {
+				return nil, err
+			}
+		}
+		if !isUnique {
+			return nil, utils.NewCustomError(http.StatusConflict, "ユーザーネームが被っています。")
+		}
 	}
+	return user, db.DB.Transaction(func(tx *gorm.DB) (error) {
+		if user.ProfileImage != request.ProfileImage {
+			if request.ProfileImage == "" && user.ProfileImage != "" {
+				if err := utils.DeleteUploadImage(ik, &user.FileId); err != nil {
+					return err
+				}
+				user.FileId = ""
+			}
 
-	return user, nil
+			if request.ProfileImage != "" && user.ProfileImage != "" {
+				if err := utils.DeleteUploadImage(ik, &user.FileId); err != nil {
+					return err
+				}
+			}
+
+			if request.ProfileImage != "" {
+				validatedImages, err := utils.ValidateAndPersistImages(tx, []string{request.ProfileImage})
+				if err != nil {
+					return err
+				}
+				if len(validatedImages) > 0 {
+					user.FileId = validatedImages[0].FileId
+				}
+			}
+		}
+		user.Username = request.Username
+		user.Name = request.Name
+		user.Description = request.Description
+		user.ProfileImage = request.ProfileImage
+		if err := db.DB.Model(user).Select("username", "profile_image", "file_id", "name", "description").Updates(user).Error; err != nil {
+			log.Printf("ユーザー更新エラー: %v", err)
+			return utils.NewCustomError(http.StatusInternalServerError, "ユーザーデータがの更新に失敗しました。")
+		}
+		return nil
+	})
+
 }
 
 func (s *UserService) getUserByIdService(request *GetUserByIdRequest) (*UserResponse, error) {
@@ -101,8 +137,8 @@ func (s *UserService) validateUpdateUserRequest(c *gin.Context) (*uint, *UpdateU
 	return userId, &requestBody, nil
 }
 
-func (s *UserService) updateUserService(userId *uint, requestBody *UpdateUserRequestBody) (*UserResponse, error) {
-	user, err := userService.updateUser(userId, requestBody)
+func (s *UserService) updateUserService(ik *imagekit.ImageKit, userId *uint, requestBody *UpdateUserRequestBody) (*UserResponse, error) {
+	user, err := s.updateUser(ik, userId, requestBody)
 	if err != nil {
 		return nil, err
 	}

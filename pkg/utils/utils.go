@@ -200,3 +200,31 @@ func CheckUsernameUnique(username string) (bool, error) {
 
 	return true, nil
 }
+
+func ValidateAndPersistImages(tx *gorm.DB, imageUrls []string) ([]models.TempImage, error) {
+	if len(imageUrls) == 0 {
+		return []models.TempImage{}, nil
+	}
+
+	var tempImages []models.TempImage
+	if err := tx.Where("image IN ?", imageUrls).Find(&tempImages).Error; err != nil {
+		return []models.TempImage{}, NewCustomError(http.StatusInternalServerError, "画像情報の取得に失敗しました")
+	}
+
+	tempImageMap := make(map[string]models.TempImage)
+	for _, img := range tempImages {
+		tempImageMap[img.Image] = img
+	}
+
+	for _, imageUrl := range imageUrls {
+		if _, exists := tempImageMap[imageUrl]; !exists {
+			return nil, NewCustomError(http.StatusBadRequest, "無効な画像URLが含まれています")
+		}
+	}
+
+	if err := tx.Where("image IN ?", imageUrls).Delete(&models.TempImage{}).Error; err != nil {
+		return nil, NewCustomError(http.StatusInternalServerError, "一時画像の削除に失敗しました")
+	}
+
+	return tempImages, nil
+}

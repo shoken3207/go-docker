@@ -9,6 +9,7 @@ services:
       - 8080:8080
     environment:
       - ENV=${ENV}
+      - BASE_URL=${BASE_URL}
       - SECRET_KEY=${SECRET_KEY}
       - FROM_EMAIL=${FROM_EMAIL}
       - DB_HOST=${DB_HOST}

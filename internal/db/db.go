@@ -34,6 +34,7 @@ func InitDB() {
 		&models.Team{},
 		&models.User{},
 		&models.VisitedFacility{},
+		&models.TempImage{},
 
 	)
 	if err != nil {

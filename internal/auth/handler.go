@@ -119,8 +119,7 @@ func (h *AuthHandler) ResetPass(c *gin.Context) {
 // @Description 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
 // @Tags auth
 // @Security BearerAuth
-// @param userId path uint true "userId"
-// @Param request body UpdatePassRequestBody true "メールアドレス"
+// @Param request body UpdatePassRequestBody true "旧パスワードと新パスワード"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"

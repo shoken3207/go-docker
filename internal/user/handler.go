@@ -130,8 +130,7 @@ func (h *UserHandler) GetMyData(c *gin.Context) {
 // @description userIdが同じユーザーの情報を変更する
 // @Tags user
 // @Security BearerAuth
-// @param userId path uint true "userId"
-// @param request body UpdateUserRequestBody true "userId"
+// @param request body UpdateUserRequestBody true "更新データ"
 // @success 200 {object} utils.ApiResponse[UserResponse] "ユーザー情報"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"

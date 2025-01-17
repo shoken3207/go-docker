@@ -393,7 +393,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-expedition_LikeExpeditionResponse"
                         }
                     },
                     "400": {
@@ -522,7 +522,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-expedition_UnLikeExpeditionResponse"
                         }
                     },
                     "400": {
@@ -2127,7 +2127,7 @@ const docTemplate = `{
                 },
                 "userName": {
                     "type": "string",
-                    "example": "ユーザー名"
+                    "example": "user123"
                 }
             }
         },
@@ -2269,6 +2269,10 @@ const docTemplate = `{
                     "type": "boolean",
                     "example": true
                 },
+                "likesCount": {
+                    "type": "integer",
+                    "example": 10
+                },
                 "memo": {
                     "type": "string",
                     "example": "初めてのスタジアム訪問。とても楽しかった！"
@@ -2303,11 +2307,32 @@ const docTemplate = `{
                     "type": "string",
                     "example": "野球観戦の遠征記録"
                 },
+                "userIcon": {
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "userId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "username": {
+                    "type": "string",
+                    "example": "user123"
+                },
                 "visitedFacilities": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/expedition.VisitedFacilityResponse"
                     }
+                }
+            }
+        },
+        "expedition.LikeExpeditionResponse": {
+            "type": "object",
+            "properties": {
+                "likesCount": {
+                    "type": "integer",
+                    "example": 10
                 }
             }
         },
@@ -2351,6 +2376,15 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "チケット代"
+                }
+            }
+        },
+        "expedition.UnLikeExpeditionResponse": {
+            "type": "object",
+            "properties": {
+                "likesCount": {
+                    "type": "integer",
+                    "example": 10
                 }
             }
         },
@@ -2838,6 +2872,38 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/expedition.GetExpeditionDetailResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-expedition_LikeExpeditionResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/expedition.LikeExpeditionResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-expedition_UnLikeExpeditionResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/expedition.UnLikeExpeditionResponse"
                 },
                 "message": {
                     "type": "string",

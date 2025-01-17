@@ -310,7 +310,7 @@ definitions:
         example: 1
         type: integer
       userName:
-        example: ユーザー名
+        example: user123
         type: string
     type: object
   expedition.GameRequest:
@@ -412,6 +412,9 @@ definitions:
       isPublic:
         example: true
         type: boolean
+      likesCount:
+        example: 10
+        type: integer
       memo:
         example: 初めてのスタジアム訪問。とても楽しかった！
         type: string
@@ -437,10 +440,25 @@ definitions:
       title:
         example: 野球観戦の遠征記録
         type: string
+      userIcon:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
+        type: string
+      userId:
+        example: 1
+        type: integer
+      username:
+        example: user123
+        type: string
       visitedFacilities:
         items:
           $ref: '#/definitions/expedition.VisitedFacilityResponse'
         type: array
+    type: object
+  expedition.LikeExpeditionResponse:
+    properties:
+      likesCount:
+        example: 10
+        type: integer
     type: object
   expedition.PaymentRequest:
     properties:
@@ -472,6 +490,12 @@ definitions:
       title:
         example: チケット代
         type: string
+    type: object
+  expedition.UnLikeExpeditionResponse:
+    properties:
+      likesCount:
+        example: 10
+        type: integer
     type: object
   expedition.UpdateExpeditionImagesRequest:
     properties:
@@ -827,6 +851,28 @@ definitions:
         example: true
         type: boolean
     type: object
+  utils.ApiResponse-expedition_LikeExpeditionResponse:
+    properties:
+      data:
+        $ref: '#/definitions/expedition.LikeExpeditionResponse'
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.ApiResponse-expedition_UnLikeExpeditionResponse:
+    properties:
+      data:
+        $ref: '#/definitions/expedition.UnLikeExpeditionResponse'
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
   utils.ApiResponse-upload_UploadImagesResponse:
     properties:
       data:
@@ -1156,7 +1202,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.SuccessBasicResponse'
+            $ref: '#/definitions/utils.ApiResponse-expedition_LikeExpeditionResponse'
         "400":
           description: リクエストエラー
           schema:
@@ -1239,7 +1285,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.SuccessBasicResponse'
+            $ref: '#/definitions/utils.ApiResponse-expedition_UnLikeExpeditionResponse'
         "400":
           description: リクエストエラー
           schema:

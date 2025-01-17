@@ -106,6 +106,7 @@ type BaseExpeditionRequest struct {
 }
 type ExpeditionResponse struct {
 	ID        int       `json:"id" example:"1"`
+	UserId 	  uint      `json:"userId" example:"1"`
 	SportId   uint      `json:"sportId" example:"1"`
 	SportName string    `json:"sportName" example:"野球"`
 	IsPublic  bool      `json:"isPublic" example:"true"`
@@ -194,7 +195,7 @@ type ExpeditionListResponse struct {
 	SportId     uint                   `json:"sportId" example:"1"`
 	SportName   string                 `json:"sportName" example:"野球"`
 	UserID      uint                   `json:"userId" example:"1"`
-	UserName    string                 `json:"userName" example:"ユーザー名"`
+	UserName    string                 `json:"userName" example:"user123"`
 	UserIcon    string                 `json:"userIcon" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
 	LikesCount  int64                  `json:"likesCount" example:"10"`
 	Images      []string               `json:"images" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
@@ -210,8 +211,18 @@ type ExpeditionListRequest struct {
 
 type GetExpeditionDetailResponse struct {
 	ExpeditionResponse
+	Username        string `json:"username" example:"user123"`
+	UserIcon    string          `json:"userIcon" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	LikesCount  int64                  `json:"likesCount" example:"10"`
 	VisitedFacilities []VisitedFacilityResponse `json:"visitedFacilities"`
 	Payments          []PaymentResponse         `json:"payments"`
 	ExpeditionImages  []ExpeditionImageResponse `json:"expeditionImages"`
 	Games             []GameResponse            `json:"games"`
+}
+
+type LikeExpeditionResponse struct {
+	LikesCount  int64                  `json:"likesCount" example:"10"`
+}
+type UnLikeExpeditionResponse struct {
+	LikesCount  int64                  `json:"likesCount" example:"10"`
 }

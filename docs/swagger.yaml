@@ -304,6 +304,9 @@ definitions:
         items:
           type: string
         type: array
+      isLiked:
+        example: true
+        type: boolean
       likesCount:
         example: 10
         type: integer
@@ -312,6 +315,12 @@ definitions:
         type: integer
       sportName:
         example: 野球
+        type: string
+      stadiumId:
+        example: 1
+        type: integer
+      stadiumName:
+        example: 東京ドーム
         type: string
       startDate:
         example: "2025-01-01T00:00:00Z"

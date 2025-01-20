@@ -229,6 +229,13 @@ func (h *ExpeditionHandler) UnlikeExpedition(c *gin.Context) {
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/list [get]
 func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
+	userId, err := utils.StringToUint(c.GetString("userId"))
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
 	var req ExpeditionListRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
 		log.Printf("リクエストパラメータが不正です: %v", err)
@@ -236,7 +243,7 @@ func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
 		return
 	}
 
-	expeditions, err := expeditionService.GetExpeditionList(&req)
+	expeditions, err := expeditionService.GetExpeditionList(&req, userId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())

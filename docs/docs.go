@@ -2208,6 +2208,10 @@ const docTemplate = `{
                         "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                     ]
                 },
+                "isLiked": {
+                    "type": "boolean",
+                    "example": true
+                },
                 "likesCount": {
                     "type": "integer",
                     "example": 10
@@ -2219,6 +2223,14 @@ const docTemplate = `{
                 "sportName": {
                     "type": "string",
                     "example": "野球"
+                },
+                "stadiumId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "stadiumName": {
+                    "type": "string",
+                    "example": "東京ドーム"
                 },
                 "startDate": {
                     "type": "string",

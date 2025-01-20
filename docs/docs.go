@@ -1250,6 +1250,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/team/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "sport, leagueで入れ子になったteamを返却\u003cbr\u003e認証後、ログイン済みのuserIdからfavoriteTeamsを取得し、isFavoriteにtrueかfalseを設定する",
+                "tags": [
+                    "favoriteTeam"
+                ],
+                "summary": "クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-array_team_SportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/team/public": {
+            "get": {
+                "description": "sport, leagueで入れ子になったteamを返却\u003cbr\u003e最初にお気に入りチームを追加する際は、認証していないため全てのisFavoriteをfalseにして返す",
+                "tags": [
+                    "favoriteTeam"
+                ],
+                "summary": "クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-array_team_SportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/team/teamAdd": {
             "post": {
                 "security": [
@@ -2739,6 +2802,51 @@ const docTemplate = `{
                 }
             }
         },
+        "team.LeagueResponse": {
+            "type": "object",
+            "properties": {
+                "league": {
+                    "type": "string"
+                },
+                "teams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/team.TeamResponse"
+                    }
+                }
+            }
+        },
+        "team.SportResponse": {
+            "type": "object",
+            "properties": {
+                "icon": {
+                    "type": "string"
+                },
+                "sports": {
+                    "type": "string"
+                },
+                "team": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/team.LeagueResponse"
+                    }
+                }
+            }
+        },
+        "team.TeamResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "isFavorite": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "upload.UploadImagesResponse": {
             "type": "object",
             "properties": {
@@ -2827,6 +2935,25 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-array_team_SportResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/team.SportResponse"
                     }
                 },
                 "message": {

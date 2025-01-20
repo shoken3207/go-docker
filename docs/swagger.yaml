@@ -758,6 +758,35 @@ definitions:
         example: 東京駅
         type: string
     type: object
+  team.LeagueResponse:
+    properties:
+      league:
+        type: string
+      teams:
+        items:
+          $ref: '#/definitions/team.TeamResponse'
+        type: array
+    type: object
+  team.SportResponse:
+    properties:
+      icon:
+        type: string
+      sports:
+        type: string
+      team:
+        items:
+          $ref: '#/definitions/team.LeagueResponse'
+        type: array
+    type: object
+  team.TeamResponse:
+    properties:
+      id:
+        type: integer
+      isFavorite:
+        type: boolean
+      name:
+        type: string
+    type: object
   upload.UploadImagesResponse:
     properties:
       imageUrls:
@@ -821,6 +850,19 @@ definitions:
       data:
         items:
           $ref: '#/definitions/expedition.ExpeditionListResponse'
+        type: array
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.ApiResponse-array_team_SportResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/team.SportResponse'
         type: array
       message:
         example: 成功しました！！
@@ -1711,6 +1753,46 @@ paths:
       summary: チーム削除
       tags:
       - team
+  /api/team/me:
+    get:
+      description: sport, leagueで入れ子になったteamを返却<br>認証後、ログイン済みのuserIdからfavoriteTeamsを取得し、isFavoriteにtrueかfalseを設定する
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-array_team_SportResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI
+      tags:
+      - favoriteTeam
+  /api/team/public:
+    get:
+      description: sport, leagueで入れ子になったteamを返却<br>最初にお気に入りチームを追加する際は、認証していないため全てのisFavoriteをfalseにして返す
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-array_team_SportResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI
+      tags:
+      - favoriteTeam
   /api/team/teamAdd:
     post:
       description: リクエストからチーム情報を取得後、重複確認を行い登録する。

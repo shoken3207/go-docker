@@ -1,0 +1,8 @@
+diff a/.gitignore b/.gitignore	(rejected hunks)
+@@ -1,2 +1,3 @@
+ .env
+-.env.*
+\ No newline at end of file
++.env.*
++.exe
+\ No newline at end of file

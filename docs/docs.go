@@ -21,7 +21,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/auth/emailVerification": {
+        "/api/admin/auth/emailVerification": {
             "get": {
                 "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信\u003cbr\u003eユーザー登録、パスワードリセット時に使います。\u003cbr\u003e",
                 "tags": [
@@ -66,7 +66,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/login": {
+        "/api/admin/auth/login": {
             "post": {
                 "description": "メールアドレスとパスワードが合致したら、jwtトークンをクライアントに返却",
                 "tags": [
@@ -112,7 +112,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/register": {
+        "/api/admin/auth/register": {
             "post": {
                 "description": "メール内リンクから遷移できる本登録用画面からリクエスト内容を取得し、ユーザーテーブルに保存",
                 "tags": [
@@ -152,7 +152,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/resetPass": {
+        "/api/admin/auth/resetPass": {
             "put": {
                 "description": "メール内リンクから遷移できるパスワードリセット画面から、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する",
                 "tags": [
@@ -198,7 +198,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/updatePass/{userId}": {
+        "/api/admin/auth/updatePass/{userId}": {
             "put": {
                 "security": [
                     {
@@ -255,7 +255,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/expedition/create": {
+        "/api/admin/expedition/create": {
             "post": {
                 "security": [
                     {
@@ -306,7 +306,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/expedition/delete/{expeditionId}": {
+        "/api/admin/expedition/delete/{expeditionId}": {
             "delete": {
                 "security": [
                     {
@@ -361,7 +361,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/expedition/like/{expeditionId}": {
+        "/api/admin/expedition/like/{expeditionId}": {
             "post": {
                 "security": [
                     {
@@ -416,7 +416,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/expedition/list": {
+        "/api/admin/expedition/list": {
             "get": {
                 "security": [
                     {
@@ -490,7 +490,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/expedition/unlike/{expeditionId}": {
+        "/api/admin/expedition/unlike/{expeditionId}": {
             "delete": {
                 "security": [
                     {
@@ -545,7 +545,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/expedition/update/{expeditionId}": {
+        "/api/admin/expedition/update/{expeditionId}": {
             "put": {
                 "security": [
                     {
@@ -609,7 +609,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/expedition/{expeditionId}": {
+        "/api/admin/expedition/{expeditionId}": {
             "get": {
                 "security": [
                     {
@@ -664,7 +664,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/league/delete": {
+        "/api/admin/league/delete": {
             "delete": {
                 "security": [
                     {
@@ -683,7 +683,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                            "$ref": "#/definitions/adminTool.IdRequest"
                         }
                     }
                 ],
@@ -709,7 +709,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/league/leagueAdd": {
+        "/api/admin/league/leagueAdd": {
             "post": {
                 "security": [
                     {
@@ -754,7 +754,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/league/leagues": {
+        "/api/admin/league/leagues": {
             "get": {
                 "description": "リーグ情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
@@ -791,7 +791,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/league/update": {
+        "/api/admin/league/update": {
             "put": {
                 "security": [
                     {
@@ -836,7 +836,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/sample/helloWorld": {
+        "/api/admin/sample/helloWorld": {
             "get": {
                 "description": "Hello Worldを返すだけのAPIです。",
                 "tags": [
@@ -846,7 +846,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/sample/protectedHelloWorld": {
+        "/api/admin/sample/protectedHelloWorld": {
             "get": {
                 "security": [
                     {
@@ -861,7 +861,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/sports/delete": {
+        "/api/admin/sports/delete/{id}": {
             "delete": {
                 "security": [
                     {
@@ -875,13 +875,11 @@ const docTemplate = `{
                 "summary": "スポーツ削除",
                 "parameters": [
                     {
-                        "description": "スポーツ情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.DeleteRequest"
-                        }
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -906,7 +904,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/sports/sports": {
+        "/api/admin/sports/idSports/{id}": {
+            "get": {
+                "description": "idからスポーツ情報のレコードを取得して表示する。",
+                "tags": [
+                    "sports"
+                ],
+                "summary": "スポーツid検索",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-adminTool_Sports"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/sports/sports": {
             "get": {
                 "description": "スポーツ情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
@@ -943,7 +979,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/sports/sportsAdd": {
+        "/api/admin/sports/sportsAdd": {
             "post": {
                 "security": [
                     {
@@ -988,7 +1024,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/sports/update": {
+        "/api/admin/sports/update": {
             "put": {
                 "security": [
                     {
@@ -1033,7 +1069,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/stadium/delete": {
+        "/api/admin/stadium/delete": {
             "delete": {
                 "security": [
                     {
@@ -1052,7 +1088,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                            "$ref": "#/definitions/adminTool.IdRequest"
                         }
                     }
                 ],
@@ -1078,7 +1114,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/stadium/stadiumAdd": {
+        "/api/admin/stadium/stadiumAdd": {
             "post": {
                 "security": [
                     {
@@ -1123,7 +1159,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/stadium/stadiums": {
+        "/api/admin/stadium/stadiums": {
             "get": {
                 "description": "スタジアム情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
@@ -1160,7 +1196,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/stadium/update": {
+        "/api/admin/stadium/update": {
             "put": {
                 "security": [
                     {
@@ -1205,7 +1241,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/team/delete": {
+        "/api/admin/team/delete": {
             "delete": {
                 "security": [
                     {
@@ -1224,7 +1260,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                            "$ref": "#/definitions/adminTool.IdRequest"
                         }
                     }
                 ],
@@ -1250,7 +1286,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/team/teamAdd": {
+        "/api/admin/team/teamAdd": {
             "post": {
                 "security": [
                     {
@@ -1295,7 +1331,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/team/teams": {
+        "/api/admin/team/teams": {
             "get": {
                 "description": "チーム情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
@@ -1332,7 +1368,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/team/update": {
+        "/api/admin/team/update": {
             "put": {
                 "security": [
                     {
@@ -1377,7 +1413,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/upload/images": {
+        "/api/admin/upload/images": {
             "post": {
                 "description": "画像をアップロードし、URLを返します。\u003cbr\u003eプロフィール、スタジアム、遠征など、格納フォルダを指定してください。\u003cbr\u003e画像は1枚から10枚アップロードできるが、Swagger UIでは1つしか選択できません。\u003cbr\u003eファイルの拡張子は、[\".jpg\", \".jpeg\", \".png\"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。",
                 "consumes": [
@@ -1437,7 +1473,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/isUnique/{username}": {
+        "/api/admin/user/isUnique/{username}": {
             "get": {
                 "description": "リクエストと同じuserNameが登録済みかチェックする",
                 "tags": [
@@ -1475,7 +1511,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/logined": {
+        "/api/admin/user/logined": {
             "get": {
                 "security": [
                     {
@@ -1515,7 +1551,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/update/{userId}": {
+        "/api/admin/user/update/{userId}": {
             "put": {
                 "security": [
                     {
@@ -1572,7 +1608,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/userId/{userId}": {
+        "/api/admin/user/userId/{userId}": {
             "get": {
                 "security": [
                     {
@@ -1627,7 +1663,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/username/{username}": {
+        "/api/admin/user/username/{username}": {
             "get": {
                 "security": [
                     {
@@ -1684,7 +1720,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "adminTool.DeleteRequest": {
+        "adminTool.IdRequest": {
             "type": "object",
             "required": [
                 "id"
@@ -1727,6 +1763,21 @@ const docTemplate = `{
                 }
             }
         },
+        "adminTool.Sports": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "adminTool.SportsAddRequest": {
             "type": "object",
             "required": [
@@ -1759,6 +1810,7 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
+                "fileId",
                 "image",
                 "name"
             ],
@@ -1770,6 +1822,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "fileId": {
                     "type": "string"
                 },
                 "image": {
@@ -1786,6 +1841,7 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
+                "fileId",
                 "id",
                 "image",
                 "name"
@@ -1798,6 +1854,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "fileId": {
                     "type": "string"
                 },
                 "id": {
@@ -2817,6 +2876,22 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "user123"
+                }
+            }
+        },
+        "utils.ApiResponse-adminTool_Sports": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/adminTool.Sports"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },

@@ -14,7 +14,7 @@ import (
 )
 
 func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
-	api := router.Group("/api")
+	api := router.Group("/api/admin")
 
 	sampleHandler := sample.NewSampleHandler()
 	authHandler := auth.NewAuthHandler()
@@ -67,9 +67,10 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 		publicSportsGroup := publicGroup.Group("/sports")
 		{
 			publicSportsGroup.GET("/sports", adminToolHandler.GetSports)
+			publicSportsGroup.GET("/idSports/:id", adminToolHandler.GetIdSports)
 			publicSportsGroup.POST("/sportsAdd", adminToolHandler.SportsAdd)
 			publicSportsGroup.PUT("/update", adminToolHandler.SportsUpdate)
-			publicSportsGroup.DELETE("/delete", adminToolHandler.DeleteSports)
+			publicSportsGroup.DELETE("/delete/:id", adminToolHandler.DeleteSports)
 		}
 
 		publicLeagueGroup := publicGroup.Group("/league")

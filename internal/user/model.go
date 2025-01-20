@@ -17,7 +17,7 @@ type UpdateUserRequestBody struct {
 }
 
 type IsUniqueUsernameRequest struct {
-	Username string `uri:"username" binding:"required,min=5,max=255" example:"user123"`
+	Username string `uri:"username" binding:"required,min=1,max=255" example:"user123"`
 }
 
 // レスポンス

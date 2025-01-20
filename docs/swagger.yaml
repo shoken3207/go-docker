@@ -831,11 +831,28 @@ definitions:
         example: 使用できます
         type: string
     type: object
+  user.UpdateFavoriteTeamsRequest:
+    properties:
+      add:
+        example:
+        - 1
+        items:
+          type: integer
+        type: array
+      delete:
+        example:
+        - 1
+        items:
+          type: integer
+        type: array
+    type: object
   user.UpdateUserRequestBody:
     properties:
       description:
         example: 野球が好きです！
         type: string
+      favoriteTeams:
+        $ref: '#/definitions/user.UpdateFavoriteTeamsRequest'
       name:
         example: tanaka taro
         type: string
@@ -850,6 +867,7 @@ definitions:
     required:
     - description
     - name
+    - profileImage
     - username
     type: object
   user.UserResponse:

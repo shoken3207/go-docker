@@ -9,11 +9,17 @@ type GetUserByUsernameRequest struct {
 	Username string `uri:"username" binding:"required,min=5,max=255" example:"user123"`
 }
 
+type UpdateFavoriteTeamsRequest struct {
+	Add []uint `json:"add" example:"1"`
+	Delete []uint `json:"delete" example:"1"`
+}
+
 type UpdateUserRequestBody struct {
 	Username     string `json:"username" binding:"required,min=1,max=255" example:"user123"`
 	Name         string `json:"name" binding:"required" example:"tanaka taro"`
 	Description  string `json:"description" binding:"required" example:"野球が好きです！"`
-	ProfileImage string `json:"profileImage" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	ProfileImage string `json:"profileImage" binding:"required" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	FavoriteTeams UpdateFavoriteTeamsRequest `json:"favoriteTeams"`
 }
 
 type IsUniqueUsernameRequest struct {

@@ -56,13 +56,6 @@ func (s *AuthService) createUser(tx *gorm.DB, newUser *models.User) error {
 	}
 	return nil
 }
-func (s *AuthService) createFavoriteTeams(tx *gorm.DB, favoriteTeams *[]models.FavoriteTeam) error {
-	if err := tx.Create(&favoriteTeams).Error; err != nil {
-		log.Printf("お気に入りチーム追加エラー: %v", err)
-		return utils.NewCustomError(http.StatusInternalServerError, "お気に入りチーム追加に失敗しました。")
-	}
-	return nil
-}
 
 func (s *AuthService) generateHashedPass(password string) (*string, error) {
 	passHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -248,7 +241,7 @@ func (s *AuthService) registerService(request *RegisterRequest) error {
 				})
 			}
 
-			if err := s.createFavoriteTeams(tx, &favoriteTeams); err != nil {
+			if err := utils.CreateFavoriteTeams(tx, &favoriteTeams); err != nil {
 				return err
 			}
 		}

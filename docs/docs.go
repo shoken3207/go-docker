@@ -2865,7 +2865,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "league": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "J1リーグ"
                 },
                 "teams": {
                     "type": "array",
@@ -2879,10 +2880,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "icon": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "soccer"
                 },
                 "sports": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "サッカー"
                 },
                 "team": {
                     "type": "array",
@@ -2896,13 +2899,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "isFavorite": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "ＦＣ東京"
                 }
             }
         },

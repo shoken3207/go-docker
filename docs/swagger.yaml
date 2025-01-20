@@ -777,6 +777,7 @@ definitions:
   team.LeagueResponse:
     properties:
       league:
+        example: J1リーグ
         type: string
       teams:
         items:
@@ -786,8 +787,10 @@ definitions:
   team.SportResponse:
     properties:
       icon:
+        example: soccer
         type: string
       sports:
+        example: サッカー
         type: string
       team:
         items:
@@ -797,10 +800,13 @@ definitions:
   team.TeamResponse:
     properties:
       id:
+        example: 1
         type: integer
       isFavorite:
+        example: true
         type: boolean
       name:
+        example: ＦＣ東京
         type: string
     type: object
   upload.UploadImagesResponse:

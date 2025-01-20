@@ -23,7 +23,7 @@ var expeditionService = NewExpeditionService()
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/expedition/{expeditionId} [get]
+// @Router /api/expedition/{expeditionId} [get]
 func (h *ExpeditionHandler) GetExpeditionDetail(c *gin.Context) {
 	var request GetExpeditionDetailRequest
 	if err := c.ShouldBindUri(&request); err != nil {
@@ -49,7 +49,7 @@ func (h *ExpeditionHandler) GetExpeditionDetail(c *gin.Context) {
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/expedition/create [post]
+// @Router /api/expedition/create [post]
 func (h *ExpeditionHandler) CreateExpedition(c *gin.Context) {
 	var request CreateExpeditionRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -83,7 +83,7 @@ func (h *ExpeditionHandler) CreateExpedition(c *gin.Context) {
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "ユーザーが見つかりません"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/expedition/update/{expeditionId} [put]
+// @Router /api/expedition/update/{expeditionId} [put]
 func (h *ExpeditionHandler) UpdateExpedition(c *gin.Context, ik *imagekit.ImageKit) {
 	expeditionId, requestBody, err := expeditionService.ValidateUpdateExpeditionRequest(c)
 	if err != nil {
@@ -118,7 +118,7 @@ func (h *ExpeditionHandler) UpdateExpedition(c *gin.Context, ik *imagekit.ImageK
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "遠征記録が見つかりません"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/expedition/delete/{expeditionId} [delete]
+// @Router /api/expedition/delete/{expeditionId} [delete]
 func (h *ExpeditionHandler) DeleteExpedition(c *gin.Context, ik *imagekit.ImageKit) {
 	var requestPath DeleteExpeditionRequestPath
 	if err := c.ShouldBindUri(&requestPath); err != nil {
@@ -153,7 +153,7 @@ func (h *ExpeditionHandler) DeleteExpedition(c *gin.Context, ik *imagekit.ImageK
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "遠征記録が見つかりません"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/expedition/like/{expeditionId} [post]
+// @Router /api/expedition/like/{expeditionId} [post]
 func (h *ExpeditionHandler) LikeExpedition(c *gin.Context) {
 	var requestPath LikeExpeditionRequestPath
 	if err := c.ShouldBindUri(&requestPath); err != nil {
@@ -188,7 +188,7 @@ func (h *ExpeditionHandler) LikeExpedition(c *gin.Context) {
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "いいねが見つかりません"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/expedition/unlike/{expeditionId} [delete]
+// @Router /api/expedition/unlike/{expeditionId} [delete]
 func (h *ExpeditionHandler) UnlikeExpedition(c *gin.Context) {
 	var requestPath UnlikeExpeditionRequestPath
 	if err := c.ShouldBindUri(&requestPath); err != nil {
@@ -227,7 +227,7 @@ func (h *ExpeditionHandler) UnlikeExpedition(c *gin.Context) {
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "遠征記録が見つかりません"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/expedition/list [get]
+// @Router /api/expedition/list [get]
 func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
 	var req ExpeditionListRequest
 	if err := c.ShouldBindQuery(&req); err != nil {

@@ -13,7 +13,731 @@
         "version": "1.0"
     },
     "paths": {
-        "/api/admin/auth/emailVerification": {
+        "/api/admin/league/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してリーグ情報を削除します",
+                "tags": [
+                    "adminLeague"
+                ],
+                "summary": "リーグ削除",
+                "parameters": [
+                    {
+                        "description": "リーグID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.IdRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/league/leagueAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからリーグ情報を取得後、重複確認を行い登録する。",
+                "tags": [
+                    "adminLeague"
+                ],
+                "summary": "リーグの追加",
+                "parameters": [
+                    {
+                        "description": "リーグ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.LeagueAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/league/leagues": {
+            "get": {
+                "description": "リーグ情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "adminLeague"
+                ],
+                "summary": "リーグ全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/league/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してリーグ情報を更新します",
+                "tags": [
+                    "adminLeague"
+                ],
+                "summary": "リーグ更新",
+                "parameters": [
+                    {
+                        "description": "リーグ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.LeagueUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/sports/delete/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してスポーツ情報を削除します",
+                "tags": [
+                    "adminSports"
+                ],
+                "summary": "スポーツ削除",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/sports/idSports/{id}": {
+            "get": {
+                "description": "idからスポーツ情報のレコードを取得して表示する。",
+                "tags": [
+                    "adminSports"
+                ],
+                "summary": "スポーツid検索",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-adminTool_Sports"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/sports/sports": {
+            "get": {
+                "description": "スポーツ情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "adminSports"
+                ],
+                "summary": "スポーツ全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/sports/sportsAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからスポーツ情報を取得後、重複確認を行い登録する。",
+                "tags": [
+                    "adminSports"
+                ],
+                "summary": "スポーツの追加",
+                "parameters": [
+                    {
+                        "description": "スポーツ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.SportsAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/sports/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してスポーツ情報を更新します",
+                "tags": [
+                    "adminSports"
+                ],
+                "summary": "スポーツ更新",
+                "parameters": [
+                    {
+                        "description": "スポーツ情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.SportsUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/stadium/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してスタジアムを削除します",
+                "tags": [
+                    "adminStadium"
+                ],
+                "summary": "スタジアム削除",
+                "parameters": [
+                    {
+                        "description": "スタジアムID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.IdRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/stadium/stadiumAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからスタジアム情報を追加後、重複確認を行い登録する。",
+                "tags": [
+                    "adminStadium"
+                ],
+                "summary": "スタジアム追加",
+                "parameters": [
+                    {
+                        "description": "スタジアム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.StadiumAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/stadium/stadiums": {
+            "get": {
+                "description": "スタジアム情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "adminStadium"
+                ],
+                "summary": "スタジアム全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/stadium/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してスタジアムを更新します",
+                "tags": [
+                    "adminStadium"
+                ],
+                "summary": "スタジアム更新",
+                "parameters": [
+                    {
+                        "description": "スタジアム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.StadiumUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/team/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに削除対象のIDを指定してチーム情報を削除します",
+                "tags": [
+                    "adminTeam"
+                ],
+                "summary": "チーム削除",
+                "parameters": [
+                    {
+                        "description": "チームID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.IdRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/team/teamAdd": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストからチーム情報を取得後、重複確認を行い登録する。",
+                "tags": [
+                    "adminTeam"
+                ],
+                "summary": "チームの追加",
+                "parameters": [
+                    {
+                        "description": "チーム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.TeamAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/team/teams": {
+            "get": {
+                "description": "チーム情報のレコードを全件取得して、一覧として表示する。",
+                "tags": [
+                    "adminTeam"
+                ],
+                "summary": "チーム全件検索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "キーワード",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/team/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストボディに更新対象のIDを指定してチーム情報を更新します",
+                "tags": [
+                    "adminTeam"
+                ],
+                "summary": "チーム情報更新",
+                "parameters": [
+                    {
+                        "description": "チーム情報",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/adminTool.TeamUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/emailVerification": {
             "get": {
                 "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信\u003cbr\u003eユーザー登録、パスワードリセット時に使います。\u003cbr\u003e",
                 "tags": [
@@ -58,7 +782,7 @@
                 }
             }
         },
-        "/api/admin/auth/login": {
+        "/api/auth/login": {
             "post": {
                 "description": "メールアドレスとパスワードが合致したら、jwtトークンをクライアントに返却",
                 "tags": [
@@ -104,7 +828,7 @@
                 }
             }
         },
-        "/api/admin/auth/register": {
+        "/api/auth/register": {
             "post": {
                 "description": "メール内リンクから遷移できる本登録用画面からリクエスト内容を取得し、ユーザーテーブルに保存",
                 "tags": [
@@ -144,7 +868,7 @@
                 }
             }
         },
-        "/api/admin/auth/resetPass": {
+        "/api/auth/resetPass": {
             "put": {
                 "description": "メール内リンクから遷移できるパスワードリセット画面から、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する",
                 "tags": [
@@ -190,7 +914,7 @@
                 }
             }
         },
-        "/api/admin/auth/updatePass/{userId}": {
+        "/api/auth/updatePass/{userId}": {
             "put": {
                 "security": [
                     {
@@ -247,7 +971,7 @@
                 }
             }
         },
-        "/api/admin/expedition/create": {
+        "/api/expedition/create": {
             "post": {
                 "security": [
                     {
@@ -298,7 +1022,7 @@
                 }
             }
         },
-        "/api/admin/expedition/delete/{expeditionId}": {
+        "/api/expedition/delete/{expeditionId}": {
             "delete": {
                 "security": [
                     {
@@ -353,7 +1077,7 @@
                 }
             }
         },
-        "/api/admin/expedition/like/{expeditionId}": {
+        "/api/expedition/like/{expeditionId}": {
             "post": {
                 "security": [
                     {
@@ -408,7 +1132,7 @@
                 }
             }
         },
-        "/api/admin/expedition/list": {
+        "/api/expedition/list": {
             "get": {
                 "security": [
                     {
@@ -482,7 +1206,7 @@
                 }
             }
         },
-        "/api/admin/expedition/unlike/{expeditionId}": {
+        "/api/expedition/unlike/{expeditionId}": {
             "delete": {
                 "security": [
                     {
@@ -537,7 +1261,7 @@
                 }
             }
         },
-        "/api/admin/expedition/update/{expeditionId}": {
+        "/api/expedition/update/{expeditionId}": {
             "put": {
                 "security": [
                     {
@@ -601,7 +1325,7 @@
                 }
             }
         },
-        "/api/admin/expedition/{expeditionId}": {
+        "/api/expedition/{expeditionId}": {
             "get": {
                 "security": [
                     {
@@ -656,179 +1380,7 @@
                 }
             }
         },
-        "/api/admin/league/delete": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストボディに削除対象のIDを指定してリーグ情報を削除します",
-                "tags": [
-                    "league"
-                ],
-                "summary": "リーグ削除",
-                "parameters": [
-                    {
-                        "description": "リーグID",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.IdRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/league/leagueAdd": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストからリーグ情報を取得後、重複確認を行い登録する。",
-                "tags": [
-                    "league"
-                ],
-                "summary": "リーグの追加",
-                "parameters": [
-                    {
-                        "description": "リーグ情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.LeagueAddRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/league/leagues": {
-            "get": {
-                "description": "リーグ情報のレコードを全件取得して、一覧として表示する。",
-                "tags": [
-                    "league"
-                ],
-                "summary": "リーグ全件検索",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "キーワード",
-                        "name": "keyword",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/league/update": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストボディに更新対象のIDを指定してリーグ情報を更新します",
-                "tags": [
-                    "league"
-                ],
-                "summary": "リーグ更新",
-                "parameters": [
-                    {
-                        "description": "リーグ情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.LeagueUpdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/sample/helloWorld": {
+        "/api/sample/helloWorld": {
             "get": {
                 "description": "Hello Worldを返すだけのAPIです。",
                 "tags": [
@@ -838,7 +1390,7 @@
                 "responses": {}
             }
         },
-        "/api/admin/sample/protectedHelloWorld": {
+        "/api/sample/protectedHelloWorld": {
             "get": {
                 "security": [
                     {
@@ -853,414 +1405,23 @@
                 "responses": {}
             }
         },
-        "/api/admin/sports/delete/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストボディに削除対象のIDを指定してスポーツ情報を削除します",
-                "tags": [
-                    "sports"
-                ],
-                "summary": "スポーツ削除",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "スポーツID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/sports/idSports/{id}": {
+        "/api/team/me": {
             "get": {
-                "description": "idからスポーツ情報のレコードを取得して表示する。",
-                "tags": [
-                    "sports"
-                ],
-                "summary": "スポーツid検索",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "スポーツID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ApiResponse-adminTool_Sports"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/sports/sports": {
-            "get": {
-                "description": "スポーツ情報のレコードを全件取得して、一覧として表示する。",
-                "tags": [
-                    "sports"
-                ],
-                "summary": "スポーツ全件検索",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "キーワード",
-                        "name": "keyword",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/sports/sportsAdd": {
-            "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "リクエストからスポーツ情報を取得後、重複確認を行い登録する。",
-                "tags": [
-                    "sports"
-                ],
-                "summary": "スポーツの追加",
-                "parameters": [
-                    {
-                        "description": "スポーツ情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.SportsAddRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/sports/update": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストボディに更新対象のIDを指定してスポーツ情報を更新します",
-                "tags": [
-                    "sports"
-                ],
-                "summary": "スポーツ更新",
-                "parameters": [
-                    {
-                        "description": "スポーツ情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.SportsUpdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/stadium/delete": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストボディに削除対象のIDを指定してスタジアムを削除します",
-                "tags": [
-                    "stadium"
-                ],
-                "summary": "スタジアム削除",
-                "parameters": [
-                    {
-                        "description": "スタジアムID",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.IdRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/stadium/stadiumAdd": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストからスタジアム情報を追加後、重複確認を行い登録する。",
-                "tags": [
-                    "stadium"
-                ],
-                "summary": "スタジアム追加",
-                "parameters": [
-                    {
-                        "description": "スタジアム情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.StadiumAddRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/stadium/stadiums": {
-            "get": {
-                "description": "スタジアム情報のレコードを全件取得して、一覧として表示する。",
-                "tags": [
-                    "stadium"
-                ],
-                "summary": "スタジアム全件検索",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "キーワード",
-                        "name": "keyword",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/stadium/update": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストボディに更新対象のIDを指定してスタジアムを更新します",
-                "tags": [
-                    "stadium"
-                ],
-                "summary": "スタジアム更新",
-                "parameters": [
-                    {
-                        "description": "スタジアム情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.StadiumUpdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/team/delete": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストボディに削除対象のIDを指定してチーム情報を削除します",
+                "description": "sport, leagueで入れ子になったteamを返却\u003cbr\u003e認証後、ログイン済みのuserIdからfavoriteTeamsを取得し、isFavoriteにtrueかfalseを設定する",
                 "tags": [
                     "team"
                 ],
-                "summary": "チーム削除",
-                "parameters": [
-                    {
-                        "description": "チームID",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.IdRequest"
-                        }
-                    }
-                ],
+                "summary": "クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI",
                 "responses": {
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-array_team_SportResponse"
                         }
                     },
                     "400": {
@@ -1278,71 +1439,18 @@
                 }
             }
         },
-        "/api/admin/team/teamAdd": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストからチーム情報を取得後、重複確認を行い登録する。",
-                "tags": [
-                    "team"
-                ],
-                "summary": "チームの追加",
-                "parameters": [
-                    {
-                        "description": "チーム情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.TeamAddRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/team/teams": {
+        "/api/team/public": {
             "get": {
-                "description": "チーム情報のレコードを全件取得して、一覧として表示する。",
+                "description": "sport, leagueで入れ子になったteamを返却\u003cbr\u003e最初にお気に入りチームを追加する際は、認証していないため全てのisFavoriteをfalseにして返す",
                 "tags": [
                     "team"
                 ],
-                "summary": "チーム全件検索",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "キーワード",
-                        "name": "keyword",
-                        "in": "query"
-                    }
-                ],
+                "summary": "クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI",
                 "responses": {
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-array_team_SportResponse"
                         }
                     },
                     "400": {
@@ -1360,52 +1468,7 @@
                 }
             }
         },
-        "/api/admin/team/update": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "リクエストボディに更新対象のIDを指定してチーム情報を更新します",
-                "tags": [
-                    "team"
-                ],
-                "summary": "チーム情報更新",
-                "parameters": [
-                    {
-                        "description": "チーム情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.TeamUpdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/upload/images": {
+        "/api/upload/images": {
             "post": {
                 "description": "画像をアップロードし、URLを返します。\u003cbr\u003eプロフィール、スタジアム、遠征など、格納フォルダを指定してください。\u003cbr\u003e画像は1枚から10枚アップロードできるが、Swagger UIでは1つしか選択できません。\u003cbr\u003eファイルの拡張子は、[\".jpg\", \".jpeg\", \".png\"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。",
                 "consumes": [
@@ -1465,7 +1528,7 @@
                 }
             }
         },
-        "/api/admin/user/isUnique/{username}": {
+        "/api/user/isUnique/{username}": {
             "get": {
                 "description": "リクエストと同じuserNameが登録済みかチェックする",
                 "tags": [
@@ -1503,7 +1566,7 @@
                 }
             }
         },
-        "/api/admin/user/logined": {
+        "/api/user/logined": {
             "get": {
                 "security": [
                     {
@@ -1543,7 +1606,7 @@
                 }
             }
         },
-        "/api/admin/user/update/{userId}": {
+        "/api/user/update/{userId}": {
             "put": {
                 "security": [
                     {
@@ -1600,7 +1663,7 @@
                 }
             }
         },
-        "/api/admin/user/userId/{userId}": {
+        "/api/user/userId/{userId}": {
             "get": {
                 "security": [
                     {
@@ -1655,7 +1718,7 @@
                 }
             }
         },
-        "/api/admin/user/username/{username}": {
+        "/api/user/username/{username}": {
             "get": {
                 "security": [
                     {
@@ -1697,69 +1760,6 @@
                     },
                     "404": {
                         "description": "not foundエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/team/me": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "sport, leagueで入れ子になったteamを返却\u003cbr\u003e認証後、ログイン済みのuserIdからfavoriteTeamsを取得し、isFavoriteにtrueかfalseを設定する",
-                "tags": [
-                    "favoriteTeam"
-                ],
-                "summary": "クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI",
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ApiResponse-array_team_SportResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/team/public": {
-            "get": {
-                "description": "sport, leagueで入れ子になったteamを返却\u003cbr\u003e最初にお気に入りチームを追加する際は、認証していないため全てのisFavoriteをfalseにして返す",
-                "tags": [
-                    "favoriteTeam"
-                ],
-                "summary": "クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI",
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ApiResponse-array_team_SportResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
@@ -2915,6 +2915,10 @@
                 "isUnique": {
                     "type": "boolean",
                     "example": true
+                },
+                "message": {
+                    "type": "string",
+                    "example": "使用できます"
                 }
             }
         },

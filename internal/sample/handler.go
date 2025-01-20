@@ -11,7 +11,7 @@ type SampleHandler struct{}
 // @Summary サンプルAPI
 // @Description Hello Worldを返すだけのAPIです。
 // @Tags sample
-// @Router /api/admin/sample/helloWorld [get]
+// @Router /api/sample/helloWorld [get]
 func (h *SampleHandler) PublicHelloWorld(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Hello World!!!",
@@ -22,7 +22,7 @@ func (h *SampleHandler) PublicHelloWorld(c *gin.Context) {
 // @Description ログイン済みじゃないと実行できない、Hello Worldを返すだけのAPIです。
 // @Tags sample
 // @Security BearerAuth
-// @Router /api/admin/sample/protectedHelloWorld [get]
+// @Router /api/sample/protectedHelloWorld [get]
 func (h *SampleHandler) ProtectedHelloWorld(c *gin.Context) {
 	userId := c.GetString("userId")
 	c.JSON(http.StatusOK, gin.H{

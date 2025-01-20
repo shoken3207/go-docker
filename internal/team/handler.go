@@ -13,7 +13,7 @@ var teamService = NewTeamService()
 
 // @Summary クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI
 // @Description sport, leagueで入れ子になったteamを返却<br>最初にお気に入りチームを追加する際は、認証していないため全てのisFavoriteをfalseにして返す
-// @Tags favoriteTeam
+// @Tags team
 // @Success 200 {object} utils.ApiResponse[[]SportResponse] "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
@@ -32,7 +32,7 @@ func (h *TeamHandler) GetTeamsWithoutFavorites(c *gin.Context) {
 
 // @Summary クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI
 // @Description sport, leagueで入れ子になったteamを返却<br>認証後、ログイン済みのuserIdからfavoriteTeamsを取得し、isFavoriteにtrueかfalseを設定する
-// @Tags favoriteTeam
+// @Tags team
 // @Security BearerAuth
 // @Success 200 {object} utils.ApiResponse[[]SportResponse] "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"

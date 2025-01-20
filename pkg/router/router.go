@@ -5,6 +5,7 @@ import (
 	"go-docker/internal/auth"
 	"go-docker/internal/expedition"
 	"go-docker/internal/sample"
+	"go-docker/internal/team"
 	"go-docker/internal/upload"
 	"go-docker/internal/user"
 	"go-docker/pkg/utils"
@@ -14,13 +15,14 @@ import (
 )
 
 func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
-	api := router.Group("/api/admin")
+	api := router.Group("/api")
 
 	sampleHandler := sample.NewSampleHandler()
 	authHandler := auth.NewAuthHandler()
 	userHandler := user.NewUserHandler()
 	expeditionHandler := expedition.NewExpeditionHandler()
 	uploadHandler := upload.NewUploadHandler()
+	teamHandler := team.NewTeamHandler()
 	adminToolHandler := adminTool.NewAdminToolHandler()
 
 	publicGroup := api.Group("")
@@ -51,42 +53,43 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 			})
 		}
 
-		// publicTeamGroup := publicGroup.Group("/teams")
-		// {
-		// 	publicTeamGroup.POST("/teamAdd", adminToolHandler.teamAdd)
-		// }
-
-		publicStadiumGroup := publicGroup.Group("/stadium")
-		{
-			publicStadiumGroup.GET("/stadiums", adminToolHandler.GetStadiums)
-			publicStadiumGroup.POST("/stadiumAdd", adminToolHandler.StadiumAdd)
-			publicStadiumGroup.PUT("/update", adminToolHandler.StadiumUpdate)
-			publicStadiumGroup.DELETE("/delete", adminToolHandler.DeleteStadium)
-		}
-
-		publicSportsGroup := publicGroup.Group("/sports")
-		{
-			publicSportsGroup.GET("/sports", adminToolHandler.GetSports)
-			publicSportsGroup.GET("/idSports/:id", adminToolHandler.GetIdSports)
-			publicSportsGroup.POST("/sportsAdd", adminToolHandler.SportsAdd)
-			publicSportsGroup.PUT("/update", adminToolHandler.SportsUpdate)
-			publicSportsGroup.DELETE("/delete/:id", adminToolHandler.DeleteSports)
-		}
-
-		publicLeagueGroup := publicGroup.Group("/league")
-		{
-			publicLeagueGroup.GET("/leagues", adminToolHandler.GetLeagues)
-			publicLeagueGroup.POST("/leagueAdd", adminToolHandler.LeagueAdd)
-			publicLeagueGroup.PUT("/update", adminToolHandler.LeagueUpdate)
-			publicLeagueGroup.DELETE("/delete", adminToolHandler.DeleteLeague)
-		}
-
 		publicTeamGroup := publicGroup.Group("/team")
 		{
-			publicTeamGroup.GET("/teams", adminToolHandler.GetTeams)
-			publicTeamGroup.POST("/teamAdd", adminToolHandler.TeamAdd)
-			publicTeamGroup.PUT("/update", adminToolHandler.TeamUpdate)
-			publicTeamGroup.DELETE("/delete", adminToolHandler.DeleteTeam)
+			publicTeamGroup.GET("/public", teamHandler.GetTeamsWithoutFavorites)
+		}
+
+		publicAdminGroup := publicGroup.Group("/admin")
+		publicAdminStadiumGroup := publicAdminGroup.Group("/stadium")
+		{
+			publicAdminStadiumGroup.GET("/stadiums", adminToolHandler.GetStadiums)
+			publicAdminStadiumGroup.POST("/stadiumAdd", adminToolHandler.StadiumAdd)
+			publicAdminStadiumGroup.PUT("/update", adminToolHandler.StadiumUpdate)
+			publicAdminStadiumGroup.DELETE("/delete", adminToolHandler.DeleteStadium)
+		}
+
+		publicAdminSportsGroup := publicAdminGroup.Group("/sports")
+		{
+			publicAdminSportsGroup.GET("/sports", adminToolHandler.GetSports)
+			publicAdminSportsGroup.GET("/idSports/:id", adminToolHandler.GetIdSports)
+			publicAdminSportsGroup.POST("/sportsAdd", adminToolHandler.SportsAdd)
+			publicAdminSportsGroup.PUT("/update", adminToolHandler.SportsUpdate)
+			publicAdminSportsGroup.DELETE("/delete/:id", adminToolHandler.DeleteSports)
+		}
+
+		publicAdminLeagueGroup := publicAdminGroup.Group("/league")
+		{
+			publicAdminLeagueGroup.GET("/leagues", adminToolHandler.GetLeagues)
+			publicAdminLeagueGroup.POST("/leagueAdd", adminToolHandler.LeagueAdd)
+			publicAdminLeagueGroup.PUT("/update", adminToolHandler.LeagueUpdate)
+			publicAdminLeagueGroup.DELETE("/delete", adminToolHandler.DeleteLeague)
+		}
+
+		publicAdminTeamGroup := publicAdminGroup.Group("/team")
+		{
+			publicAdminTeamGroup.GET("/teams", adminToolHandler.GetTeams)
+			publicAdminTeamGroup.POST("/teamAdd", adminToolHandler.TeamAdd)
+			publicAdminTeamGroup.PUT("/update", adminToolHandler.TeamUpdate)
+			publicAdminTeamGroup.DELETE("/delete", adminToolHandler.DeleteTeam)
 		}
 
 	}
@@ -131,6 +134,11 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 				expeditionHandler.UnlikeExpedition(c)
 			})
 			protectedExpeditionGroup.GET("/list", expeditionHandler.GetExpeditionList)
+		}
+
+		protectedTeamGroup := protectedGroup.Group("/team")
+		{
+			protectedTeamGroup.GET("/me", teamHandler.GetTeamsWithFavorites)
 		}
 	}
 

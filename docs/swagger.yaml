@@ -163,6 +163,12 @@ definitions:
       description:
         example: 野球が好きです！
         type: string
+      favoriteTeamIds:
+        example:
+        - 1
+        items:
+          type: integer
+        type: array
       name:
         example: tanaka taro
         maxLength: 100
@@ -298,6 +304,9 @@ definitions:
         items:
           type: string
         type: array
+      isLiked:
+        example: true
+        type: boolean
       likesCount:
         example: 10
         type: integer
@@ -306,6 +315,12 @@ definitions:
         type: integer
       sportName:
         example: 野球
+        type: string
+      stadiumId:
+        example: 1
+        type: integer
+      stadiumName:
+        example: 東京ドーム
         type: string
       startDate:
         example: "2025-01-01T00:00:00Z"
@@ -825,11 +840,28 @@ definitions:
         example: 使用できます
         type: string
     type: object
+  user.UpdateFavoriteTeamsRequest:
+    properties:
+      add:
+        example:
+        - 1
+        items:
+          type: integer
+        type: array
+      delete:
+        example:
+        - 1
+        items:
+          type: integer
+        type: array
+    type: object
   user.UpdateUserRequestBody:
     properties:
       description:
         example: 野球が好きです！
         type: string
+      favoriteTeams:
+        $ref: '#/definitions/user.UpdateFavoriteTeamsRequest'
       name:
         example: tanaka taro
         type: string
@@ -844,6 +876,7 @@ definitions:
     required:
     - description
     - name
+    - profileImage
     - username
     type: object
   user.UserResponse:

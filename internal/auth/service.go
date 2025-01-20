@@ -232,6 +232,20 @@ func (s *AuthService) registerService(request *RegisterRequest) error {
 			return err
 		}
 
+		if len(request.FavoriteTeamIds) > 0 {
+			var favoriteTeams []models.FavoriteTeam
+			for _, favoriteTeamId := range request.FavoriteTeamIds {
+				favoriteTeams = append(favoriteTeams, models.FavoriteTeam{
+					UserId: newUser.ID,
+					TeamId: uint(favoriteTeamId),
+				})
+			}
+
+			if err := utils.CreateFavoriteTeams(tx, &favoriteTeams); err != nil {
+				return err
+			}
+		}
+
 		return nil
 	})
 }

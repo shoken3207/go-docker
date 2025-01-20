@@ -750,7 +750,7 @@ func (s *ExpeditionService) DeleteExpeditionLikeService(userId *uint, expedition
 	return likesCount, nil
 }
 
-func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest) ([]ExpeditionListResponse, error) {
+func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest, userId *uint) ([]ExpeditionListResponse, error) {
 	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
 	var expeditions []ExpeditionListResponse
 
@@ -761,6 +761,7 @@ func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest) ([]Exp
 			expeditions.start_date,
 			expeditions.end_date,
 			stadia.name as stadium_name,
+			stadia.id as stadium_id,
 			expeditions.sport_id,
 			sports.name as sport_name,
 			expeditions.user_id,
@@ -782,8 +783,14 @@ func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest) ([]Exp
 				WHERE g.expedition_id = expeditions.id
 				ORDER BY g.created_at
 				LIMIT 1
-			) as team2_name
-		`).
+			) as team2_name,
+			EXISTS (
+				SELECT 1
+				FROM expedition_likes
+				WHERE expedition_likes.expedition_id = expeditions.id
+				AND expedition_likes.user_id = ?
+			) as is_liked
+		`, *userId).
 		Joins("LEFT JOIN sports ON expeditions.sport_id = sports.id").
 		Joins("LEFT JOIN users ON expeditions.user_id = users.id").
 		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id").

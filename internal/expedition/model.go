@@ -197,6 +197,9 @@ type ExpeditionListResponse struct {
 	UserID      uint                   `json:"userId" example:"1"`
 	UserName    string                 `json:"userName" example:"user123"`
 	UserIcon    string                 `json:"userIcon" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	StadiumId uint      `json:"stadiumId" example:"1"`
+	StadiumName string `json:"stadiumName" example:"東京ドーム"`
+	IsLiked bool `json:"isLiked" example:"true"`
 	LikesCount  int64                  `json:"likesCount" example:"10"`
 	Images      []string               `json:"images" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
 	Team1Name   string                 `json:"team1Name" example:"ヤクルト"`

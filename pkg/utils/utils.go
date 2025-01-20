@@ -228,3 +228,11 @@ func ValidateAndPersistImages(tx *gorm.DB, imageUrls []string) ([]models.TempIma
 
 	return tempImages, nil
 }
+
+func CreateFavoriteTeams(tx *gorm.DB, favoriteTeams *[]models.FavoriteTeam) error {
+	if err := tx.Create(&favoriteTeams).Error; err != nil {
+		log.Printf("お気に入りチーム追加エラー: %v", err)
+		return NewCustomError(http.StatusInternalServerError, "お気に入りチーム追加に失敗しました。")
+	}
+	return nil
+}

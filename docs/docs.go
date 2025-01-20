@@ -2024,6 +2024,15 @@ const docTemplate = `{
                     "type": "string",
                     "example": "野球が好きです！"
                 },
+                "favoriteTeamIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1
+                    ]
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 100,
@@ -2199,6 +2208,10 @@ const docTemplate = `{
                         "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                     ]
                 },
+                "isLiked": {
+                    "type": "boolean",
+                    "example": true
+                },
                 "likesCount": {
                     "type": "integer",
                     "example": 10
@@ -2210,6 +2223,14 @@ const docTemplate = `{
                 "sportName": {
                     "type": "string",
                     "example": "野球"
+                },
+                "stadiumId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "stadiumName": {
+                    "type": "string",
+                    "example": "東京ドーム"
                 },
                 "startDate": {
                     "type": "string",
@@ -2936,17 +2957,44 @@ const docTemplate = `{
                 }
             }
         },
+        "user.UpdateFavoriteTeamsRequest": {
+            "type": "object",
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1
+                    ]
+                },
+                "delete": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1
+                    ]
+                }
+            }
+        },
         "user.UpdateUserRequestBody": {
             "type": "object",
             "required": [
                 "description",
                 "name",
+                "profileImage",
                 "username"
             ],
             "properties": {
                 "description": {
                     "type": "string",
                     "example": "野球が好きです！"
+                },
+                "favoriteTeams": {
+                    "$ref": "#/definitions/user.UpdateFavoriteTeamsRequest"
                 },
                 "name": {
                     "type": "string",

@@ -28,6 +28,17 @@ func (s *UserService) createUserResponse(user *models.User) *UserResponse {
 	return &userResponse
 }
 
+func (s *UserService) DeleteFavoriteTeams(tx *gorm.DB, userId uint, teamIds []uint) error {
+	if err := tx.Where("user_id = ? AND team_id IN ?", userId, teamIds).Delete(&models.FavoriteTeam{}).Error; err != nil {
+		log.Printf("お気に入りチーム削除エラー: %v", err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return utils.NewCustomError(http.StatusNotFound, "お気に入りチームが見つかりません。")
+		}
+		return utils.NewCustomError(http.StatusInternalServerError, "お気に入りチーム削除に失敗しました。")
+	}
+	return nil
+}
+
 func (s *UserService) findUserById(userId uint) (*models.User, error) {
 	user := models.User{}
 	if err := db.DB.Where("id = ?", userId).First(&user).Error; err != nil {
@@ -131,22 +142,43 @@ func (s *UserService) validateUpdateUserRequest(c *gin.Context) (*uint, *UpdateU
 }
 
 func (s *UserService) updateUserService(ik *imagekit.ImageKit, userId *uint, requestBody *UpdateUserRequestBody) (*UserResponse, error) {
-	user, err := s.updateUser(ik, userId, requestBody)
-	if err != nil {
-		return nil, err
-	}
+	var userResponse UserResponse
+	return &userResponse, db.DB.Transaction(func (tx *gorm.DB) error {
+		user, err := s.updateUser(ik, userId, requestBody)
+		if err != nil {
+			return err
+		}
 
-	userResponse := UserResponse{
-		Id:           user.ID,
-		Username:     user.Username,
-		Email:        user.Email,
-		Name:         user.Name,
-		Description:  user.GetDescription(),
-		ProfileImage: user.GetProfileImage(),
-		FileId:       user.GetFileId(),
-	}
+		addFavoriteTeamIds := requestBody.FavoriteTeams.Add
+		if(len(addFavoriteTeamIds) > 0) {
+			var favoriteTeams []models.FavoriteTeam
+			for _, teamId := range addFavoriteTeamIds {
+				favoriteTeams = append(favoriteTeams, models.FavoriteTeam{
+					UserId: user.ID,
+					TeamId: uint(teamId),
+				})
+			}
+			utils.CreateFavoriteTeams(tx, &favoriteTeams)
+		}
 
-	return &userResponse, nil
+		deleteFavoriteTeamIds := requestBody.FavoriteTeams.Delete
+		if(len(deleteFavoriteTeamIds) > 0) {
+			if err := s.DeleteFavoriteTeams(tx, user.ID, deleteFavoriteTeamIds); err != nil {
+				return err
+			}
+		}
+
+		userResponse = UserResponse{
+			Id:           user.ID,
+			Username:     user.Username,
+			Email:        user.Email,
+			Name:         user.Name,
+			Description:  user.GetDescription(),
+			ProfileImage: user.GetProfileImage(),
+			FileId:       user.GetFileId(),
+		}
+		return nil
+	})
 }
 
 func NewUserService() *UserService {

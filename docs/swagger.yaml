@@ -1,7 +1,7 @@
 consumes:
 - application/json
 definitions:
-  adminTool.DeleteRequest:
+  adminTool.IdRequest:
     properties:
       id:
         type: integer
@@ -29,6 +29,16 @@ definitions:
     - id
     - sport_id
     type: object
+  adminTool.Sports:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - id
+    - name
+    type: object
   adminTool.SportsAddRequest:
     properties:
       name:
@@ -54,6 +64,8 @@ definitions:
         type: integer
       description:
         type: string
+      fileId:
+        type: string
       image:
         type: string
       name:
@@ -62,6 +74,7 @@ definitions:
     - address
     - capacity
     - description
+    - fileId
     - image
     - name
     type: object
@@ -73,6 +86,8 @@ definitions:
         type: integer
       description:
         type: string
+      fileId:
+        type: string
       id:
         type: integer
       image:
@@ -83,6 +98,7 @@ definitions:
     - address
     - capacity
     - description
+    - fileId
     - id
     - image
     - name
@@ -845,6 +861,17 @@ definitions:
         example: user123
         type: string
     type: object
+  utils.ApiResponse-adminTool_Sports:
+    properties:
+      data:
+        $ref: '#/definitions/adminTool.Sports'
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
   utils.ApiResponse-array_expedition_ExpeditionListResponse:
     properties:
       data:
@@ -972,7 +999,7 @@ info:
   title: ビジターゴーAPI
   version: "1.0"
 paths:
-  /api/auth/emailVerification:
+  /api/admin/auth/emailVerification:
     get:
       description: リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信<br>ユーザー登録、パスワードリセット時に使います。<br>
       parameters:
@@ -1002,7 +1029,7 @@ paths:
       summary: メールアドレスの本人確認
       tags:
       - auth
-  /api/auth/login:
+  /api/admin/auth/login:
     post:
       description: メールアドレスとパスワードが合致したら、jwtトークンをクライアントに返却
       parameters:
@@ -1032,7 +1059,7 @@ paths:
       summary: ログイン
       tags:
       - auth
-  /api/auth/register:
+  /api/admin/auth/register:
     post:
       description: メール内リンクから遷移できる本登録用画面からリクエスト内容を取得し、ユーザーテーブルに保存
       parameters:
@@ -1058,7 +1085,7 @@ paths:
       summary: ユーザー登録
       tags:
       - auth
-  /api/auth/resetPass:
+  /api/admin/auth/resetPass:
     put:
       description: メール内リンクから遷移できるパスワードリセット画面から、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する
       parameters:
@@ -1088,7 +1115,7 @@ paths:
       summary: ログアウト状態からパスワードを変更
       tags:
       - auth
-  /api/auth/updatePass/{userId}:
+  /api/admin/auth/updatePass/{userId}:
     put:
       description: 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
       parameters:
@@ -1124,7 +1151,7 @@ paths:
       summary: ログイン状態からパスワードを変更
       tags:
       - auth
-  /api/expedition/{expeditionId}:
+  /api/admin/expedition/{expeditionId}:
     get:
       description: 遠征記録詳細情報を取得
       parameters:
@@ -1159,7 +1186,7 @@ paths:
       summary: idから遠征記録詳細を取得
       tags:
       - expedition
-  /api/expedition/create:
+  /api/admin/expedition/create:
     post:
       description: 遠征、出費、試合、訪れた施設の情報を保存する。
       parameters:
@@ -1191,7 +1218,7 @@ paths:
       summary: 遠征記録を作成
       tags:
       - expedition
-  /api/expedition/delete/{expeditionId}:
+  /api/admin/expedition/delete/{expeditionId}:
     delete:
       description: 遠征記録とそれに関連する全てのデータ（画像、いいね、支払い、試合情報など）を削除する
       parameters:
@@ -1226,7 +1253,7 @@ paths:
       summary: 遠征記録を削除
       tags:
       - expedition
-  /api/expedition/like/{expeditionId}:
+  /api/admin/expedition/like/{expeditionId}:
     post:
       description: ユーザーが遠征記録にいいねを付ける
       parameters:
@@ -1261,7 +1288,7 @@ paths:
       summary: 遠征記録にいいねする
       tags:
       - expedition
-  /api/expedition/list:
+  /api/admin/expedition/list:
     get:
       consumes:
       - application/json
@@ -1309,7 +1336,7 @@ paths:
       summary: 遠征記録一覧を取得
       tags:
       - expedition
-  /api/expedition/unlike/{expeditionId}:
+  /api/admin/expedition/unlike/{expeditionId}:
     delete:
       description: ユーザーが遠征記録のいいねを外す
       parameters:
@@ -1344,7 +1371,7 @@ paths:
       summary: 遠征記録のいいねを外す
       tags:
       - expedition
-  /api/expedition/update/{expeditionId}:
+  /api/admin/expedition/update/{expeditionId}:
     put:
       description: 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはurlの配列をリクエストで渡してください
       parameters:
@@ -1385,7 +1412,7 @@ paths:
       summary: 遠征記録を更新
       tags:
       - expedition
-  /api/league/delete:
+  /api/admin/league/delete:
     delete:
       description: リクエストボディに削除対象のIDを指定してリーグ情報を削除します
       parameters:
@@ -1394,7 +1421,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/adminTool.DeleteRequest'
+          $ref: '#/definitions/adminTool.IdRequest'
       responses:
         "200":
           description: 成功
@@ -1413,7 +1440,7 @@ paths:
       summary: リーグ削除
       tags:
       - league
-  /api/league/leagueAdd:
+  /api/admin/league/leagueAdd:
     post:
       description: リクエストからリーグ情報を取得後、重複確認を行い登録する。
       parameters:
@@ -1441,7 +1468,7 @@ paths:
       summary: リーグの追加
       tags:
       - league
-  /api/league/leagues:
+  /api/admin/league/leagues:
     get:
       description: リーグ情報のレコードを全件取得して、一覧として表示する。
       parameters:
@@ -1465,7 +1492,7 @@ paths:
       summary: リーグ全件検索
       tags:
       - league
-  /api/league/update:
+  /api/admin/league/update:
     put:
       description: リクエストボディに更新対象のIDを指定してリーグ情報を更新します
       parameters:
@@ -1493,14 +1520,14 @@ paths:
       summary: リーグ更新
       tags:
       - league
-  /api/sample/helloWorld:
+  /api/admin/sample/helloWorld:
     get:
       description: Hello Worldを返すだけのAPIです。
       responses: {}
       summary: サンプルAPI
       tags:
       - sample
-  /api/sample/protectedHelloWorld:
+  /api/admin/sample/protectedHelloWorld:
     get:
       description: ログイン済みじゃないと実行できない、Hello Worldを返すだけのAPIです。
       responses: {}
@@ -1509,16 +1536,15 @@ paths:
       summary: サンプルAPI
       tags:
       - sample
-  /api/sports/delete:
+  /api/admin/sports/delete/{id}:
     delete:
       description: リクエストボディに削除対象のIDを指定してスポーツ情報を削除します
       parameters:
-      - description: スポーツ情報
-        in: body
-        name: request
+      - description: スポーツID
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/adminTool.DeleteRequest'
+        type: integer
       responses:
         "200":
           description: 成功
@@ -1537,7 +1563,32 @@ paths:
       summary: スポーツ削除
       tags:
       - sports
-  /api/sports/sports:
+  /api/admin/sports/idSports/{id}:
+    get:
+      description: idからスポーツ情報のレコードを取得して表示する。
+      parameters:
+      - description: スポーツID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-adminTool_Sports'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: スポーツid検索
+      tags:
+      - sports
+  /api/admin/sports/sports:
     get:
       description: スポーツ情報のレコードを全件取得して、一覧として表示する。
       parameters:
@@ -1561,7 +1612,7 @@ paths:
       summary: スポーツ全件検索
       tags:
       - sports
-  /api/sports/sportsAdd:
+  /api/admin/sports/sportsAdd:
     post:
       description: リクエストからスポーツ情報を取得後、重複確認を行い登録する。
       parameters:
@@ -1589,7 +1640,7 @@ paths:
       summary: スポーツの追加
       tags:
       - sports
-  /api/sports/update:
+  /api/admin/sports/update:
     put:
       description: リクエストボディに更新対象のIDを指定してスポーツ情報を更新します
       parameters:
@@ -1617,7 +1668,7 @@ paths:
       summary: スポーツ更新
       tags:
       - sports
-  /api/stadium/delete:
+  /api/admin/stadium/delete:
     delete:
       description: リクエストボディに削除対象のIDを指定してスタジアムを削除します
       parameters:
@@ -1626,7 +1677,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/adminTool.DeleteRequest'
+          $ref: '#/definitions/adminTool.IdRequest'
       responses:
         "200":
           description: 成功
@@ -1645,7 +1696,7 @@ paths:
       summary: スタジアム削除
       tags:
       - stadium
-  /api/stadium/stadiumAdd:
+  /api/admin/stadium/stadiumAdd:
     post:
       description: リクエストからスタジアム情報を追加後、重複確認を行い登録する。
       parameters:
@@ -1673,7 +1724,7 @@ paths:
       summary: スタジアム追加
       tags:
       - stadium
-  /api/stadium/stadiums:
+  /api/admin/stadium/stadiums:
     get:
       description: スタジアム情報のレコードを全件取得して、一覧として表示する。
       parameters:
@@ -1697,7 +1748,7 @@ paths:
       summary: スタジアム全件検索
       tags:
       - stadium
-  /api/stadium/update:
+  /api/admin/stadium/update:
     put:
       description: リクエストボディに更新対象のIDを指定してスタジアムを更新します
       parameters:
@@ -1725,7 +1776,7 @@ paths:
       summary: スタジアム更新
       tags:
       - stadium
-  /api/team/delete:
+  /api/admin/team/delete:
     delete:
       description: リクエストボディに削除対象のIDを指定してチーム情報を削除します
       parameters:
@@ -1734,7 +1785,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/adminTool.DeleteRequest'
+          $ref: '#/definitions/adminTool.IdRequest'
       responses:
         "200":
           description: 成功
@@ -1753,47 +1804,7 @@ paths:
       summary: チーム削除
       tags:
       - team
-  /api/team/me:
-    get:
-      description: sport, leagueで入れ子になったteamを返却<br>認証後、ログイン済みのuserIdからfavoriteTeamsを取得し、isFavoriteにtrueかfalseを設定する
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/utils.ApiResponse-array_team_SportResponse'
-        "400":
-          description: リクエストエラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-        "500":
-          description: 内部エラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-      security:
-      - BearerAuth: []
-      summary: クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI
-      tags:
-      - favoriteTeam
-  /api/team/public:
-    get:
-      description: sport, leagueで入れ子になったteamを返却<br>最初にお気に入りチームを追加する際は、認証していないため全てのisFavoriteをfalseにして返す
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/utils.ApiResponse-array_team_SportResponse'
-        "400":
-          description: リクエストエラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-        "500":
-          description: 内部エラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-      summary: クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI
-      tags:
-      - favoriteTeam
-  /api/team/teamAdd:
+  /api/admin/team/teamAdd:
     post:
       description: リクエストからチーム情報を取得後、重複確認を行い登録する。
       parameters:
@@ -1821,7 +1832,7 @@ paths:
       summary: チームの追加
       tags:
       - team
-  /api/team/teams:
+  /api/admin/team/teams:
     get:
       description: チーム情報のレコードを全件取得して、一覧として表示する。
       parameters:
@@ -1845,7 +1856,7 @@ paths:
       summary: チーム全件検索
       tags:
       - team
-  /api/team/update:
+  /api/admin/team/update:
     put:
       description: リクエストボディに更新対象のIDを指定してチーム情報を更新します
       parameters:
@@ -1873,7 +1884,7 @@ paths:
       summary: チーム情報更新
       tags:
       - team
-  /api/upload/images:
+  /api/admin/upload/images:
     post:
       consumes:
       - multipart/form-data
@@ -1914,7 +1925,7 @@ paths:
       summary: 画像をクラウドストレージ(imagekit)にアップロード
       tags:
       - upload
-  /api/user/isUnique/{username}:
+  /api/admin/user/isUnique/{username}:
     get:
       description: リクエストと同じuserNameが登録済みかチェックする
       parameters:
@@ -1939,7 +1950,7 @@ paths:
       summary: ユーザーネームの重複チェック
       tags:
       - user
-  /api/user/logined:
+  /api/admin/user/logined:
     get:
       description: ヘッダーのトークンからロ図イン済みのユーザーを取得する
       responses:
@@ -1964,7 +1975,7 @@ paths:
       summary: ログイン済みの場合、ログインユーザーの情報を取得
       tags:
       - user
-  /api/user/update/{userId}:
+  /api/admin/user/update/{userId}:
     put:
       description: ユーザーの情報を変更する
       parameters:
@@ -2000,7 +2011,7 @@ paths:
       summary: ユーザー情報変更
       tags:
       - user
-  /api/user/userId/{userId}:
+  /api/admin/user/userId/{userId}:
     get:
       description: userIdからユーザーを1人取得
       parameters:
@@ -2035,7 +2046,7 @@ paths:
       summary: userIdからユーザー情報取得
       tags:
       - user
-  /api/user/username/{username}:
+  /api/admin/user/username/{username}:
     get:
       description: usernameからユーザーを1人取得
       parameters:
@@ -2070,6 +2081,46 @@ paths:
       summary: usernameからユーザー情報取得
       tags:
       - user
+  /api/team/me:
+    get:
+      description: sport, leagueで入れ子になったteamを返却<br>認証後、ログイン済みのuserIdからfavoriteTeamsを取得し、isFavoriteにtrueかfalseを設定する
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-array_team_SportResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI
+      tags:
+      - favoriteTeam
+  /api/team/public:
+    get:
+      description: sport, leagueで入れ子になったteamを返却<br>最初にお気に入りチームを追加する際は、認証していないため全てのisFavoriteをfalseにして返す
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-array_team_SportResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI
+      tags:
+      - favoriteTeam
 produces:
 - application/json
 securityDefinitions:

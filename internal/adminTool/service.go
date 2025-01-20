@@ -28,10 +28,18 @@ func (s *AdminToolService) stadiumSearchId(id uint) (*models.Stadium, error) {
 // ※スタジアム情報追加時
 func (s *AdminToolService) stadiumAddCheck(address string) (*models.Stadium, error) {
 	stadium := models.Stadium{}
-	if err := db.DB.Select("id", "name", "description", "address", "capacity", "description").Where("address = ?", address).First(&stadium).Error; err != nil {
+	if err := db.DB.Select("id", "name", "description", "address", "capacity", "description", "file_id").Where("address = ?", address).First(&stadium).Error; err != nil {
 		return nil, err
 	}
 	return &stadium, nil
+}
+
+// fieldIdの確認及び値の設定
+func (s *AdminToolService) stadiumFileIdCheck(fileId string) string {
+	if fileId == "NoImage" {
+		fileId = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhhNiQiwJEndtEtiXGbge_nFBhm48O1veQDVkskf53TwtD9Tf-UsueCE7WkNoLrs3cn05HT07yCtpNkFH8UcmEP4-IA-POvT81HlnsWRnOiCrJQ_MF8lRQxmUURmwhRMJdffXm_RRPXzjZO/s1600/no_image_yoko.jpg"
+	}
+	return fileId
 }
 
 // ※スタジアム情報更新時
@@ -96,7 +104,9 @@ func (s *AdminToolService) createStadiumService(request *StadiumAddRequest) erro
 		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのスタジアムです")
 	}
 
-	newStadium := models.Stadium{Name: request.Name, Description: request.Description, Address: request.Address, Capacity: int(request.Capacity), Image: request.Image}
+	request.FileId = adminToolService.stadiumFileIdCheck(request.FileId)
+
+	newStadium := models.Stadium{Name: request.Name, Description: request.Description, Address: request.Address, Capacity: int(request.Capacity), Image: request.Image, FileId: request.FileId}
 
 	if err := db.DB.Create(&newStadium).Error; err != nil {
 		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")
@@ -110,8 +120,11 @@ func (s *AdminToolService) UpdateStadiumService(request *StadiumUpdateRequest) e
 	if err != nil {
 		return err
 	}
-	log.Println(request.Name, request.Description, request.Address, int(request.Capacity), request.Image)
-	updateStadium := models.Stadium{Name: request.Name, Description: request.Description, Address: request.Address, Capacity: int(request.Capacity), Image: request.Image}
+
+	request.FileId = adminToolService.stadiumFileIdCheck(request.FileId)
+
+	log.Println(request.Name, request.Description, request.Address, int(request.Capacity), request.Image, request.FileId)
+	updateStadium := models.Stadium{Name: request.Name, Description: request.Description, Address: request.Address, Capacity: int(request.Capacity), Image: request.Image, FileId: request.FileId}
 
 	if err := db.DB.Model(&models.Stadium{}).Where("id = ?", request.StadiumId).Updates(updateStadium).Error; err != nil {
 		log.Println("エラー", err)
@@ -122,7 +135,7 @@ func (s *AdminToolService) UpdateStadiumService(request *StadiumUpdateRequest) e
 }
 
 // スタジアム削除
-func (s *AdminToolService) deleteStadiumService(request *DeleteRequest) error {
+func (s *AdminToolService) deleteStadiumService(request *IdRequest) error {
 	stadium, err := adminToolService.stadiumSearchId(request.Id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -146,7 +159,7 @@ func (s *AdminToolService) createSportService(request *SportsAddRequest) error {
 		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
 	}
 	if sports != nil {
-		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのスタジアムです")
+		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのスポーツです")
 	}
 
 	newSport := models.Sport{Name: request.Name}
@@ -175,8 +188,9 @@ func (s *AdminToolService) UpdateSportService(request *SportsUpdateRequest) erro
 }
 
 // スポーツ削除
-func (s *AdminToolService) deleteSportService(request *DeleteRequest) error {
-	sport, err := adminToolService.sportSearchId(request.Id)
+func (s *AdminToolService) deleteSportService(id uint) error {
+	log.Println("受け取った値(重複検索前):", id)
+	sport, err := adminToolService.sportSearchId(id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return utils.NewCustomError(http.StatusUnauthorized, "スポーツが見つかりませんでした")
@@ -190,7 +204,7 @@ func (s *AdminToolService) deleteSportService(request *DeleteRequest) error {
 	return nil
 }
 
-// スタジアム情報の取得
+// スポーツ情報の取得
 func (s *AdminToolService) getSportService(keyword string) ([]models.Sport, error) {
 	sport, err := adminToolService.sportSearchKeyword(keyword)
 
@@ -234,6 +248,7 @@ func (s *AdminToolService) sportUppdateCheck(id uint, name string) error {
 // スポーツ検索(id)
 func (s *AdminToolService) sportSearchId(id uint) (*models.Sport, error) {
 	var sport models.Sport
+	log.Println("受け取った値(id検索):", id)
 	if err := db.DB.First(&sport, id).Error; err != nil {
 		log.Printf("Error: %v", err)
 		return nil, err
@@ -259,6 +274,18 @@ func (s *AdminToolService) sportSearchKeyword(keyword string) ([]models.Sport, e
 		}
 	}
 	return sport, nil
+}
+
+// 該当idからレコードを取得
+func (s *AdminToolService) SportGetIdService(id uint) (*Sports, error) {
+	var sport Sports
+	if err := db.DB.Select("id", "name").Where("id = ?", id).Find(&sport).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, utils.NewCustomError(http.StatusUnauthorized, "スポーツが見つかりませんでした")
+		}
+		return nil, utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました")
+	}
+	return &sport, nil
 }
 
 // リーグ情報
@@ -300,7 +327,7 @@ func (s *AdminToolService) UpdateLeagueService(request *LeagueUpdateRequest) err
 }
 
 // リーグ情報削除
-func (s *AdminToolService) deleteLeagueService(request *DeleteRequest) error {
+func (s *AdminToolService) deleteLeagueService(request *IdRequest) error {
 	league, err := adminToolService.LeagueSearchId(request.Id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -390,7 +417,7 @@ func (s *AdminToolService) leagueSearchKeyword(keyword string) ([]models.League,
 // チーム情報関連
 // チーム情報追加
 func (s *AdminToolService) createTeamService(request *TeamAddRequest) error {
-	sports, err := adminToolService.teamAddCheck(request.Name, request.SportsId)
+	sports, err := adminToolService.teamAddCheck(request.Name)
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました。")
@@ -426,7 +453,7 @@ func (s *AdminToolService) UpdateTeamService(request *TeamUpdateRequest) error {
 }
 
 // チーム情報削除
-func (s *AdminToolService) deleteTeamService(request *DeleteRequest) error {
+func (s *AdminToolService) deleteTeamService(request *IdRequest) error {
 	team, err := adminToolService.teamSearchId(request.Id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -457,7 +484,7 @@ func (s *AdminToolService) getTeamService(keyword string) ([]models.Team, error)
 
 // チーム情報重複検索（条件：競技場名）
 // ※チーム情報追加時
-func (s *AdminToolService) teamAddCheck(name string, sport_id uint) (*models.Team, error) {
+func (s *AdminToolService) teamAddCheck(name string) (*models.Team, error) {
 	team := models.Team{}
 	if err := db.DB.Select("id", "name", "stadium_id", "league_id", "sport_id").Where("name = ? ", name).First(&team).Error; err != nil {
 		log.Println("エラー:", err)

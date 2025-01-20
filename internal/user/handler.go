@@ -100,7 +100,7 @@ func (h *UserHandler) IsUniqueUsername(c *gin.Context) {
 }
 
 // @Summary ログイン済みの場合、ログインユーザーの情報を取得
-// @Description ヘッダーのトークンからユーザーを取得する
+// @Description ヘッダーのトークンからロ図イン済みのユーザーを取得する
 // @Tags user
 // @Security BearerAuth
 // @Success 200 {object} utils.ApiResponse[UserResponse] "成功"
@@ -127,11 +127,10 @@ func (h *UserHandler) GetMyData(c *gin.Context) {
 }
 
 // @Summary ユーザー情報変更
-// @description userIdが同じユーザーの情報を変更する
+// @description ユーザーの情報を変更する
 // @Tags user
 // @Security BearerAuth
-// @param userId path uint true "userId"
-// @param request body UpdateUserRequestBody true "userId"
+// @param request body UpdateUserRequestBody true "更新データ"
 // @success 200 {object} utils.ApiResponse[UserResponse] "ユーザー情報"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"

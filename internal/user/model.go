@@ -15,9 +15,6 @@ type UpdateUserRequestBody struct {
 	Description  string `json:"description" binding:"required" example:"野球が好きです！"`
 	ProfileImage string `json:"profileImage" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
 }
-type UpdateUserRequestPath struct {
-	UserId uint `uri:"userId" binding:"required" example:"1"`
-}
 
 type IsUniqueUsernameRequest struct {
 	Username string `uri:"username" binding:"required,min=5,max=255" example:"user123"`

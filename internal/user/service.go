@@ -121,17 +121,10 @@ func (s *UserService) validateUpdateUserRequest(c *gin.Context) (*uint, *UpdateU
 		log.Printf("リクエストエラー: %v", err)
 		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
 	}
-	var requestPath UpdateUserRequestPath
-	if err := c.ShouldBindUri(&requestPath); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
-	}
+
 	userId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
 		return nil, nil, err
-	}
-	if *userId != requestPath.UserId {
-		return nil, nil, utils.NewCustomError(http.StatusUnauthorized, "自分のユーザー情報しか更新できません。")
 	}
 
 	return userId, &requestBody, nil

@@ -24,9 +24,6 @@ type UpdatePassRequestBody struct {
 	BeforePassword string `json:"beforePassword" binding:"required,min=6,max=50" example:"password123"`
 	AfterPassword  string `json:"afterPassword" binding:"required,min=6,max=50" example:"password456"`
 }
-type UpdateUserRequestPath struct {
-	UserId uint `uri:"userId" binding:"required" example:"1"`
-}
 
 type ResetPassRequest struct {
 	Token         string `json:"token" binding:"required" example:"1234567890"`

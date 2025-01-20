@@ -13,7 +13,7 @@ type AuthHandler struct{}
 var authService = NewAuthService()
 
 // @Summary メールアドレスの本人確認
-// @Description リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信
+// @Description リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信<br>ユーザー登録、パスワードリセット時に使います。<br>
 // @Tags auth
 // @Param email query string true "メールアドレス"
 // @Param tokenType query string true "トークンタイプ register or reset"
@@ -39,7 +39,7 @@ func (h *AuthHandler) EmailVerification(c *gin.Context) {
 }
 
 // @Summary ユーザー登録
-// @Description メールアドレス確認後にリクエスト内容をユーザーテーブルに保存
+// @Description メール内リンクから遷移できる本登録用画面からリクエスト内容を取得し、ユーザーテーブルに保存
 // @Tags auth
 // @Param request body auth.RegisterRequest true "ユーザー情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -91,7 +91,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 // @Summary ログアウト状態からパスワードを変更
-// @Description メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する
+// @Description メール内リンクから遷移できるパスワードリセット画面から、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する
 // @Tags auth
 // @Param request body ResetPassRequest true "tokenと新しいパスワード"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -119,8 +119,7 @@ func (h *AuthHandler) ResetPass(c *gin.Context) {
 // @Description 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
 // @Tags auth
 // @Security BearerAuth
-// @param userId path uint true "userId"
-// @Param request body UpdatePassRequestBody true "メールアドレス"
+// @Param request body UpdatePassRequestBody true "現在のパスワードと新しいパスワード"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"

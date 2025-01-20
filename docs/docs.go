@@ -23,7 +23,7 @@ const docTemplate = `{
     "paths": {
         "/api/auth/emailVerification": {
             "get": {
-                "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信",
+                "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信\u003cbr\u003eユーザー登録、パスワードリセット時に使います。\u003cbr\u003e",
                 "tags": [
                     "auth"
                 ],
@@ -114,7 +114,7 @@ const docTemplate = `{
         },
         "/api/auth/register": {
             "post": {
-                "description": "メールアドレス確認後にリクエスト内容をユーザーテーブルに保存",
+                "description": "メール内リンクから遷移できる本登録用画面からリクエスト内容を取得し、ユーザーテーブルに保存",
                 "tags": [
                     "auth"
                 ],
@@ -154,7 +154,7 @@ const docTemplate = `{
         },
         "/api/auth/resetPass": {
             "put": {
-                "description": "メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する",
+                "description": "メール内リンクから遷移できるパスワードリセット画面から、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する",
                 "tags": [
                     "auth"
                 ],
@@ -212,14 +212,7 @@ const docTemplate = `{
                 "summary": "ログイン状態からパスワードを変更",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "userId",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "メールアドレス",
+                        "description": "現在のパスワードと新しいパスワード",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -845,6 +838,7 @@ const docTemplate = `{
         },
         "/api/sample/helloWorld": {
             "get": {
+                "description": "Hello Worldを返すだけのAPIです。",
                 "tags": [
                     "sample"
                 ],
@@ -859,6 +853,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "ログイン済みじゃないと実行できない、Hello Worldを返すだけのAPIです。",
                 "tags": [
                     "sample"
                 ],
@@ -1487,7 +1482,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "ヘッダーのトークンからユーザーを取得する",
+                "description": "ヘッダーのトークンからロ図イン済みのユーザーを取得する",
                 "tags": [
                     "user"
                 ],
@@ -1527,21 +1522,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "userIdが同じユーザーの情報を変更する",
+                "description": "ユーザーの情報を変更する",
                 "tags": [
                     "user"
                 ],
                 "summary": "ユーザー情報変更",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "userId",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "userId",
+                        "description": "更新データ",
                         "name": "request",
                         "in": "body",
                         "required": true,

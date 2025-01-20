@@ -20,6 +20,7 @@ import (
 
 var swaggerUsername = os.Getenv("SWAGGER_USERNAME")
 var swaggerPassword = os.Getenv("SWAGGER_PASSWORD")
+
 func BasicAuthMiddleware() gin.HandlerFunc {
 	return gin.BasicAuth(gin.Accounts{
 		swaggerUsername: swaggerPassword,
@@ -43,13 +44,13 @@ func checkAdminPermission() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-        if origin == "" && strings.Contains(referer, readonlyPath) {
+		if origin == "" && strings.Contains(referer, readonlyPath) {
 			utils.ErrorResponse[any](c, http.StatusForbidden, "読み取り専用モードではAPIの実行はできません。")
 			log.Printf("読み取り専用UIからのAPIリクエストをRefererでブロック: Referer=%s", referer)
 			c.Abort()
 			return
 		}
-        c.Next()
+		c.Next()
 	}
 }
 
@@ -60,7 +61,7 @@ func customCorsMiddleware() gin.HandlerFunc {
 			allowedOrigins := []string{
 				os.Getenv("BASE_URL"),
 				"http://localhost:3000",
-				"http://127.0.0.1:5050",
+				"http://127.0.0.1:5500",
 				"http://localhost:8080",
 				"capacitor://localhost",
 				"ionic://localhost",
@@ -120,7 +121,7 @@ func main() {
 	ik := utils.NewImageKit()
 	r := gin.Default()
 
-    r.Use(checkAdminPermission())
+	r.Use(checkAdminPermission())
 
 	r.Use(customCorsMiddleware())
 
@@ -129,7 +130,7 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.String(200, "Hello, world!")
 	})
-    r.GET("/swagger/admin/*any", BasicAuthMiddleware(), ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/admin/*any", BasicAuthMiddleware(), ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.GET("/swagger/readonly/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run()

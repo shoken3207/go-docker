@@ -13,7 +13,7 @@
         "version": "1.0"
     },
     "paths": {
-        "/api/auth/emailVerification": {
+        "/api/admin/auth/emailVerification": {
             "get": {
                 "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信",
                 "tags": [
@@ -58,7 +58,7 @@
                 }
             }
         },
-        "/api/auth/login": {
+        "/api/admin/auth/login": {
             "post": {
                 "description": "メールアドレスとパスワードが合致したら、jwtトークンをクライアントに返却",
                 "tags": [
@@ -104,7 +104,7 @@
                 }
             }
         },
-        "/api/auth/register": {
+        "/api/admin/auth/register": {
             "post": {
                 "description": "メールアドレス確認後にリクエスト内容をユーザーテーブルに保存",
                 "tags": [
@@ -144,7 +144,7 @@
                 }
             }
         },
-        "/api/auth/resetPass": {
+        "/api/admin/auth/resetPass": {
             "put": {
                 "description": "メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する",
                 "tags": [
@@ -190,7 +190,7 @@
                 }
             }
         },
-        "/api/auth/updatePass/{userId}": {
+        "/api/admin/auth/updatePass/{userId}": {
             "put": {
                 "security": [
                     {
@@ -254,7 +254,7 @@
                 }
             }
         },
-        "/api/expedition/create": {
+        "/api/admin/expedition/create": {
             "post": {
                 "security": [
                     {
@@ -305,7 +305,7 @@
                 }
             }
         },
-        "/api/expedition/delete/{expeditionId}": {
+        "/api/admin/expedition/delete/{expeditionId}": {
             "delete": {
                 "security": [
                     {
@@ -360,7 +360,7 @@
                 }
             }
         },
-        "/api/expedition/like/{expeditionId}": {
+        "/api/admin/expedition/like/{expeditionId}": {
             "post": {
                 "security": [
                     {
@@ -415,7 +415,7 @@
                 }
             }
         },
-        "/api/expedition/list": {
+        "/api/admin/expedition/list": {
             "get": {
                 "security": [
                     {
@@ -489,7 +489,7 @@
                 }
             }
         },
-        "/api/expedition/unlike/{expeditionId}": {
+        "/api/admin/expedition/unlike/{expeditionId}": {
             "delete": {
                 "security": [
                     {
@@ -544,7 +544,7 @@
                 }
             }
         },
-        "/api/expedition/update/{expeditionId}": {
+        "/api/admin/expedition/update/{expeditionId}": {
             "put": {
                 "security": [
                     {
@@ -608,7 +608,7 @@
                 }
             }
         },
-        "/api/expedition/{expeditionId}": {
+        "/api/admin/expedition/{expeditionId}": {
             "get": {
                 "security": [
                     {
@@ -663,7 +663,7 @@
                 }
             }
         },
-        "/api/league/delete": {
+        "/api/admin/league/delete": {
             "delete": {
                 "security": [
                     {
@@ -682,7 +682,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                            "$ref": "#/definitions/adminTool.IdRequest"
                         }
                     }
                 ],
@@ -708,7 +708,7 @@
                 }
             }
         },
-        "/api/league/leagueAdd": {
+        "/api/admin/league/leagueAdd": {
             "post": {
                 "security": [
                     {
@@ -753,7 +753,7 @@
                 }
             }
         },
-        "/api/league/leagues": {
+        "/api/admin/league/leagues": {
             "get": {
                 "description": "リーグ情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
@@ -790,7 +790,7 @@
                 }
             }
         },
-        "/api/league/update": {
+        "/api/admin/league/update": {
             "put": {
                 "security": [
                     {
@@ -835,7 +835,7 @@
                 }
             }
         },
-        "/api/sample/helloWorld": {
+        "/api/admin/sample/helloWorld": {
             "get": {
                 "tags": [
                     "sample"
@@ -844,7 +844,7 @@
                 "responses": {}
             }
         },
-        "/api/sample/protectedHelloWorld": {
+        "/api/admin/sample/protectedHelloWorld": {
             "get": {
                 "security": [
                     {
@@ -858,7 +858,7 @@
                 "responses": {}
             }
         },
-        "/api/sports/delete": {
+        "/api/admin/sports/delete/{id}": {
             "delete": {
                 "security": [
                     {
@@ -872,13 +872,11 @@
                 "summary": "スポーツ削除",
                 "parameters": [
                     {
-                        "description": "スポーツ情報",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.DeleteRequest"
-                        }
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -903,7 +901,45 @@
                 }
             }
         },
-        "/api/sports/sports": {
+        "/api/admin/sports/idSports/{id}": {
+            "get": {
+                "description": "idからスポーツ情報のレコードを取得して表示する。",
+                "tags": [
+                    "sports"
+                ],
+                "summary": "スポーツid検索",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-adminTool_Sports"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/sports/sports": {
             "get": {
                 "description": "スポーツ情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
@@ -940,7 +976,7 @@
                 }
             }
         },
-        "/api/sports/sportsAdd": {
+        "/api/admin/sports/sportsAdd": {
             "post": {
                 "security": [
                     {
@@ -985,7 +1021,7 @@
                 }
             }
         },
-        "/api/sports/update": {
+        "/api/admin/sports/update": {
             "put": {
                 "security": [
                     {
@@ -1030,7 +1066,7 @@
                 }
             }
         },
-        "/api/stadium/delete": {
+        "/api/admin/stadium/delete": {
             "delete": {
                 "security": [
                     {
@@ -1049,7 +1085,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                            "$ref": "#/definitions/adminTool.IdRequest"
                         }
                     }
                 ],
@@ -1075,7 +1111,7 @@
                 }
             }
         },
-        "/api/stadium/stadiumAdd": {
+        "/api/admin/stadium/stadiumAdd": {
             "post": {
                 "security": [
                     {
@@ -1120,7 +1156,7 @@
                 }
             }
         },
-        "/api/stadium/stadiums": {
+        "/api/admin/stadium/stadiums": {
             "get": {
                 "description": "スタジアム情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
@@ -1157,7 +1193,7 @@
                 }
             }
         },
-        "/api/stadium/update": {
+        "/api/admin/stadium/update": {
             "put": {
                 "security": [
                     {
@@ -1202,7 +1238,7 @@
                 }
             }
         },
-        "/api/team/delete": {
+        "/api/admin/team/delete": {
             "delete": {
                 "security": [
                     {
@@ -1221,7 +1257,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/adminTool.DeleteRequest"
+                            "$ref": "#/definitions/adminTool.IdRequest"
                         }
                     }
                 ],
@@ -1247,7 +1283,7 @@
                 }
             }
         },
-        "/api/team/teamAdd": {
+        "/api/admin/team/teamAdd": {
             "post": {
                 "security": [
                     {
@@ -1292,7 +1328,7 @@
                 }
             }
         },
-        "/api/team/teams": {
+        "/api/admin/team/teams": {
             "get": {
                 "description": "チーム情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
@@ -1329,7 +1365,7 @@
                 }
             }
         },
-        "/api/team/update": {
+        "/api/admin/team/update": {
             "put": {
                 "security": [
                     {
@@ -1374,7 +1410,7 @@
                 }
             }
         },
-        "/api/upload/images": {
+        "/api/admin/upload/images": {
             "post": {
                 "description": "画像をアップロードし、URLを返します。\u003cbr\u003eプロフィール、スタジアム、遠征など、格納フォルダを指定してください。\u003cbr\u003e画像は1枚から10枚アップロードできるが、Swagger UIでは1つしか選択できません。\u003cbr\u003eファイルの拡張子は、[\".jpg\", \".jpeg\", \".png\"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。",
                 "consumes": [
@@ -1434,7 +1470,7 @@
                 }
             }
         },
-        "/api/user/isUnique/{username}": {
+        "/api/admin/user/isUnique/{username}": {
             "get": {
                 "description": "リクエストと同じuserNameが登録済みかチェックする",
                 "tags": [
@@ -1472,7 +1508,7 @@
                 }
             }
         },
-        "/api/user/logined": {
+        "/api/admin/user/logined": {
             "get": {
                 "security": [
                     {
@@ -1512,7 +1548,7 @@
                 }
             }
         },
-        "/api/user/update/{userId}": {
+        "/api/admin/user/update/{userId}": {
             "put": {
                 "security": [
                     {
@@ -1576,7 +1612,7 @@
                 }
             }
         },
-        "/api/user/userId/{userId}": {
+        "/api/admin/user/userId/{userId}": {
             "get": {
                 "security": [
                     {
@@ -1631,7 +1667,7 @@
                 }
             }
         },
-        "/api/user/username/{username}": {
+        "/api/admin/user/username/{username}": {
             "get": {
                 "security": [
                     {
@@ -1688,7 +1724,7 @@
         }
     },
     "definitions": {
-        "adminTool.DeleteRequest": {
+        "adminTool.IdRequest": {
             "type": "object",
             "required": [
                 "id"
@@ -1728,6 +1764,21 @@
                 },
                 "sport_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "adminTool.Sports": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -2795,6 +2846,22 @@
                 "username": {
                     "type": "string",
                     "example": "user123"
+                }
+            }
+        },
+        "utils.ApiResponse-adminTool_Sports": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/adminTool.Sports"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },

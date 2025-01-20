@@ -59,8 +59,8 @@ type TeamUpdateRequest struct {
 	Name      string `json:"name" binding:"required"`
 }
 
-// 削除は共通してidを利用するため共通のmodelを利用する
-type DeleteRequest struct {
+// 共通してidを利用するため共通のmodelを利用する
+type IdRequest struct {
 	Id uint `uri:"id" binding:"required"`
 }
 

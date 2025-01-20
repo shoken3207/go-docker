@@ -21,7 +21,7 @@ var adminToolService = NewAdminToolService()
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/stadium/stadiums [get]
+// @Router /api/admin/stadium/stadiums [get]
 func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
 	log.Println("キーワード:", keyword)
@@ -48,7 +48,7 @@ func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/stadium/stadiumAdd [post]
+// @Router /api/admin/stadium/stadiumAdd [post]
 func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 	request := StadiumAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -75,7 +75,7 @@ func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/stadium/update [put]
+// @Router /api/admin/stadium/update [put]
 func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 	request := StadiumUpdateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -99,13 +99,13 @@ func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 // @Description リクエストボディに削除対象のIDを指定してスタジアムを削除します
 // @Tags stadium
 // @Security BearerAuth
-// @Param request body DeleteRequest true "スタジアムID"
+// @Param request body IdRequest true "スタジアムID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/stadium/delete [delete]
+// @Router /api/admin/stadium/delete [delete]
 func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
-	request := DeleteRequest{}
+	request := IdRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
@@ -130,13 +130,15 @@ func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/sports/sports [get]
+// @Router /api/admin/sports/sports [get]
 func (h *AdminToolHandler) GetSports(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
 	log.Println("キーワード:", keyword)
 	sport := []models.Sport{}
 
 	sport, err := adminToolService.getSportService(keyword)
+
+	log.Println("返却値：", sport)
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
@@ -149,6 +151,35 @@ func (h *AdminToolHandler) GetSports(c *gin.Context) {
 	utils.SuccessResponse[any](c, http.StatusOK, sport, "スポーツの検索に成功しました。")
 }
 
+// @Summary スポーツid検索
+// @Description idからスポーツ情報のレコードを取得して表示する。
+// @Tags sports
+// @Secrity BearerAuth
+// @Param id path uint true "スポーツID"
+// @Success 200 {object} utils.ApiResponse[Sports]"成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
+// @Router /api/admin/sports/idSports/{id} [get]
+func (h *AdminToolHandler) GetIdSports(c *gin.Context) {
+	var request IdRequest
+
+	if err := c.ShouldBindUri(&request); err != nil {
+		log.Println("エラー:", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	sport, err := adminToolService.SportGetIdService(request.Id)
+
+	if err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, sport, "スポーツの検索に成功しました。")
+}
+
 // @Summary スポーツの追加
 // @Description リクエストからスポーツ情報を取得後、重複確認を行い登録する。
 // @Tags sports
@@ -157,7 +188,7 @@ func (h *AdminToolHandler) GetSports(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/sports/sportsAdd [post]
+// @Router /api/admin/sports/sportsAdd [post]
 func (h *AdminToolHandler) SportsAdd(c *gin.Context) {
 	request := SportsAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -184,7 +215,7 @@ func (h *AdminToolHandler) SportsAdd(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/sports/update [put]
+// @Router /api/admin/sports/update [put]
 func (h *AdminToolHandler) SportsUpdate(c *gin.Context) {
 	request := SportsUpdateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -208,20 +239,21 @@ func (h *AdminToolHandler) SportsUpdate(c *gin.Context) {
 // @Description リクエストボディに削除対象のIDを指定してスポーツ情報を削除します
 // @Tags sports
 // @Security BearerAuth
-// @Param request body DeleteRequest true "スポーツ情報"
+// @Param id path uint true "スポーツID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/sports/delete [delete]
+// @Router /api/admin/sports/delete/{id} [delete]
 func (h *AdminToolHandler) DeleteSports(c *gin.Context) {
-	request := DeleteRequest{}
-	if err := c.ShouldBindJSON(&request); err != nil {
-		log.Printf("リクエストエラー: %v", err)
+	var request IdRequest
+
+	if err := c.ShouldBindUri(&request); err != nil {
+		log.Printf("エラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
 
-	if err := adminToolService.deleteSportService(&request); err != nil {
+	if err := adminToolService.deleteSportService(request.Id); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
@@ -239,7 +271,7 @@ func (h *AdminToolHandler) DeleteSports(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/league/leagues [get]
+// @Router /api/admin/league/leagues [get]
 func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
 	log.Println("キーワード:", keyword)
@@ -266,7 +298,7 @@ func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/league/leagueAdd [post]
+// @Router /api/admin/league/leagueAdd [post]
 func (h *AdminToolHandler) LeagueAdd(c *gin.Context) {
 	request := LeagueAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -293,7 +325,7 @@ func (h *AdminToolHandler) LeagueAdd(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/league/update [put]
+// @Router /api/admin/league/update [put]
 func (h *AdminToolHandler) LeagueUpdate(c *gin.Context) {
 	request := LeagueUpdateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -317,13 +349,13 @@ func (h *AdminToolHandler) LeagueUpdate(c *gin.Context) {
 // @Description リクエストボディに削除対象のIDを指定してリーグ情報を削除します
 // @Tags league
 // @Security BearerAuth
-// @Param request body DeleteRequest true "リーグID"
+// @Param request body IdRequest true "リーグID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/league/delete [delete]
+// @Router /api/admin/league/delete [delete]
 func (h *AdminToolHandler) DeleteLeague(c *gin.Context) {
-	request := DeleteRequest{}
+	request := IdRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
@@ -348,7 +380,7 @@ func (h *AdminToolHandler) DeleteLeague(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/team/teams [get]
+// @Router /api/admin/team/teams [get]
 func (h *AdminToolHandler) GetTeams(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
 	log.Println("キーワード:", keyword)
@@ -375,7 +407,7 @@ func (h *AdminToolHandler) GetTeams(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/team/teamAdd [post]
+// @Router /api/admin/team/teamAdd [post]
 func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 	request := TeamAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -402,7 +434,7 @@ func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/team/update [put]
+// @Router /api/admin/team/update [put]
 func (h *AdminToolHandler) TeamUpdate(c *gin.Context) {
 	request := TeamUpdateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -426,13 +458,13 @@ func (h *AdminToolHandler) TeamUpdate(c *gin.Context) {
 // @Description リクエストボディに削除対象のIDを指定してチーム情報を削除します
 // @Tags team
 // @Security BearerAuth
-// @Param request body DeleteRequest true "チームID"
+// @Param request body IdRequest true "チームID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/team/delete [delete]
+// @Router /api/admin/team/delete [delete]
 func (h *AdminToolHandler) DeleteTeam(c *gin.Context) {
-	request := DeleteRequest{}
+	request := IdRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")

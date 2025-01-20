@@ -20,7 +20,7 @@ var authService = NewAuthService()
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/auth/emailVerification [get]
+// @Router /api/admin/auth/emailVerification [get]
 func (h *AuthHandler) EmailVerification(c *gin.Context) {
 	request := EmailVerificationRequest{}
 	if err := c.ShouldBindQuery(&request); err != nil {
@@ -45,7 +45,7 @@ func (h *AuthHandler) EmailVerification(c *gin.Context) {
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/auth/register [post]
+// @Router /api/admin/auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var request RegisterRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -71,7 +71,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/auth/login [post]
+// @Router /api/admin/auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var request LoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -98,7 +98,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/auth/resetPass [put]
+// @Router /api/admin/auth/resetPass [put]
 func (h *AuthHandler) ResetPass(c *gin.Context) {
 	var request ResetPassRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -126,7 +126,7 @@ func (h *AuthHandler) ResetPass(c *gin.Context) {
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/auth/updatePass/{userId} [put]
+// @Router /api/admin/auth/updatePass/{userId} [put]
 func (h *AuthHandler) UpdatePass(c *gin.Context) {
 	userId, requestBody, err := authService.validateUpdatePassRequest(c)
 	if err != nil {

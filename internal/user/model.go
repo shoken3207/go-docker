@@ -15,9 +15,6 @@ type UpdateUserRequestBody struct {
 	Description  string `json:"description" binding:"required" example:"野球が好きです！"`
 	ProfileImage string `json:"profileImage" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
 }
-type UpdateUserRequestPath struct {
-	UserId uint `uri:"userId" binding:"required" example:"1"`
-}
 
 type IsUniqueUsernameRequest struct {
 	Username string `uri:"username" binding:"required,min=5,max=255" example:"user123"`
@@ -30,8 +27,8 @@ type UserResponse struct {
 	Email        string `json:"email" example:"tanaka@example.com"`
 	FileId       string `json:"fileId" example:"1234567890"`
 	Name         string `json:"name" example:"tanaka taro"`
-	Description  string `json:"description,omitempty" example:"野球が好きです！"`
-	ProfileImage string `json:"profileImage,omitempty" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	Description  string `json:"description" example:"野球が好きです！"`
+	ProfileImage string `json:"profileImage" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
 }
 type IsUniqueUsernameResponse struct {
 	IsUnique bool `json:"isUnique" example:"true"`

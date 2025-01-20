@@ -148,7 +148,7 @@ func (h *ExpeditionHandler) DeleteExpedition(c *gin.Context, ik *imagekit.ImageK
 // @Tags expedition
 // @Security BearerAuth
 // @Param expeditionId path int true "遠征記録ID"
-// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Success 200 {object} utils.ApiResponse[LikeExpeditionResponse] "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "遠征記録が見つかりません"
@@ -167,15 +167,15 @@ func (h *ExpeditionHandler) LikeExpedition(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	if err := expeditionService.CreateExpeditionLike(userId, &requestPath.ExpeditionId); err != nil {
+	likesCount, err := expeditionService.CreateExpeditionLikeService(userId, &requestPath.ExpeditionId);
+	if  err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "いいねしました")
+	utils.SuccessResponse[LikeExpeditionResponse](c, http.StatusOK, LikeExpeditionResponse{LikesCount: *likesCount}, "いいねしました")
 }
 
 // @Summary 遠征記録のいいねを外す
@@ -183,7 +183,7 @@ func (h *ExpeditionHandler) LikeExpedition(c *gin.Context) {
 // @Tags expedition
 // @Security BearerAuth
 // @Param expeditionId path int true "遠征記録ID"
-// @Success 200 {object} utils.SuccessBasicResponse "成功"
+// @Success 200 {object} utils.ApiResponse[UnLikeExpeditionResponse] "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "いいねが見つかりません"
@@ -202,14 +202,15 @@ func (h *ExpeditionHandler) UnlikeExpedition(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := expeditionService.DeleteExpeditionLike(userId, &requestPath.ExpeditionId); err != nil {
+	likesCount, err := expeditionService.DeleteExpeditionLikeService(userId, &requestPath.ExpeditionId);
+	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "いいねを外しました")
+	utils.SuccessResponse[UnLikeExpeditionResponse](c, http.StatusOK, UnLikeExpeditionResponse{LikesCount: *likesCount}, "いいねを外しました")
 }
 
 // @Summary 遠征記録一覧を取得

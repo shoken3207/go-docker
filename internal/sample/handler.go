@@ -9,6 +9,7 @@ import (
 type SampleHandler struct{}
 
 // @Summary サンプルAPI
+// @Description Hello Worldを返すだけのAPIです。
 // @Tags sample
 // @Router /api/admin/sample/helloWorld [get]
 func (h *SampleHandler) PublicHelloWorld(c *gin.Context) {
@@ -18,6 +19,7 @@ func (h *SampleHandler) PublicHelloWorld(c *gin.Context) {
 }
 
 // @Summary サンプルAPI
+// @Description ログイン済みじゃないと実行できない、Hello Worldを返すだけのAPIです。
 // @Tags sample
 // @Security BearerAuth
 // @Router /api/admin/sample/protectedHelloWorld [get]

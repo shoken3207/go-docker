@@ -223,10 +223,10 @@ func (s *AuthService) registerService(request *RegisterRequest) error {
 			Username:     request.Username,
 			Email:        email,
 			PassHash:     *passHash,
-			Description:  request.Description,
-			ProfileImage: request.ProfileImage,
-			FileId:      fileId,
 		}
+		newUser.SetDescription(request.Description)
+		newUser.SetProfileImage(request.ProfileImage)
+		newUser.SetFileId(fileId)
 
 		if err := authService.createUser(tx, &newUser); err != nil {
 			return err
@@ -259,17 +259,10 @@ func (s *AuthService) validateUpdatePassRequest(c *gin.Context) (*uint, *UpdateP
 		log.Printf("リクエストエラー: %v", err)
 		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
 	}
-	var requestPath UpdateUserRequestPath
-	if err := c.ShouldBindUri(&requestPath); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
-	}
+
 	userId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
 		return nil, nil, err
-	}
-	if *userId != requestPath.UserId {
-		return nil, nil, utils.NewCustomError(http.StatusUnauthorized, "自分のパスワードしか更新できません。")
 	}
 
 	return userId, &requestBody, nil

@@ -23,7 +23,7 @@ const docTemplate = `{
     "paths": {
         "/api/admin/auth/emailVerification": {
             "get": {
-                "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信",
+                "description": "リクエストからメールアドレス取得後、tokenTypeに応じてチェックし、メールアドレス宛にtokenを含めた画面URLをメールで送信\u003cbr\u003eユーザー登録、パスワードリセット時に使います。\u003cbr\u003e",
                 "tags": [
                     "auth"
                 ],
@@ -114,7 +114,7 @@ const docTemplate = `{
         },
         "/api/admin/auth/register": {
             "post": {
-                "description": "メールアドレス確認後にリクエスト内容をユーザーテーブルに保存",
+                "description": "メール内リンクから遷移できる本登録用画面からリクエスト内容を取得し、ユーザーテーブルに保存",
                 "tags": [
                     "auth"
                 ],
@@ -154,7 +154,7 @@ const docTemplate = `{
         },
         "/api/admin/auth/resetPass": {
             "put": {
-                "description": "メール内リンクで本人確認後、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する",
+                "description": "メール内リンクから遷移できるパスワードリセット画面から、トークンと新しいパスワードをリクエストで取得し、パスワードを更新する",
                 "tags": [
                     "auth"
                 ],
@@ -212,14 +212,7 @@ const docTemplate = `{
                 "summary": "ログイン状態からパスワードを変更",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "userId",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "メールアドレス",
+                        "description": "現在のパスワードと新しいパスワード",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -393,7 +386,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-expedition_LikeExpeditionResponse"
                         }
                     },
                     "400": {
@@ -522,7 +515,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.SuccessBasicResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-expedition_UnLikeExpeditionResponse"
                         }
                     },
                     "400": {
@@ -845,6 +838,7 @@ const docTemplate = `{
         },
         "/api/admin/sample/helloWorld": {
             "get": {
+                "description": "Hello Worldを返すだけのAPIです。",
                 "tags": [
                     "sample"
                 ],
@@ -859,6 +853,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "ログイン済みじゃないと実行できない、Hello Worldを返すだけのAPIです。",
                 "tags": [
                     "sample"
                 ],
@@ -1523,7 +1518,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "ヘッダーのトークンからユーザーを取得する",
+                "description": "ヘッダーのトークンからロ図イン済みのユーザーを取得する",
                 "tags": [
                     "user"
                 ],
@@ -1563,21 +1558,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "userIdが同じユーザーの情報を変更する",
+                "description": "ユーザーの情報を変更する",
                 "tags": [
                     "user"
                 ],
                 "summary": "ユーザー情報変更",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "userId",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "userId",
+                        "description": "更新データ",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2186,7 +2174,7 @@ const docTemplate = `{
                 },
                 "userName": {
                     "type": "string",
-                    "example": "ユーザー名"
+                    "example": "user123"
                 }
             }
         },
@@ -2328,6 +2316,10 @@ const docTemplate = `{
                     "type": "boolean",
                     "example": true
                 },
+                "likesCount": {
+                    "type": "integer",
+                    "example": 10
+                },
                 "memo": {
                     "type": "string",
                     "example": "初めてのスタジアム訪問。とても楽しかった！"
@@ -2362,11 +2354,32 @@ const docTemplate = `{
                     "type": "string",
                     "example": "野球観戦の遠征記録"
                 },
+                "userIcon": {
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "userId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "username": {
+                    "type": "string",
+                    "example": "user123"
+                },
                 "visitedFacilities": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/expedition.VisitedFacilityResponse"
                     }
+                }
+            }
+        },
+        "expedition.LikeExpeditionResponse": {
+            "type": "object",
+            "properties": {
+                "likesCount": {
+                    "type": "integer",
+                    "example": 10
                 }
             }
         },
@@ -2410,6 +2423,15 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "チケット代"
+                }
+            }
+        },
+        "expedition.UnLikeExpeditionResponse": {
+            "type": "object",
+            "properties": {
+                "likesCount": {
+                    "type": "integer",
+                    "example": 10
                 }
             }
         },
@@ -2913,6 +2935,38 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/expedition.GetExpeditionDetailResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-expedition_LikeExpeditionResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/expedition.LikeExpeditionResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-expedition_UnLikeExpeditionResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/expedition.UnLikeExpeditionResponse"
                 },
                 "message": {
                     "type": "string",

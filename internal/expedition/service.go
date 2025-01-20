@@ -16,6 +16,17 @@ import (
 
 type ExpeditionService struct{}
 
+
+
+func (s *ExpeditionService) GetLikesCountByExpeditionId(expeditionId uint) (*int64, error) {
+	expeditionLikes := []models.ExpeditionLike{}
+	if err := db.DB.Where("expedition_id = ?", expeditionId).Find(&expeditionLikes).Error; err != nil {
+		log.Printf("遠征記録お気に入り取得エラー: %v", err)
+			return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録取得に失敗しました。")
+	}
+	likesCount := int64(len(expeditionLikes))
+	return &likesCount, nil
+}
 func (s *ExpeditionService) FindExpeditionById(expeditionId uint) (*models.Expedition, error) {
 	expedition := models.Expedition{}
 	if err := db.DB.Where("id = ?", expeditionId).First(&expedition).Error; err != nil {
@@ -271,6 +282,7 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 		Preload("Games.GameScores").
 		Preload("Sport").
 		Preload("Stadium").
+		Preload("User").
 		First(&expedition, request.ExpeditionId).Error; err != nil {
 		log.Printf("遠征記録詳細取得エラー: %v", err)
 		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録詳細の取得に失敗しました。")
@@ -342,8 +354,12 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 			EndDate:     expedition.EndDate,
 			StadiumId:   expedition.StadiumId,
 			StadiumName: expedition.Stadium.Name,
-			Memo:        expedition.Memo,
+			Memo:        expedition.GetMemo(),
+			UserId: expedition.UserId,
 		},
+		Username: expedition.User.Username,
+		UserIcon: expedition.User.GetProfileImage(),
+		LikesCount: int64(len(expedition.ExpeditionLikes)),
 		VisitedFacilities: visitedFacilities,
 		Payments:          payments,
 		ExpeditionImages:  expeditionImages,
@@ -359,12 +375,12 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 			SportId:   request.SportId,
 			IsPublic:  request.IsPublic,
 			Title:     request.Title,
-			Memo:      request.Memo,
 			StartDate: request.StartDate,
 			EndDate:   request.EndDate,
 			StadiumId: request.StadiumId,
 			UserId:    *userId,
 		}
+		newExpedition.SetMemo(request.Memo)
 		if err := s.CreateExpedition(tx, &newExpedition); err != nil {
 			return err
 		}
@@ -476,7 +492,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 
 	expedition.IsPublic = requestBody.IsPublic
 	expedition.Title = requestBody.Title
-	expedition.Memo = requestBody.Memo
+	expedition.SetMemo(requestBody.Memo)
 	expedition.StartDate = requestBody.StartDate
 	expedition.EndDate = requestBody.EndDate
 	expedition.StadiumId = requestBody.StadiumId
@@ -672,15 +688,6 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 }
 
 func (s *ExpeditionService) CreateExpeditionLike(userId *uint, expeditionId *uint) error {
-	var existingLike models.ExpeditionLike
-	if err := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).First(&existingLike).Error; err == nil {
-		return utils.NewCustomError(http.StatusBadRequest, "既にいいね済みです")
-	}
-
-	if _, err := s.FindExpeditionById(*expeditionId); err != nil {
-		return err
-	}
-
 	newLike := models.ExpeditionLike{
 		UserId:       *userId,
 		ExpeditionId: *expeditionId,
@@ -690,8 +697,29 @@ func (s *ExpeditionService) CreateExpeditionLike(userId *uint, expeditionId *uin
 		log.Printf("いいね作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "いいねの作成に失敗しました")
 	}
-
 	return nil
+}
+
+func (s *ExpeditionService) CreateExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, error) {
+	var existingLike models.ExpeditionLike
+	if err := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).First(&existingLike).Error; err == nil {
+		return nil, utils.NewCustomError(http.StatusBadRequest, "既にいいね済みです")
+	}
+
+	if _, err := s.FindExpeditionById(*expeditionId); err != nil {
+		return nil, err
+	}
+
+	if err := s.CreateExpeditionLike(userId, expeditionId); err != nil {
+		return nil, err
+	}
+
+	likesCount, err := s.GetLikesCountByExpeditionId(*expeditionId);
+	if  err != nil {
+		return nil, err
+	}
+
+	return likesCount, nil
 }
 
 func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uint) error {
@@ -707,6 +735,19 @@ func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uin
 	}
 
 	return nil
+}
+
+func (s *ExpeditionService) DeleteExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, error) {
+	if err := s.DeleteExpeditionLike(userId, expeditionId); err != nil {
+		return nil, err
+	}
+
+	likesCount, err := s.GetLikesCountByExpeditionId(*expeditionId);
+	if  err != nil {
+		return nil, err
+	}
+
+	return likesCount, nil
 }
 
 func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest) ([]ExpeditionListResponse, error) {

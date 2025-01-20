@@ -23,7 +23,7 @@ var uploadService = NewUploadService()
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/upload/images [post]
+// @Router /api/upload/images [post]
 func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
 	query, files, err := uploadService.validateUploadImagesRequest(c)
 	if err != nil {

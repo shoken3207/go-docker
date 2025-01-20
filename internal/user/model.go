@@ -32,4 +32,5 @@ type UserResponse struct {
 }
 type IsUniqueUsernameResponse struct {
 	IsUnique bool `json:"isUnique" example:"true"`
+	Message string `json:"message" example:"使用できます"`
 }

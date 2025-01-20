@@ -163,6 +163,12 @@ definitions:
       description:
         example: 野球が好きです！
         type: string
+      favoriteTeamIds:
+        example:
+        - 1
+        items:
+          type: integer
+        type: array
       name:
         example: tanaka taro
         maxLength: 100

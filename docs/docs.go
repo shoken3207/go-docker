@@ -2024,6 +2024,15 @@ const docTemplate = `{
                     "type": "string",
                     "example": "野球が好きです！"
                 },
+                "favoriteTeamIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1
+                    ]
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 100,

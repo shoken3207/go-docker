@@ -1419,9 +1419,14 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/stadium/get": {
+        "/api/stadium/{stadiumId}": {
             "get": {
-                "description": "遠征記録、周辺施設は1ページ目だけ返し、2ページ目以降は別APIから返す",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "遠征記録は1ページ目（15件）だけ返し、2ページ目以降は別APIから返す\u003cbr\u003e周辺施設は20件を上限としてランキング形式で返す",
                 "tags": [
                     "stadium"
                 ],
@@ -1444,6 +1449,18 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
@@ -2944,19 +2961,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "address": {
-                    "type": "string"
-                },
-                "customName": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "東京都千代田区丸の内1-1-1"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "東京駅"
                 },
                 "visitCount": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -2964,13 +2978,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "address": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "大阪府大阪市西区千代崎3-1-1"
                 },
                 "capacity": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 36000
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "オリックス・バファローズのホーム球場"
                 },
                 "expeditions": {
                     "type": "array",
@@ -2985,13 +3002,16 @@ const docTemplate = `{
                     }
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "image": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "京セラドーム"
                 }
             }
         },

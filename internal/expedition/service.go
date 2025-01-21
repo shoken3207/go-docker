@@ -704,26 +704,41 @@ func (s *ExpeditionService) CreateExpeditionLike(userId *uint, expeditionId *uin
 	return nil
 }
 
-func (s *ExpeditionService) CreateExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, error) {
-	var existingLike models.ExpeditionLike
-	if err := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).First(&existingLike).Error; err == nil {
-		return nil, utils.NewCustomError(http.StatusBadRequest, "既にいいね済みです")
+func (s *ExpeditionService) ExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, *bool, *string, error) {
+	var expeditionLike *models.ExpeditionLike
+	err := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).First(&expeditionLike).Error;
+	if err != nil {
+		log.Printf("いいね取得エラー: %v", err)
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil, nil, utils.NewCustomError(http.StatusBadRequest, "いいね取得に失敗しました。")
+		}
 	}
 
-	if _, err := s.FindExpeditionById(*expeditionId); err != nil {
-		return nil, err
+	if _, err := s.FindExpeditionById(*expeditionId);  err != nil {
+		return nil, nil, nil, err
 	}
-
-	if err := s.CreateExpeditionLike(userId, expeditionId); err != nil {
-		return nil, err
+	var message string
+	var isLiked bool
+	if(errors.Is(err, gorm.ErrRecordNotFound)) {
+		if err := s.CreateExpeditionLike(userId, expeditionId); err != nil {
+			return nil, nil, nil, err
+		}
+		message = "いいねしました。"
+		isLiked = true
+	} else {
+		if err := s.DeleteExpeditionLike(userId, expeditionId); err != nil {
+			return nil, nil, nil, err
+		}
+		message = "いいねを外しました。"
+		isLiked = false
 	}
 
 	likesCount, err := s.GetLikesCountByExpeditionId(*expeditionId);
 	if  err != nil {
-		return nil, err
+		return nil, nil, nil, err
 	}
 
-	return likesCount, nil
+	return likesCount, &isLiked, &message, nil
 }
 
 func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uint) error {
@@ -741,18 +756,18 @@ func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uin
 	return nil
 }
 
-func (s *ExpeditionService) DeleteExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, error) {
-	if err := s.DeleteExpeditionLike(userId, expeditionId); err != nil {
-		return nil, err
-	}
+// func (s *ExpeditionService) DeleteExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, error) {
+// 	if err := s.DeleteExpeditionLike(userId, expeditionId); err != nil {
+// 		return nil, err
+// 	}
 
-	likesCount, err := s.GetLikesCountByExpeditionId(*expeditionId);
-	if  err != nil {
-		return nil, err
-	}
+// 	likesCount, err := s.GetLikesCountByExpeditionId(*expeditionId);
+// 	if  err != nil {
+// 		return nil, err
+// 	}
 
-	return likesCount, nil
-}
+// 	return likesCount, nil
+// }
 
 func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest, userId *uint) ([]ExpeditionListResponse, error) {
 	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST

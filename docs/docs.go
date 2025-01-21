@@ -1092,11 +1092,11 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "ユーザーが遠征記録にいいねを付ける",
+                "description": "ユーザーが遠征記録にいいね済みならいいねを付ける。いいねしていなかったらいいねする",
                 "tags": [
                     "expedition"
                 ],
-                "summary": "遠征記録にいいねする",
+                "summary": "遠征記録にいいね、いいね解除を行う",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1207,61 +1207,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "遠征記録が見つかりません",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/expedition/unlike/{expeditionId}": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "ユーザーが遠征記録のいいねを外す",
-                "tags": [
-                    "expedition"
-                ],
-                "summary": "遠征記録のいいねを外す",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "遠征記録ID",
-                        "name": "expeditionId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ApiResponse-expedition_UnLikeExpeditionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "認証エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "いいねが見つかりません",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
@@ -2522,6 +2467,10 @@ const docTemplate = `{
         "expedition.LikeExpeditionResponse": {
             "type": "object",
             "properties": {
+                "isLiked": {
+                    "type": "boolean",
+                    "example": true
+                },
                 "likesCount": {
                     "type": "integer",
                     "example": 10
@@ -2568,15 +2517,6 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "チケット代"
-                }
-            }
-        },
-        "expedition.UnLikeExpeditionResponse": {
-            "type": "object",
-            "properties": {
-                "likesCount": {
-                    "type": "integer",
-                    "example": 10
                 }
             }
         },
@@ -3269,22 +3209,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/expedition.LikeExpeditionResponse"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
-                },
-                "success": {
-                    "type": "boolean",
-                    "example": true
-                }
-            }
-        },
-        "utils.ApiResponse-expedition_UnLikeExpeditionResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/expedition.UnLikeExpeditionResponse"
                 },
                 "message": {
                     "type": "string",

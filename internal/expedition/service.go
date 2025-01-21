@@ -756,19 +756,6 @@ func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uin
 	return nil
 }
 
-// func (s *ExpeditionService) DeleteExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, error) {
-// 	if err := s.DeleteExpeditionLike(userId, expeditionId); err != nil {
-// 		return nil, err
-// 	}
-
-// 	likesCount, err := s.GetLikesCountByExpeditionId(*expeditionId);
-// 	if  err != nil {
-// 		return nil, err
-// 	}
-
-// 	return likesCount, nil
-// }
-
 func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest, userId *uint) ([]ExpeditionListResponse, error) {
 	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
 	var expeditions []ExpeditionListResponse

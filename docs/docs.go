@@ -3030,35 +3030,10 @@ const docTemplate = `{
                 }
             }
         },
-        "user.UpdateFavoriteTeamsRequest": {
-            "type": "object",
-            "properties": {
-                "add": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "example": [
-                        1
-                    ]
-                },
-                "delete": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "example": [
-                        1
-                    ]
-                }
-            }
-        },
         "user.UpdateUserRequestBody": {
             "type": "object",
             "required": [
-                "description",
                 "name",
-                "profileImage",
                 "username"
             ],
             "properties": {
@@ -3067,7 +3042,13 @@ const docTemplate = `{
                     "example": "野球が好きです！"
                 },
                 "favoriteTeams": {
-                    "$ref": "#/definitions/user.UpdateFavoriteTeamsRequest"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1
+                    ]
                 },
                 "name": {
                     "type": "string",

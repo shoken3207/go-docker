@@ -487,6 +487,9 @@ definitions:
     type: object
   expedition.LikeExpeditionResponse:
     properties:
+      isLiked:
+        example: true
+        type: boolean
       likesCount:
         example: 10
         type: integer
@@ -521,12 +524,6 @@ definitions:
       title:
         example: チケット代
         type: string
-    type: object
-  expedition.UnLikeExpeditionResponse:
-    properties:
-      likesCount:
-        example: 10
-        type: integer
     type: object
   expedition.UpdateExpeditionImagesRequest:
     properties:
@@ -1018,17 +1015,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/expedition.LikeExpeditionResponse'
-      message:
-        example: 成功しました！！
-        type: string
-      success:
-        example: true
-        type: boolean
-    type: object
-  utils.ApiResponse-expedition_UnLikeExpeditionResponse:
-    properties:
-      data:
-        $ref: '#/definitions/expedition.UnLikeExpeditionResponse'
       message:
         example: 成功しました！！
         type: string
@@ -1816,7 +1802,7 @@ paths:
       - expedition
   /api/expedition/like/{expeditionId}:
     post:
-      description: ユーザーが遠征記録にいいねを付ける
+      description: ユーザーが遠征記録にいいね済みならいいねを付ける。いいねしていなかったらいいねする
       parameters:
       - description: 遠征記録ID
         in: path
@@ -1846,7 +1832,7 @@ paths:
             $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
-      summary: 遠征記録にいいねする
+      summary: 遠征記録にいいね、いいね解除を行う
       tags:
       - expedition
   /api/expedition/list:
@@ -1899,41 +1885,6 @@ paths:
       security:
       - BearerAuth: []
       summary: 遠征記録一覧を取得
-      tags:
-      - expedition
-  /api/expedition/unlike/{expeditionId}:
-    delete:
-      description: ユーザーが遠征記録のいいねを外す
-      parameters:
-      - description: 遠征記録ID
-        in: path
-        name: expeditionId
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/utils.ApiResponse-expedition_UnLikeExpeditionResponse'
-        "400":
-          description: リクエストエラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-        "403":
-          description: 認証エラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-        "404":
-          description: いいねが見つかりません
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-        "500":
-          description: 内部エラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-      security:
-      - BearerAuth: []
-      summary: 遠征記録のいいねを外す
       tags:
       - expedition
   /api/expedition/update/{expeditionId}:

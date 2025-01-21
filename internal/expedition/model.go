@@ -228,6 +228,7 @@ type GetExpeditionDetailResponse struct {
 
 type LikeExpeditionResponse struct {
 	LikesCount  int64                  `json:"likesCount" example:"10"`
+	IsLiked bool `json:"isLiked" example:"true"`
 }
 type UnLikeExpeditionResponse struct {
 	LikesCount  int64                  `json:"likesCount" example:"10"`

@@ -64,6 +64,7 @@ type UpdateGameScoreRequest struct {
 
 type VisitedFacilityRequest struct {
 	Name      string  `json:"name" binding:"required" example:"東京駅"`
+	CustomName      string  `json:"customName" binding:"required" example:"東京駅(おみやげ)"`
 	Address   string  `json:"address" binding:"required" example:"東京都千代田区丸の内1-1-1"`
 	Icon      string  `json:"icon" binding:"required" example:"train"`
 	Color     string  `json:"color" binding:"required" example:"#00FF00"`
@@ -73,6 +74,7 @@ type VisitedFacilityRequest struct {
 type VisitedFacilityResponse struct {
 	ID        int     `json:"id" example:"1"`
 	Name      string  `json:"name" example:"東京駅"`
+	CustomName string `json:"customName" example:"東京駅（おみやげ）"`
 	Address   string  `json:"address" example:"東京都千代田区丸の内1-1-1"`
 	Icon      string  `json:"icon" example:"train"`
 	Color     string  `json:"color" example:"#00FF00"`
@@ -210,6 +212,7 @@ type ExpeditionListRequest struct {
 	Page     int        `form:"page" binding:"required,min=1" example:"1"`
 	SportId  *uint      `form:"sportId" example:"1"`
 	TeamId   *uint      `form:"teamId" example:"1"`
+	StadiumId *uint `form:"stadiumId" example:"1"`
 }
 
 type GetExpeditionDetailResponse struct {

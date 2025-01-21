@@ -713,6 +713,9 @@ definitions:
       color:
         example: '#00FF00'
         type: string
+      customName:
+        example: 東京駅(おみやげ)
+        type: string
       icon:
         example: train
         type: string
@@ -731,6 +734,7 @@ definitions:
     required:
     - address
     - color
+    - customName
     - icon
     - id
     - latitude
@@ -745,6 +749,9 @@ definitions:
       color:
         example: '#00FF00'
         type: string
+      customName:
+        example: 東京駅(おみやげ)
+        type: string
       icon:
         example: train
         type: string
@@ -760,6 +767,7 @@ definitions:
     required:
     - address
     - color
+    - customName
     - icon
     - latitude
     - longitude
@@ -772,6 +780,9 @@ definitions:
         type: string
       color:
         example: '#00FF00'
+        type: string
+      customName:
+        example: 東京駅（おみやげ）
         type: string
       icon:
         example: train
@@ -787,6 +798,42 @@ definitions:
         type: number
       name:
         example: 東京駅
+        type: string
+    type: object
+  stadium.FacilityResponse:
+    properties:
+      address:
+        type: string
+      customName:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      visitCount:
+        type: integer
+    type: object
+  stadium.GetStadiumResponse:
+    properties:
+      address:
+        type: string
+      capacity:
+        type: integer
+      description:
+        type: string
+      expeditions:
+        items:
+          $ref: '#/definitions/expedition.ExpeditionListResponse'
+        type: array
+      facilities:
+        items:
+          $ref: '#/definitions/stadium.FacilityResponse'
+        type: array
+      id:
+        type: integer
+      image:
+        type: string
+      name:
         type: string
     type: object
   team.LeagueResponse:
@@ -977,6 +1024,17 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/expedition.UnLikeExpeditionResponse'
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.ApiResponse-stadium_GetStadiumResponse:
+    properties:
+      data:
+        $ref: '#/definitions/stadium.GetStadiumResponse'
       message:
         example: 成功しました！！
         type: string
@@ -1806,6 +1864,10 @@ paths:
         in: query
         name: teamId
         type: integer
+      - description: スタジアムID
+        in: query
+        name: stadiumId
+        type: integer
       produces:
       - application/json
       responses:
@@ -1926,6 +1988,31 @@ paths:
       summary: サンプルAPI
       tags:
       - sample
+  /api/stadium/get:
+    get:
+      description: 遠征記録、周辺施設は1ページ目だけ返し、2ページ目以降は別APIから返す
+      parameters:
+      - description: stadiumId
+        in: path
+        name: stadiumId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-stadium_GetStadiumResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: スタジアム情報、そのスタジアムの遠征記録、周辺施設を取得するAPI
+      tags:
+      - stadium
   /api/team/me:
     get:
       description: sport, leagueで入れ子になったteamを返却<br>認証後、ログイン済みのuserIdからfavoriteTeamsを取得し、isFavoriteにtrueかfalseを設定する

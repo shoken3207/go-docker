@@ -35,7 +35,7 @@ const (
 var AllowedExtensions = [...]string{".jpg", ".jpeg", ".png"}
 
 var SportIcon = map[int]string{
-	1: "soccer",
+	1: "soccerball",
 	2: "baseball",
 	3: "basketball",
 	4: "volleyball",

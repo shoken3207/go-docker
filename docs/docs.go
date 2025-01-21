@@ -1178,6 +1178,12 @@ const docTemplate = `{
                         "description": "チームID",
                         "name": "teamId",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "スタジアムID",
+                        "name": "stadiumId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1411,6 +1417,44 @@ const docTemplate = `{
                 ],
                 "summary": "サンプルAPI",
                 "responses": {}
+            }
+        },
+        "/api/stadium/get": {
+            "get": {
+                "description": "遠征記録、周辺施設は1ページ目だけ返し、2ページ目以降は別APIから返す",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム情報、そのスタジアムの遠征記録、周辺施設を取得するAPI",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "stadiumId",
+                        "name": "stadiumId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-stadium_GetStadiumResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
             }
         },
         "/api/team/me": {
@@ -2775,6 +2819,7 @@ const docTemplate = `{
             "required": [
                 "address",
                 "color",
+                "customName",
                 "icon",
                 "id",
                 "latitude",
@@ -2789,6 +2834,10 @@ const docTemplate = `{
                 "color": {
                     "type": "string",
                     "example": "#00FF00"
+                },
+                "customName": {
+                    "type": "string",
+                    "example": "東京駅(おみやげ)"
                 },
                 "icon": {
                     "type": "string",
@@ -2817,6 +2866,7 @@ const docTemplate = `{
             "required": [
                 "address",
                 "color",
+                "customName",
                 "icon",
                 "latitude",
                 "longitude",
@@ -2830,6 +2880,10 @@ const docTemplate = `{
                 "color": {
                     "type": "string",
                     "example": "#00FF00"
+                },
+                "customName": {
+                    "type": "string",
+                    "example": "東京駅(おみやげ)"
                 },
                 "icon": {
                     "type": "string",
@@ -2860,6 +2914,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "#00FF00"
                 },
+                "customName": {
+                    "type": "string",
+                    "example": "東京駅（おみやげ）"
+                },
                 "icon": {
                     "type": "string",
                     "example": "train"
@@ -2879,6 +2937,61 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "東京駅"
+                }
+            }
+        },
+        "stadium.FacilityResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "customName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "visitCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "stadium.GetStadiumResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expeditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/stadium.FacilityResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -3152,6 +3265,22 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/expedition.UnLikeExpeditionResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-stadium_GetStadiumResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/stadium.GetStadiumResponse"
                 },
                 "message": {
                     "type": "string",

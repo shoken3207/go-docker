@@ -79,7 +79,26 @@ func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 func (h *UserHandler) IsUniqueUsername(c *gin.Context) {
 	request := IsUniqueUsernameRequest{}
 	if err := c.ShouldBindUri(&request); err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		errorMessage := "リクエストに不備があります。"
+		// if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		// 	log.Printf("validationErrors: %v", validationErrors)
+		// }
+		// for _, e := range validationErrors {
+		// 	log.Printf("e: %v", e)
+		// 	if e.Field() == "Username" {
+		// 		switch e.Tag() {
+		// 			case "required":
+		// 				if e.Field() == "Username" {
+		// 					errorMessage = "ユーザー名は必須です。"
+		// 				}
+		// 			case "max":
+		// 				if e.Field() == "Username" {
+		// 					errorMessage = "ユーザー名は255文字以内で入力してください。"
+		// 				}
+		// 		}
+		// 	}
+		// }
+		utils.ErrorResponse[any](c, http.StatusBadRequest, errorMessage)
 		return
 	}
 

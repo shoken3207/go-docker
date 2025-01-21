@@ -1178,6 +1178,12 @@ const docTemplate = `{
                         "description": "チームID",
                         "name": "teamId",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "スタジアムID",
+                        "name": "stadiumId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1411,6 +1417,61 @@ const docTemplate = `{
                 ],
                 "summary": "サンプルAPI",
                 "responses": {}
+            }
+        },
+        "/api/stadium/{stadiumId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "遠征記録は1ページ目（15件）だけ返し、2ページ目以降は別APIから返す\u003cbr\u003e周辺施設は20件を上限としてランキング形式で返す",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム情報、そのスタジアムの遠征記録、周辺施設を取得するAPI",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "stadiumId",
+                        "name": "stadiumId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-stadium_GetStadiumResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
             }
         },
         "/api/team/me": {
@@ -2775,6 +2836,7 @@ const docTemplate = `{
             "required": [
                 "address",
                 "color",
+                "customName",
                 "icon",
                 "id",
                 "latitude",
@@ -2789,6 +2851,10 @@ const docTemplate = `{
                 "color": {
                     "type": "string",
                     "example": "#00FF00"
+                },
+                "customName": {
+                    "type": "string",
+                    "example": "東京駅(おみやげ)"
                 },
                 "icon": {
                     "type": "string",
@@ -2817,6 +2883,7 @@ const docTemplate = `{
             "required": [
                 "address",
                 "color",
+                "customName",
                 "icon",
                 "latitude",
                 "longitude",
@@ -2830,6 +2897,10 @@ const docTemplate = `{
                 "color": {
                     "type": "string",
                     "example": "#00FF00"
+                },
+                "customName": {
+                    "type": "string",
+                    "example": "東京駅(おみやげ)"
                 },
                 "icon": {
                     "type": "string",
@@ -2860,6 +2931,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "#00FF00"
                 },
+                "customName": {
+                    "type": "string",
+                    "example": "東京駅（おみやげ）"
+                },
                 "icon": {
                     "type": "string",
                     "example": "train"
@@ -2879,6 +2954,64 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "東京駅"
+                }
+            }
+        },
+        "stadium.FacilityResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "東京都千代田区丸の内1-1-1"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "東京駅"
+                },
+                "visitCount": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "stadium.GetStadiumResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "大阪府大阪市西区千代崎3-1-1"
+                },
+                "capacity": {
+                    "type": "integer",
+                    "example": 36000
+                },
+                "description": {
+                    "type": "string",
+                    "example": "オリックス・バファローズのホーム球場"
+                },
+                "expeditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/stadium.FacilityResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "image": {
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "京セラドーム"
                 }
             }
         },
@@ -3152,6 +3285,22 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/expedition.UnLikeExpeditionResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-stadium_GetStadiumResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/stadium.GetStadiumResponse"
                 },
                 "message": {
                     "type": "string",

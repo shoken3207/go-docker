@@ -222,6 +222,7 @@ func (h *ExpeditionHandler) UnlikeExpedition(c *gin.Context) {
 // @Param page query int true "ページ番号" minimum(1)
 // @Param sportId query int false "スポーツID"
 // @Param teamId query int false "チームID"
+// @Param stadiumId query int false "スタジアムID"
 // @Success 200 {object} utils.ApiResponse[[]ExpeditionListResponse] "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 403 {object} utils.ErrorBasicResponse "認証エラー"
@@ -251,7 +252,7 @@ func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
 		}
 	}
 
-	utils.SuccessResponse(c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
 }
 
 func NewExpeditionHandler() *ExpeditionHandler {

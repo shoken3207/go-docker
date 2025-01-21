@@ -5,6 +5,7 @@ import (
 	"go-docker/internal/auth"
 	"go-docker/internal/expedition"
 	"go-docker/internal/sample"
+	"go-docker/internal/stadium"
 	"go-docker/internal/team"
 	"go-docker/internal/upload"
 	"go-docker/internal/user"
@@ -23,6 +24,7 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 	expeditionHandler := expedition.NewExpeditionHandler()
 	uploadHandler := upload.NewUploadHandler()
 	teamHandler := team.NewTeamHandler()
+	stadiumHandler := stadium.NewStadiumHandler()
 	adminToolHandler := adminTool.NewAdminToolHandler()
 
 	publicGroup := api.Group("")
@@ -139,6 +141,10 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 		protectedTeamGroup := protectedGroup.Group("/team")
 		{
 			protectedTeamGroup.GET("/me", teamHandler.GetTeamsWithFavorites)
+		}
+		protectedStadiumGroup := protectedGroup.Group("/stadium")
+		{
+			protectedStadiumGroup.GET("/:stadiumId", stadiumHandler.GetStadium)
 		}
 	}
 

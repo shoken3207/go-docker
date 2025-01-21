@@ -293,6 +293,7 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 		visitedFacilities = append(visitedFacilities, VisitedFacilityResponse{
 			ID:        int(vf.ID),
 			Name:      vf.Name,
+			CustomName: vf.CustomName,
 			Address:   vf.Address,
 			Icon:      vf.Icon,
 			Color:     vf.Color,
@@ -450,6 +451,7 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 			newVisitedFacility := models.VisitedFacility{
 				ExpeditionId: newExpedition.ID,
 				Name:         visitedFacility.Name,
+				CustomName: visitedFacility.CustomName,
 				Address:      visitedFacility.Address,
 				Icon:         visitedFacility.Icon,
 				Color:        visitedFacility.Color,
@@ -652,6 +654,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 			newVisitedFacility := models.VisitedFacility{
 				ExpeditionId: *expeditionId,
 				Name:         visitedFacility.Name,
+				CustomName: visitedFacility.CustomName,
 				Address:      visitedFacility.Address,
 				Icon:         visitedFacility.Icon,
 				Color:        visitedFacility.Color,
@@ -668,6 +671,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 				return err
 			}
 			updateVisitedFacility.Name = visitedFacility.Name
+			updateVisitedFacility.CustomName = visitedFacility.CustomName
 			updateVisitedFacility.Address = visitedFacility.Address
 			updateVisitedFacility.Icon = visitedFacility.Icon
 			updateVisitedFacility.Color = visitedFacility.Color
@@ -796,6 +800,9 @@ func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest, userId
 		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id").
 		Where("expeditions.is_public = ?", true)
 
+	if req.StadiumId != nil {
+		query = query.Where("expeditions.stadium_id = ?", *req.StadiumId)
+	}
 	if req.SportId != nil {
 		query = query.Where("expeditions.sport_id = ?", *req.SportId)
 	}

@@ -28,12 +28,9 @@ func (s *UserService) createUserResponse(user *models.User) *UserResponse {
 	return &userResponse
 }
 
-func (s *UserService) DeleteFavoriteTeams(tx *gorm.DB, userId uint, teamIds []uint) error {
-	if err := tx.Where("user_id = ? AND team_id IN ?", userId, teamIds).Delete(&models.FavoriteTeam{}).Error; err != nil {
+func (s *UserService) DeleteFavoriteTeams(tx *gorm.DB, userId uint) error {
+	if err := tx.Where("user_id = ?", userId).Delete(&models.FavoriteTeam{}).Error; err != nil {
 		log.Printf("お気に入りチーム削除エラー: %v", err)
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return utils.NewCustomError(http.StatusNotFound, "お気に入りチームが見つかりません。")
-		}
 		return utils.NewCustomError(http.StatusInternalServerError, "お気に入りチーム削除に失敗しました。")
 	}
 	return nil
@@ -149,21 +146,18 @@ func (s *UserService) updateUserService(ik *imagekit.ImageKit, userId *uint, req
 			return err
 		}
 
-		addFavoriteTeamIds := requestBody.FavoriteTeams.Add
-		if(len(addFavoriteTeamIds) > 0) {
+		if(len(requestBody.FavoriteTeams) > 0) {
+			if err := s.DeleteFavoriteTeams(tx, user.ID); err != nil {
+				return err
+			}
 			var favoriteTeams []models.FavoriteTeam
-			for _, teamId := range addFavoriteTeamIds {
+			for _, teamId := range requestBody.FavoriteTeams {
 				favoriteTeams = append(favoriteTeams, models.FavoriteTeam{
 					UserId: user.ID,
 					TeamId: uint(teamId),
 				})
 			}
-			utils.CreateFavoriteTeams(tx, &favoriteTeams)
-		}
-
-		deleteFavoriteTeamIds := requestBody.FavoriteTeams.Delete
-		if(len(deleteFavoriteTeamIds) > 0) {
-			if err := s.DeleteFavoriteTeams(tx, user.ID, deleteFavoriteTeamIds); err != nil {
+			if err := utils.CreateFavoriteTeams(tx, &favoriteTeams); err != nil {
 				return err
 			}
 		}

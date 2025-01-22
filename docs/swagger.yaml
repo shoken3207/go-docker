@@ -1,12 +1,18 @@
 consumes:
 - application/json
 definitions:
-  adminTool.IdRequest:
+  adminTool.League:
     properties:
       id:
         type: integer
+      name:
+        type: string
+      sport_id:
+        type: integer
     required:
     - id
+    - name
+    - sport_id
     type: object
   adminTool.LeagueAddRequest:
     properties:
@@ -19,14 +25,11 @@ definitions:
     type: object
   adminTool.LeagueUpdateRequest:
     properties:
-      id:
-        type: integer
       name:
         type: string
       sport_id:
         type: integer
     required:
-    - id
     - sport_id
     type: object
   adminTool.Sports:
@@ -48,12 +51,34 @@ definitions:
     type: object
   adminTool.SportsUpdateRequest:
     properties:
-      id:
-        type: integer
       name:
         type: string
     required:
+    - name
+    type: object
+  adminTool.Stadium:
+    properties:
+      address:
+        type: string
+      capacity:
+        type: integer
+      description:
+        type: string
+      fileId:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    required:
+    - address
+    - capacity
+    - description
+    - fileId
     - id
+    - image
     - name
     type: object
   adminTool.StadiumAddRequest:
@@ -88,8 +113,6 @@ definitions:
         type: string
       fileId:
         type: string
-      id:
-        type: integer
       image:
         type: string
       name:
@@ -99,9 +122,27 @@ definitions:
     - capacity
     - description
     - fileId
-    - id
     - image
     - name
+    type: object
+  adminTool.Team:
+    properties:
+      id:
+        type: integer
+      league_id:
+        type: integer
+      name:
+        type: string
+      sport_id:
+        type: integer
+      stadium_id:
+        type: integer
+    required:
+    - id
+    - league_id
+    - name
+    - sport_id
+    - stadium_id
     type: object
   adminTool.TeamAddRequest:
     properties:
@@ -129,14 +170,11 @@ definitions:
         type: integer
       stadiumId:
         type: integer
-      teamId:
-        type: integer
     required:
     - LeagueId
     - name
     - sportsId
     - stadiumId
-    - teamId
     type: object
   auth.LoginRequest:
     properties:
@@ -942,10 +980,43 @@ definitions:
         example: user123
         type: string
     type: object
+  utils.ApiResponse-adminTool_League:
+    properties:
+      data:
+        $ref: '#/definitions/adminTool.League'
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
   utils.ApiResponse-adminTool_Sports:
     properties:
       data:
         $ref: '#/definitions/adminTool.Sports'
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.ApiResponse-adminTool_Stadium:
+    properties:
+      data:
+        $ref: '#/definitions/adminTool.Stadium'
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.ApiResponse-adminTool_Team:
+    properties:
+      data:
+        $ref: '#/definitions/adminTool.Team'
       message:
         example: 成功しました！！
         type: string
@@ -1080,16 +1151,15 @@ info:
   title: ビジターゴーAPI
   version: "1.0"
 paths:
-  /api/admin/league/delete:
+  /api/admin/league/delete/{id}:
     delete:
       description: リクエストボディに削除対象のIDを指定してリーグ情報を削除します
       parameters:
       - description: リーグID
-        in: body
-        name: request
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/adminTool.IdRequest'
+        type: integer
       responses:
         "200":
           description: 成功
@@ -1106,6 +1176,31 @@ paths:
       security:
       - BearerAuth: []
       summary: リーグ削除
+      tags:
+      - adminLeague
+  /api/admin/league/idLeague/{id}:
+    get:
+      description: idからリーグ情報のレコードを取得して表示する。
+      parameters:
+      - description: リーグID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-adminTool_League'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: リーグid検索
       tags:
       - adminLeague
   /api/admin/league/leagueAdd:
@@ -1160,10 +1255,15 @@ paths:
       summary: リーグ全件検索
       tags:
       - adminLeague
-  /api/admin/league/update:
+  /api/admin/league/update/{id}:
     put:
       description: リクエストボディに更新対象のIDを指定してリーグ情報を更新します
       parameters:
+      - description: リーグID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: リーグ情報
         in: body
         name: request
@@ -1292,10 +1392,15 @@ paths:
       summary: スポーツの追加
       tags:
       - adminSports
-  /api/admin/sports/update:
+  /api/admin/sports/update/{id}:
     put:
       description: リクエストボディに更新対象のIDを指定してスポーツ情報を更新します
       parameters:
+      - description: スポーツID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: スポーツ情報
         in: body
         name: request
@@ -1320,16 +1425,15 @@ paths:
       summary: スポーツ更新
       tags:
       - adminSports
-  /api/admin/stadium/delete:
+  /api/admin/stadium/delete/{id}:
     delete:
       description: リクエストボディに削除対象のIDを指定してスタジアムを削除します
       parameters:
       - description: スタジアムID
-        in: body
-        name: request
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/adminTool.IdRequest'
+        type: integer
       responses:
         "200":
           description: 成功
@@ -1346,6 +1450,31 @@ paths:
       security:
       - BearerAuth: []
       summary: スタジアム削除
+      tags:
+      - adminStadium
+  /api/admin/stadium/idStadium/{id}:
+    get:
+      description: idからスタジアム情報のレコードを取得して表示する。
+      parameters:
+      - description: スタジアムID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-adminTool_Stadium'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: スタジアムid検索
       tags:
       - adminStadium
   /api/admin/stadium/stadiumAdd:
@@ -1400,10 +1529,15 @@ paths:
       summary: スタジアム全件検索
       tags:
       - adminStadium
-  /api/admin/stadium/update:
+  /api/admin/stadium/update/{id}:
     put:
       description: リクエストボディに更新対象のIDを指定してスタジアムを更新します
       parameters:
+      - description: スタジアムID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: スタジアム情報
         in: body
         name: request
@@ -1428,16 +1562,15 @@ paths:
       summary: スタジアム更新
       tags:
       - adminStadium
-  /api/admin/team/delete:
+  /api/admin/team/delete/{id}:
     delete:
       description: リクエストボディに削除対象のIDを指定してチーム情報を削除します
       parameters:
       - description: チームID
-        in: body
-        name: request
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/adminTool.IdRequest'
+        type: integer
       responses:
         "200":
           description: 成功
@@ -1454,6 +1587,31 @@ paths:
       security:
       - BearerAuth: []
       summary: チーム削除
+      tags:
+      - adminTeam
+  /api/admin/team/idTeam/{id}:
+    get:
+      description: idからチーム情報のレコードを取得して表示する。
+      parameters:
+      - description: チームID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-adminTool_Team'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      summary: チームid検索
       tags:
       - adminTeam
   /api/admin/team/teamAdd:
@@ -1508,10 +1666,15 @@ paths:
       summary: チーム全件検索
       tags:
       - adminTeam
-  /api/admin/team/update:
+  /api/admin/team/update/{id}:
     put:
       description: リクエストボディに更新対象のIDを指定してチーム情報を更新します
       parameters:
+      - description: チームID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: チーム情報
         in: body
         name: request

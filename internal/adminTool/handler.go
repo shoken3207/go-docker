@@ -29,6 +29,8 @@ func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 
 	stadiums, err := adminToolService.getStadiumsService(keyword)
 
+	log.Println("返却値：", stadiums)
+
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
@@ -38,6 +40,35 @@ func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 	log.Println(stadiums)
 
 	utils.SuccessResponse[any](c, http.StatusOK, stadiums, "スタジアムの検索に成功しました。")
+}
+
+// @Summary スタジアムid検索
+// @Description idからスタジアム情報のレコードを取得して表示する。
+// @Tags adminStadium
+// @Secrity BearerAuth
+// @Param id path uint true "スタジアムID"
+// @Success 200 {object} utils.ApiResponse[Stadium]"成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
+// @Router /api/admin/stadium/idStadium/{id} [get]
+func (h *AdminToolHandler) GetIdStadiums(c *gin.Context) {
+	var request IdRequest
+
+	if err := c.ShouldBindUri(&request); err != nil {
+		log.Println("エラー:", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	stadium, err := adminToolService.StadiumGetIdService(request.Id)
+
+	if err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, stadium, "スタジアムの検索に成功しました。")
 }
 
 // @Summary スタジアム追加
@@ -71,20 +102,29 @@ func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 // @Description リクエストボディに更新対象のIDを指定してスタジアムを更新します
 // @Tags adminStadium
 // @Security BearerAuth
+// @Param id path uint true "スタジアムID"
 // @Param request body StadiumUpdateRequest true "スタジアム情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/stadium/update [put]
+// @Router /api/admin/stadium/update/{id} [put]
 func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
-	request := StadiumUpdateRequest{}
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var requestId IdRequest
+
+	if err := c.ShouldBindUri(&requestId); err != nil {
+		log.Println("エラー:", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	requestBody := StadiumUpdateRequest{}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
 	log.Println("重複検索が正常にリターンはされているよ:handler")
-	if err := adminToolService.UpdateStadiumService(&request); err != nil {
+	if err := adminToolService.UpdateStadiumService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
@@ -99,20 +139,21 @@ func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 // @Description リクエストボディに削除対象のIDを指定してスタジアムを削除します
 // @Tags adminStadium
 // @Security BearerAuth
-// @Param request body IdRequest true "スタジアムID"
+// @Param id path uint true "スタジアムID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/stadium/delete [delete]
+// @Router /api/admin/stadium/delete/{id} [delete]
 func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
-	request := IdRequest{}
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var request IdRequest
+
+	if err := c.ShouldBindUri(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
 
-	if err := adminToolService.deleteStadiumService(&request); err != nil {
+	if err := adminToolService.deleteStadiumService(request.Id); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
@@ -211,20 +252,29 @@ func (h *AdminToolHandler) SportsAdd(c *gin.Context) {
 // @Description リクエストボディに更新対象のIDを指定してスポーツ情報を更新します
 // @Tags adminSports
 // @Security BearerAuth
+// @Param id path uint true "スポーツID"
 // @Param request body SportsUpdateRequest true "スポーツ情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/sports/update [put]
+// @Router /api/admin/sports/update/{id} [put]
 func (h *AdminToolHandler) SportsUpdate(c *gin.Context) {
-	request := SportsUpdateRequest{}
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var requestId IdRequest
+
+	if err := c.ShouldBindUri(&requestId); err != nil {
+		log.Println("エラー:", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	requestBody := StadiumUpdateRequest{}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
 	log.Println("重複検索が正常にリターンはされているよ:handler")
-	if err := adminToolService.UpdateSportService(&request); err != nil {
+	if err := adminToolService.UpdateStadiumService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
@@ -285,7 +335,38 @@ func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 		return
 	}
 
+	log.Println("返却値：", league)
+
 	log.Println(league)
+
+	utils.SuccessResponse[any](c, http.StatusOK, league, "リーグの検索に成功しました。")
+}
+
+// @Summary リーグid検索
+// @Description idからリーグ情報のレコードを取得して表示する。
+// @Tags adminLeague
+// @Secrity BearerAuth
+// @Param id path uint true "リーグID"
+// @Success 200 {object} utils.ApiResponse[League]"成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
+// @Router /api/admin/league/idLeague/{id} [get]
+func (h *AdminToolHandler) GetIdLeague(c *gin.Context) {
+	var request IdRequest
+
+	if err := c.ShouldBindUri(&request); err != nil {
+		log.Println("エラー:", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	league, err := adminToolService.LeagueGetIdService(request.Id)
+
+	if err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
 
 	utils.SuccessResponse[any](c, http.StatusOK, league, "リーグの検索に成功しました。")
 }
@@ -321,20 +402,29 @@ func (h *AdminToolHandler) LeagueAdd(c *gin.Context) {
 // @Description リクエストボディに更新対象のIDを指定してリーグ情報を更新します
 // @Tags adminLeague
 // @Security BearerAuth
+// @Param id path uint true "リーグID"
 // @Param request body LeagueUpdateRequest true "リーグ情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/league/update [put]
+// @Router /api/admin/league/update/{id} [put]
 func (h *AdminToolHandler) LeagueUpdate(c *gin.Context) {
-	request := LeagueUpdateRequest{}
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var requestId IdRequest
+
+	if err := c.ShouldBindUri(&requestId); err != nil {
+		log.Println("エラー:", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	requestBody := LeagueUpdateRequest{}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
 	log.Println("重複検索が正常にリターンはされているよ:handler")
-	if err := adminToolService.UpdateLeagueService(&request); err != nil {
+	if err := adminToolService.UpdateLeagueService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
@@ -342,27 +432,28 @@ func (h *AdminToolHandler) LeagueUpdate(c *gin.Context) {
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "スポーツが正常に更新されました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, "リーグが正常に更新されました。")
 }
 
 // @Summary リーグ削除
 // @Description リクエストボディに削除対象のIDを指定してリーグ情報を削除します
 // @Tags adminLeague
 // @Security BearerAuth
-// @Param request body IdRequest true "リーグID"
+// @Param id path uint true "リーグID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/league/delete [delete]
+// @Router /api/admin/league/delete/{id} [delete]
 func (h *AdminToolHandler) DeleteLeague(c *gin.Context) {
-	request := IdRequest{}
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var request IdRequest
+
+	if err := c.ShouldBindUri(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
 
-	if err := adminToolService.deleteLeagueService(&request); err != nil {
+	if err := adminToolService.deleteLeagueService(request.Id); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
@@ -399,6 +490,36 @@ func (h *AdminToolHandler) GetTeams(c *gin.Context) {
 	utils.SuccessResponse[any](c, http.StatusOK, team, "チームの検索に成功しました。")
 }
 
+// @Summary チームid検索
+// @Description idからチーム情報のレコードを取得して表示する。
+// @Tags adminTeam
+// @Secrity BearerAuth
+// @Param id path uint true "チームID"
+// @Success 200 {object} utils.ApiResponse[Team]"成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
+// @Router /api/admin/team/idTeam/{id} [get]
+func (h *AdminToolHandler) GetIdTeam(c *gin.Context) {
+	var request IdRequest
+
+	if err := c.ShouldBindUri(&request); err != nil {
+		log.Println("エラー:", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	team, err := adminToolService.TeamGetIdService(request.Id)
+
+	if err != nil {
+		log.Printf("リクエストエラー: %v", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		return
+	}
+	log.Println("チーム名:", team.Name)
+
+	utils.SuccessResponse[any](c, http.StatusOK, team, "チームの検索に成功しました。")
+}
+
 // @Summary チームの追加
 // @Description リクエストからチーム情報を取得後、重複確認を行い登録する。
 // @Tags adminTeam
@@ -430,20 +551,28 @@ func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 // @Description リクエストボディに更新対象のIDを指定してチーム情報を更新します
 // @Tags adminTeam
 // @Security BearerAuth
+// @Param id path uint true "チームID"
 // @Param request body TeamUpdateRequest true "チーム情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/team/update [put]
+// @Router /api/admin/team/update/{id} [put]
 func (h *AdminToolHandler) TeamUpdate(c *gin.Context) {
-	request := TeamUpdateRequest{}
-	if err := c.ShouldBindJSON(&request); err != nil {
-		log.Printf("リクエストエラー: %v", err)
+	var requestId IdRequest
+
+	if err := c.ShouldBindUri(&requestId); err != nil {
+		log.Println("リクエストエラー(URI):", err)
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	requestBody := TeamUpdateRequest{}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		log.Printf("リクエストエラー(ボディ): %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
-	log.Println("重複検索が正常にリターンはされているよ:handler")
-	if err := adminToolService.UpdateTeamService(&request); err != nil {
+	if err := adminToolService.UpdateTeamService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
@@ -458,20 +587,21 @@ func (h *AdminToolHandler) TeamUpdate(c *gin.Context) {
 // @Description リクエストボディに削除対象のIDを指定してチーム情報を削除します
 // @Tags adminTeam
 // @Security BearerAuth
-// @Param request body IdRequest true "チームID"
+// @Param id path uint true "チームID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/admin/team/delete [delete]
+// @Router /api/admin/team/delete/{id} [delete]
 func (h *AdminToolHandler) DeleteTeam(c *gin.Context) {
-	request := IdRequest{}
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var request IdRequest
+
+	if err := c.ShouldBindUri(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
 		return
 	}
 
-	if err := adminToolService.deleteTeamService(&request); err != nil {
+	if err := adminToolService.deleteTeamService(request.Id); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return

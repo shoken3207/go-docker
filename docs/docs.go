@@ -21,7 +21,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/admin/league/delete": {
+        "/api/admin/league/delete/{id}": {
             "delete": {
                 "security": [
                     {
@@ -35,13 +35,11 @@ const docTemplate = `{
                 "summary": "リーグ削除",
                 "parameters": [
                     {
+                        "type": "integer",
                         "description": "リーグID",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.IdRequest"
-                        }
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -49,6 +47,44 @@ const docTemplate = `{
                         "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/league/idLeague/{id}": {
+            "get": {
+                "description": "idからリーグ情報のレコードを取得して表示する。",
+                "tags": [
+                    "adminLeague"
+                ],
+                "summary": "リーグid検索",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "リーグID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-adminTool_League"
                         }
                     },
                     "400": {
@@ -148,7 +184,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/admin/league/update": {
+        "/api/admin/league/update/{id}": {
             "put": {
                 "security": [
                     {
@@ -161,6 +197,13 @@ const docTemplate = `{
                 ],
                 "summary": "リーグ更新",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "リーグID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "リーグ情報",
                         "name": "request",
@@ -356,7 +399,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/admin/sports/update": {
+        "/api/admin/sports/update/{id}": {
             "put": {
                 "security": [
                     {
@@ -369,6 +412,13 @@ const docTemplate = `{
                 ],
                 "summary": "スポーツ更新",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "スポーツ情報",
                         "name": "request",
@@ -401,7 +451,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/admin/stadium/delete": {
+        "/api/admin/stadium/delete/{id}": {
             "delete": {
                 "security": [
                     {
@@ -415,13 +465,11 @@ const docTemplate = `{
                 "summary": "スタジアム削除",
                 "parameters": [
                     {
+                        "type": "integer",
                         "description": "スタジアムID",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.IdRequest"
-                        }
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -429,6 +477,44 @@ const docTemplate = `{
                         "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/stadium/idStadium/{id}": {
+            "get": {
+                "description": "idからスタジアム情報のレコードを取得して表示する。",
+                "tags": [
+                    "adminStadium"
+                ],
+                "summary": "スタジアムid検索",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "スタジアムID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-adminTool_Stadium"
                         }
                     },
                     "400": {
@@ -528,7 +614,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/admin/stadium/update": {
+        "/api/admin/stadium/update/{id}": {
             "put": {
                 "security": [
                     {
@@ -541,6 +627,13 @@ const docTemplate = `{
                 ],
                 "summary": "スタジアム更新",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "スタジアムID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "スタジアム情報",
                         "name": "request",
@@ -573,7 +666,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/admin/team/delete": {
+        "/api/admin/team/delete/{id}": {
             "delete": {
                 "security": [
                     {
@@ -587,13 +680,11 @@ const docTemplate = `{
                 "summary": "チーム削除",
                 "parameters": [
                     {
+                        "type": "integer",
                         "description": "チームID",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/adminTool.IdRequest"
-                        }
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -601,6 +692,44 @@ const docTemplate = `{
                         "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessBasicResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/team/idTeam/{id}": {
+            "get": {
+                "description": "idからチーム情報のレコードを取得して表示する。",
+                "tags": [
+                    "adminTeam"
+                ],
+                "summary": "チームid検索",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "チームID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-adminTool_Team"
                         }
                     },
                     "400": {
@@ -700,7 +829,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/admin/team/update": {
+        "/api/admin/team/update/{id}": {
             "put": {
                 "security": [
                     {
@@ -713,6 +842,13 @@ const docTemplate = `{
                 ],
                 "summary": "チーム情報更新",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "チームID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "チーム情報",
                         "name": "request",
@@ -1852,13 +1988,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "adminTool.IdRequest": {
+        "adminTool.League": {
             "type": "object",
             "required": [
-                "id"
+                "id",
+                "name",
+                "sport_id"
             ],
             "properties": {
                 "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sport_id": {
                     "type": "integer"
                 }
             }
@@ -1880,13 +2024,9 @@ const docTemplate = `{
         "adminTool.LeagueUpdateRequest": {
             "type": "object",
             "required": [
-                "id",
                 "sport_id"
             ],
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -1924,12 +2064,43 @@ const docTemplate = `{
         "adminTool.SportsUpdateRequest": {
             "type": "object",
             "required": [
-                "id",
                 "name"
             ],
             "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "adminTool.Stadium": {
+            "type": "object",
+            "required": [
+                "address",
+                "capacity",
+                "description",
+                "fileId",
+                "id",
+                "image",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "fileId": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "image": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -1974,7 +2145,6 @@ const docTemplate = `{
                 "capacity",
                 "description",
                 "fileId",
-                "id",
                 "image",
                 "name"
             ],
@@ -1991,14 +2161,38 @@ const docTemplate = `{
                 "fileId": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "image": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "adminTool.Team": {
+            "type": "object",
+            "required": [
+                "id",
+                "league_id",
+                "name",
+                "sport_id",
+                "stadium_id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "league_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sport_id": {
+                    "type": "integer"
+                },
+                "stadium_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -2031,8 +2225,7 @@ const docTemplate = `{
                 "LeagueId",
                 "name",
                 "sportsId",
-                "stadiumId",
-                "teamId"
+                "stadiumId"
             ],
             "properties": {
                 "LeagueId": {
@@ -2045,9 +2238,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "stadiumId": {
-                    "type": "integer"
-                },
-                "teamId": {
                     "type": "integer"
                 }
             }
@@ -3166,11 +3356,59 @@ const docTemplate = `{
                 }
             }
         },
+        "utils.ApiResponse-adminTool_League": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/adminTool.League"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
         "utils.ApiResponse-adminTool_Sports": {
             "type": "object",
             "properties": {
                 "data": {
                     "$ref": "#/definitions/adminTool.Sports"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-adminTool_Stadium": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/adminTool.Stadium"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-adminTool_Team": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/adminTool.Team"
                 },
                 "message": {
                     "type": "string",

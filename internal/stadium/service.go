@@ -57,7 +57,7 @@ func (s *StadiumService) GetStadiumService(loginUserId *uint, request *GetStadiu
 		log.Printf("施設取得エラー: %v", err)
 		return nil, utils.NewCustomError(http.StatusInternalServerError, "施設取得に失敗しました。")
 	}
-	expeditions, err := expeditionService.GetExpeditionList(&expedition.GetExpeditionListRequest{Page: 1,StadiumId: &request.StadiumId}, loginUserId)
+	expeditions, err := expeditionService.GetExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1,StadiumId: &request.StadiumId}, loginUserId)
 	if err != nil {
 		return nil, err
 	}

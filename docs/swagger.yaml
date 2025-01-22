@@ -1829,7 +1829,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: ページネーション付きで遠征記録一覧を取得します<br>teamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します
+      description: ページネーション付きで遠征記録一覧を取得します<br>teamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します<br>stadiumIdを入力したらそのstadiumIdに関する遠征記録を取得します。
       parameters:
       - description: ページ番号
         in: query
@@ -1877,45 +1877,9 @@ paths:
       summary: 遠征記録一覧を取得
       tags:
       - expedition
-  /api/expedition/list/me:
-    get:
-      description: jwtトークンのuserIdからページネーション付きで遠征記録一覧を取得します<br>isPublicがfalse（プライベート）な投稿も取得します。
-      parameters:
-      - description: ページ番号
-        in: query
-        minimum: 1
-        name: page
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse'
-        "400":
-          description: リクエストエラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-        "401":
-          description: 認証エラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-        "404":
-          description: 遠征記録が見つかりません
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-        "500":
-          description: 内部エラー
-          schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
-      security:
-      - BearerAuth: []
-      summary: 自分が投稿した遠征記録一覧を取得
-      tags:
-      - expedition
   /api/expedition/list/user:
     get:
-      description: リクエストのuserIdからページネーション付きで遠征記録一覧を取得します<br>isPublicがtrue（パブリック）な投稿だけ取得します。
+      description: リクエストのuserIdからページネーション付きで遠征記録一覧を取得します<br>ログインユーザーの場合はisPublicがfalse（プライベート）な投稿も取得し、そうじゃなければisPublicがtrue（パブリック）な投稿だけ取得します。
       parameters:
       - description: ページ番号
         in: query
@@ -1951,7 +1915,7 @@ paths:
             $ref: '#/definitions/utils.ErrorBasicResponse'
       security:
       - BearerAuth: []
-      summary: 他ユーザーが投稿した遠征記録一覧を取得
+      summary: ユーザーが投稿した遠征記録一覧を取得
       tags:
       - expedition
   /api/expedition/update/{expeditionId}:

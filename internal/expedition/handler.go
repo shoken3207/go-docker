@@ -179,7 +179,7 @@ func (h *ExpeditionHandler) LikeExpedition(c *gin.Context) {
 }
 
 // @Summary 遠征記録一覧を取得
-// @Description ページネーション付きで遠征記録一覧を取得します<br>teamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します
+// @Description ページネーション付きで遠征記録一覧を取得します<br>teamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します<br>stadiumIdを入力したらそのstadiumIdに関する遠征記録を取得します。
 // @Tags expedition
 // @Security BearerAuth
 // @Accept json
@@ -209,7 +209,7 @@ func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
 		return
 	}
 
-	expeditions, err := expeditionService.GetExpeditionList(&req, userId, false)
+	expeditions, err := expeditionService.GetExpeditionList(&req, userId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
@@ -220,45 +220,8 @@ func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
 	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
 }
 
-// @Summary 自分が投稿した遠征記録一覧を取得
-// @Description jwtトークンのuserIdからページネーション付きで遠征記録一覧を取得します<br>isPublicがfalse（プライベート）な投稿も取得します。
-// @Tags expedition
-// @Security BearerAuth
-// @Param page query int true "ページ番号" minimum(1)
-// @Success 200 {object} utils.ApiResponse[[]ExpeditionListResponse] "成功"
-// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
-// @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
-// @Failure 404 {object} utils.ErrorBasicResponse "遠征記録が見つかりません"
-// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/expedition/list/me [get]
-func (h *ExpeditionHandler) GetMyExpeditionList(c *gin.Context) {
-	userId, err := utils.StringToUint(c.GetString("userId"))
-	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
-			return
-		}
-	}
-	var req GetMyExpeditionListRequest
-	if err := c.ShouldBindQuery(&req); err != nil {
-		log.Printf("リクエストパラメータが不正です: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストパラメータが不正です")
-		return
-	}
-
-	expeditions, err := expeditionService.GetExpeditionList(&GetExpeditionListRequest{Page: req.Page}, userId, true)
-	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
-			return
-		}
-	}
-
-	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
-}
-
-// @Summary 他ユーザーが投稿した遠征記録一覧を取得
-// @Description リクエストのuserIdからページネーション付きで遠征記録一覧を取得します<br>isPublicがtrue（パブリック）な投稿だけ取得します。
+// @Summary ユーザーが投稿した遠征記録一覧を取得
+// @Description リクエストのuserIdからページネーション付きで遠征記録一覧を取得します<br>ログインユーザーの場合はisPublicがfalse（プライベート）な投稿も取得し、そうじゃなければisPublicがtrue（パブリック）な投稿だけ取得します。
 // @Tags expedition
 // @Security BearerAuth
 // @Param page query int true "ページ番号" minimum(1)
@@ -284,7 +247,7 @@ func (h *ExpeditionHandler) GetExpeditionListByUserId(c *gin.Context) {
 		return
 	}
 
-	expeditions, err := expeditionService.GetExpeditionList(&GetExpeditionListRequest{Page: req.Page, UserId: &req.UserId}, loginUserId, false)
+	expeditions, err := expeditionService.GetExpeditionList(&GetExpeditionListRequest{Page: req.Page, UserId: &req.UserId}, loginUserId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())

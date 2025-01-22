@@ -1139,7 +1139,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "ページネーション付きで遠征記録一覧を取得します\u003cbr\u003eteamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します",
+                "description": "ページネーション付きで遠征記録一覧を取得します\u003cbr\u003eteamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します\u003cbr\u003estadiumIdを入力したらそのstadiumIdに関する遠征記録を取得します。",
                 "consumes": [
                     "application/json"
                 ],
@@ -1212,62 +1212,6 @@
                 }
             }
         },
-        "/api/expedition/list/me": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "jwtトークンのuserIdからページネーション付きで遠征記録一覧を取得します\u003cbr\u003eisPublicがfalse（プライベート）な投稿も取得します。",
-                "tags": [
-                    "expedition"
-                ],
-                "summary": "自分が投稿した遠征記録一覧を取得",
-                "parameters": [
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "description": "ページ番号",
-                        "name": "page",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "リクエストエラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "認証エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "遠征記録が見つかりません",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部エラー",
-                        "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/expedition/list/user": {
             "get": {
                 "security": [
@@ -1275,11 +1219,11 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "リクエストのuserIdからページネーション付きで遠征記録一覧を取得します\u003cbr\u003eisPublicがtrue（パブリック）な投稿だけ取得します。",
+                "description": "リクエストのuserIdからページネーション付きで遠征記録一覧を取得します\u003cbr\u003eログインユーザーの場合はisPublicがfalse（プライベート）な投稿も取得し、そうじゃなければisPublicがtrue（パブリック）な投稿だけ取得します。",
                 "tags": [
                     "expedition"
                 ],
-                "summary": "他ユーザーが投稿した遠征記録一覧を取得",
+                "summary": "ユーザーが投稿した遠征記録一覧を取得",
                 "parameters": [
                     {
                         "minimum": 1,

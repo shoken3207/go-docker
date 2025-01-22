@@ -131,7 +131,6 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 			})
 			protectedExpeditionGroup.POST("/like/:expeditionId", expeditionHandler.LikeExpedition)
 			protectedExpeditionGroup.GET("/list", expeditionHandler.GetExpeditionList)
-			protectedExpeditionGroup.GET("/list/me", expeditionHandler.GetMyExpeditionList)
 			protectedExpeditionGroup.GET("/list/user", expeditionHandler.GetExpeditionListByUserId)
 		}
 

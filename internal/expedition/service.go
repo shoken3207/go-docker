@@ -756,7 +756,7 @@ func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uin
 	return nil
 }
 
-func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, loginUserId *uint, isMyExpedition bool) ([]ExpeditionListResponse, error) {
+func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, loginUserId *uint) ([]ExpeditionListResponse, error) {
 	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
 	var expeditions []ExpeditionListResponse
 
@@ -801,8 +801,8 @@ func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, log
 		Joins("LEFT JOIN sports ON expeditions.sport_id = sports.id").
 		Joins("LEFT JOIN users ON expeditions.user_id = users.id").
 		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id")
-
-	if isMyExpedition {
+	log.Printf("id: %v %v", req.UserId, loginUserId)
+	if req.UserId != nil && *req.UserId == *loginUserId {
 		query = query.Where("expeditions.user_id = ?", loginUserId)
 	} else {
 		query = query.Where("expeditions.is_public = ?", true)
@@ -819,7 +819,6 @@ func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, log
 			query = query.Where("EXISTS (SELECT 1 FROM games WHERE games.expedition_id = expeditions.id AND (games.team1_id = ? OR games.team2_id = ?))", *req.TeamId, *req.TeamId)
 		}
 	}
-
 
 	if err := query.
 		Order("expeditions.created_at DESC").

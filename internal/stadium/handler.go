@@ -24,7 +24,7 @@ var stadiumService = NewStadiumService()
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/{stadiumId} [get]
 func (h *StadiumHandler) GetStadium(c *gin.Context) {
-	userId, err := utils.StringToUint(c.GetString("userId"))
+	loginUserId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
@@ -38,7 +38,7 @@ func (h *StadiumHandler) GetStadium(c *gin.Context) {
 		return
 	}
 
-	stadiumResponse, err := stadiumService.GetStadiumService(userId, &request)
+	stadiumResponse, err := stadiumService.GetStadiumService(loginUserId, &request)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())

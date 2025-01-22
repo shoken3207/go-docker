@@ -60,7 +60,7 @@ func (s *AdminToolService) stadiumUpdateCheck(id uint, name, address string) err
 }
 
 // スタジアム情報の取得
-func (s *AdminToolService) getStadiumsService(keyword string) ([]models.Stadium, error) {
+func (s *AdminToolService) getStadiumsService(keyword string) ([]Stadium, error) {
 	stadiums, err := adminToolService.stadiumSearchKeyword(keyword)
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -74,23 +74,34 @@ func (s *AdminToolService) getStadiumsService(keyword string) ([]models.Stadium,
 }
 
 // スタジアム検索
-func (s *AdminToolService) stadiumSearchKeyword(keyword string) ([]models.Stadium, error) {
-	stadiums := []models.Stadium{}
+func (s *AdminToolService) stadiumSearchKeyword(keyword string) ([]Stadium, error) {
+	var stadiums []models.Stadium
+
+	query := db.DB.Model(&models.Stadium{})
 
 	if keyword != "" {
-		if err := db.DB.Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").First(&stadiums).Error; err != nil {
-			return nil, err
-		}
-
-		if err := db.DB.Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&stadiums).Error; err != nil {
+		if err := db.DB.Select("id", "name", "description", "address", "capacity", "description", "image", "file_id").Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&stadiums).Error; err != nil {
 			return nil, err
 		}
 	} else {
-		if err := db.DB.Find(&stadiums).Error; err != nil {
+		if err := query.Find(&stadiums).Error; err != nil {
 			return nil, err
 		}
 	}
-	return stadiums, nil
+
+	var stadiumResponse []Stadium
+	for _, stadium := range stadiums {
+		stadiumResponse = append(stadiumResponse, Stadium{
+			StadiumId:   stadium.ID,
+			Name:        stadium.Name,
+			Description: stadium.Description,
+			Address:     stadium.Address,
+			Capacity:    uint(stadium.Capacity),
+			Image:       stadium.Image,
+			FileId:      stadium.FileId,
+		})
+	}
+	return stadiumResponse, nil
 }
 
 // スタジアム追加

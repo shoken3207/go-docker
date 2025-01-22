@@ -374,7 +374,7 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 	return db.DB.Transaction(func(tx *gorm.DB) error {
 		newExpedition := models.Expedition{
 			SportId:   request.SportId,
-			IsPublic:  request.IsPublic,
+			IsPublic:  *request.IsPublic,
 			Title:     request.Title,
 			StartDate: request.StartDate,
 			EndDate:   request.EndDate,
@@ -756,13 +756,14 @@ func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uin
 	return nil
 }
 
-func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest, userId *uint) ([]ExpeditionListResponse, error) {
+func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, loginUserId *uint, isMyExpedition bool) ([]ExpeditionListResponse, error) {
 	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
 	var expeditions []ExpeditionListResponse
 
 	query := db.DB.Table("expeditions").
 		Select(`
 			expeditions.id,
+			expeditions.is_public,
 			expeditions.title,
 			expeditions.start_date,
 			expeditions.end_date,
@@ -796,21 +797,29 @@ func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest, userId
 				WHERE expedition_likes.expedition_id = expeditions.id
 				AND expedition_likes.user_id = ?
 			) as is_liked
-		`, *userId).
+		`, *loginUserId).
 		Joins("LEFT JOIN sports ON expeditions.sport_id = sports.id").
 		Joins("LEFT JOIN users ON expeditions.user_id = users.id").
-		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id").
-		Where("expeditions.is_public = ?", true)
+		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id")
 
-	if req.StadiumId != nil {
-		query = query.Where("expeditions.stadium_id = ?", *req.StadiumId)
+	if isMyExpedition {
+		query = query.Where("expeditions.user_id = ?", loginUserId)
+	} else {
+		query = query.Where("expeditions.is_public = ?", true)
+		if req.StadiumId != nil {
+			query = query.Where("expeditions.stadium_id = ?", *req.StadiumId)
+		}
+		if req.SportId != nil {
+			query = query.Where("expeditions.sport_id = ?", *req.SportId)
+		}
+		if req.UserId != nil {
+			query = query.Where("expeditions.user_id = ?", *req.UserId)
+		}
+		if req.TeamId != nil {
+			query = query.Where("EXISTS (SELECT 1 FROM games WHERE games.expedition_id = expeditions.id AND (games.team1_id = ? OR games.team2_id = ?))", *req.TeamId, *req.TeamId)
+		}
 	}
-	if req.SportId != nil {
-		query = query.Where("expeditions.sport_id = ?", *req.SportId)
-	}
-	if req.TeamId != nil {
-		query = query.Where("EXISTS (SELECT 1 FROM games WHERE games.expedition_id = expeditions.id AND (games.team1_id = ? OR games.team2_id = ?))", *req.TeamId, *req.TeamId)
-	}
+
 
 	if err := query.
 		Order("expeditions.created_at DESC").

@@ -1015,7 +1015,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1064,7 +1064,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1119,7 +1119,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1199,7 +1199,126 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/list/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "jwtトークンのuserIdからページネーション付きで遠征記録一覧を取得します\u003cbr\u003eisPublicがfalse（プライベート）な投稿も取得します。",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "自分が投稿した遠征記録一覧を取得",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ページ番号",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "遠征記録が見つかりません",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expedition/list/user": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "リクエストのuserIdからページネーション付きで遠征記録一覧を取得します\u003cbr\u003eisPublicがtrue（パブリック）な投稿だけ取得します。",
+                "tags": [
+                    "expedition"
+                ],
+                "summary": "他ユーザーが投稿した遠征記録一覧を取得",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ページ番号",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ユーザID",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1263,7 +1382,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1318,7 +1437,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -2215,6 +2334,10 @@ const docTemplate = `{
                     ]
                 },
                 "isLiked": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "isPublic": {
                     "type": "boolean",
                     "example": true
                 },

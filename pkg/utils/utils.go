@@ -53,6 +53,13 @@ func SuccessResponse[T any](c *gin.Context, statusCode int, data T, message stri
 	})
 }
 
+func ErrorDataResponse[T any](c *gin.Context, statusCode int, data T, message string) {
+	c.JSON(statusCode, ApiResponse[T]{
+		Success: false,
+		Data: data,
+		Message: message,
+	})
+}
 func ErrorResponse[T any](c *gin.Context, statusCode int, message string) {
 	c.JSON(statusCode, ApiResponse[T]{
 		Success: false,

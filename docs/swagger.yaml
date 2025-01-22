@@ -1918,6 +1918,47 @@ paths:
       summary: ユーザーが投稿した遠征記録一覧を取得
       tags:
       - expedition
+  /api/expedition/list/user/likes:
+    get:
+      description: リクエストのuserIdからページネーション付きで遠征記録一覧を取得します<br>ログインユーザーの場合はisPublicがfalse（プライベート）な投稿も取得し、そうじゃなければisPublicがtrue（パブリック）な投稿だけ取得します。
+      parameters:
+      - description: ページ番号
+        in: query
+        minimum: 1
+        name: page
+        required: true
+        type: integer
+      - description: ユーザID
+        in: query
+        name: userId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "401":
+          description: 認証エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "404":
+          description: 遠征記録が見つかりません
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: ユーザーがいいねした遠征記録一覧を取得
+      tags:
+      - expedition
   /api/expedition/update/{expeditionId}:
     put:
       description: 遠征、出費、試合、訪れた施設の情報を更新する。<br>Payment, VisitedFacility, Game, GameScoreのdeleteにはidの配列ですが、ExpeditionImageのdeleteにはurlの配列をリクエストで渡してください

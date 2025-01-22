@@ -15,7 +15,7 @@ var adminToolService = NewAdminToolService()
 
 // @Summary スタジアム全件検索
 // @Description スタジアム情報のレコードを全件取得して、一覧として表示する。
-// @Tags Stadium
+// @Tags adminStadium
 // @Secrity BearerAuth
 // @Param keyword query string false "キーワード"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -44,7 +44,7 @@ func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 
 // @Summary スタジアムid検索
 // @Description idからスタジアム情報のレコードを取得して表示する。
-// @Tags Stadium
+// @Tags adminStadium
 // @Secrity BearerAuth
 // @Param id path uint true "スタジアムID"
 // @Success 200 {object} utils.ApiResponse[Stadium]"成功"
@@ -73,7 +73,7 @@ func (h *AdminToolHandler) GetIdStadiums(c *gin.Context) {
 
 // @Summary スタジアム追加
 // @Description リクエストからスタジアム情報を追加後、重複確認を行い登録する。
-// @Tags Stadium
+// @Tags adminStadium
 // @Security BearerAuth
 // @Param request body StadiumAddRequest true "スタジアム情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -100,7 +100,7 @@ func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 
 // @Summary スタジアム更新
 // @Description リクエストボディに更新対象のIDを指定してスタジアムを更新します
-// @Tags Stadium
+// @Tags adminStadium
 // @Security BearerAuth
 // @Param id path uint true "スタジアムID"
 // @Param request body StadiumUpdateRequest true "スタジアム情報"
@@ -137,7 +137,7 @@ func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 
 // @Summary スタジアム削除
 // @Description リクエストボディに削除対象のIDを指定してスタジアムを削除します
-// @Tags Stadium
+// @Tags adminStadium
 // @Security BearerAuth
 // @Param id path uint true "スタジアムID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -165,7 +165,7 @@ func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
 
 // @Summary スポーツ全件検索
 // @Description スポーツ情報のレコードを全件取得して、一覧として表示する。
-// @Tags Sports
+// @Tags adminSports
 // @Secrity BearerAuth
 // @Param keyword query string false "キーワード"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -194,7 +194,7 @@ func (h *AdminToolHandler) GetSports(c *gin.Context) {
 
 // @Summary スポーツid検索
 // @Description idからスポーツ情報のレコードを取得して表示する。
-// @Tags Sports
+// @Tags adminSports
 // @Secrity BearerAuth
 // @Param id path uint true "スポーツID"
 // @Success 200 {object} utils.ApiResponse[Sports]"成功"
@@ -223,7 +223,7 @@ func (h *AdminToolHandler) GetIdSports(c *gin.Context) {
 
 // @Summary スポーツの追加
 // @Description リクエストからスポーツ情報を取得後、重複確認を行い登録する。
-// @Tags Sports
+// @Tags adminSports
 // @Security BearerAuth
 // @Param request body SportsAddRequest true "スポーツ情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -250,7 +250,7 @@ func (h *AdminToolHandler) SportsAdd(c *gin.Context) {
 
 // @Summary スポーツ更新
 // @Description リクエストボディに更新対象のIDを指定してスポーツ情報を更新します
-// @Tags Sports
+// @Tags adminSports
 // @Security BearerAuth
 // @Param id path uint true "スポーツID"
 // @Param request body SportsUpdateRequest true "スポーツ情報"
@@ -287,7 +287,7 @@ func (h *AdminToolHandler) SportsUpdate(c *gin.Context) {
 
 // @Summary スポーツ削除
 // @Description リクエストボディに削除対象のIDを指定してスポーツ情報を削除します
-// @Tags Sports
+// @Tags adminSports
 // @Security BearerAuth
 // @Param id path uint true "スポーツID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -315,7 +315,7 @@ func (h *AdminToolHandler) DeleteSports(c *gin.Context) {
 
 // @Summary リーグ全件検索
 // @Description リーグ情報のレコードを全件取得して、一覧として表示する。
-// @Tags League
+// @Tags adminLeague
 // @Secrity BearerAuth
 // @Param keyword query string false "キーワード"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -344,7 +344,7 @@ func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 
 // @Summary リーグid検索
 // @Description idからリーグ情報のレコードを取得して表示する。
-// @Tags League
+// @Tags adminLeague
 // @Secrity BearerAuth
 // @Param id path uint true "リーグID"
 // @Success 200 {object} utils.ApiResponse[League]"成功"
@@ -373,7 +373,7 @@ func (h *AdminToolHandler) GetIdLeague(c *gin.Context) {
 
 // @Summary リーグの追加
 // @Description リクエストからリーグ情報を取得後、重複確認を行い登録する。
-// @Tags League
+// @Tags adminLeague
 // @Security BearerAuth
 // @Param request body LeagueAddRequest true "リーグ情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -400,7 +400,7 @@ func (h *AdminToolHandler) LeagueAdd(c *gin.Context) {
 
 // @Summary リーグ更新
 // @Description リクエストボディに更新対象のIDを指定してリーグ情報を更新します
-// @Tags League
+// @Tags adminLeague
 // @Security BearerAuth
 // @Param id path uint true "リーグID"
 // @Param request body LeagueUpdateRequest true "リーグ情報"
@@ -437,7 +437,7 @@ func (h *AdminToolHandler) LeagueUpdate(c *gin.Context) {
 
 // @Summary リーグ削除
 // @Description リクエストボディに削除対象のIDを指定してリーグ情報を削除します
-// @Tags League
+// @Tags adminLeague
 // @Security BearerAuth
 // @Param id path uint true "リーグID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -465,7 +465,7 @@ func (h *AdminToolHandler) DeleteLeague(c *gin.Context) {
 
 // @Summary チーム全件検索
 // @Description チーム情報のレコードを全件取得して、一覧として表示する。
-// @Tags Team
+// @Tags adminTeam
 // @Secrity BearerAuth
 // @Param keyword query string false "キーワード"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -492,7 +492,7 @@ func (h *AdminToolHandler) GetTeams(c *gin.Context) {
 
 // @Summary チームid検索
 // @Description idからチーム情報のレコードを取得して表示する。
-// @Tags Team
+// @Tags adminTeam
 // @Secrity BearerAuth
 // @Param id path uint true "チームID"
 // @Success 200 {object} utils.ApiResponse[Team]"成功"
@@ -522,7 +522,7 @@ func (h *AdminToolHandler) GetIdTeam(c *gin.Context) {
 
 // @Summary チームの追加
 // @Description リクエストからチーム情報を取得後、重複確認を行い登録する。
-// @Tags Team
+// @Tags adminTeam
 // @Security BearerAuth
 // @Param request body TeamAddRequest true "チーム情報"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
@@ -549,7 +549,7 @@ func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 
 // @Summary チーム情報更新
 // @Description リクエストボディに更新対象のIDを指定してチーム情報を更新します
-// @Tags Team
+// @Tags adminTeam
 // @Security BearerAuth
 // @Param id path uint true "チームID"
 // @Param request body TeamUpdateRequest true "チーム情報"
@@ -585,7 +585,7 @@ func (h *AdminToolHandler) TeamUpdate(c *gin.Context) {
 
 // @Summary チーム削除
 // @Description リクエストボディに削除対象のIDを指定してチーム情報を削除します
-// @Tags Team
+// @Tags adminTeam
 // @Security BearerAuth
 // @Param id path uint true "チームID"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"

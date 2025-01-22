@@ -12,8 +12,9 @@ type GetUserByUsernameRequest struct {
 type UpdateUserRequestBody struct {
 	Username     string `json:"username" binding:"required,min=1,max=255" example:"user123"`
 	Name         string `json:"name" binding:"required" example:"tanaka taro"`
-	Description  string `json:"description" binding:"required" example:"野球が好きです！"`
+	Description  string `json:"description" example:"野球が好きです！"`
 	ProfileImage string `json:"profileImage" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	FavoriteTeams []uint `json:"favoriteTeams" example:"1"`
 }
 
 type IsUniqueUsernameRequest struct {

@@ -13,6 +13,7 @@ type RegisterRequest struct {
 	Password     string `json:"password" binding:"required,min=6,max=50" example:"password123"`
 	Description  string `json:"description" example:"野球が好きです！"`
 	ProfileImage string `json:"profileImage" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	FavoriteTeamIds []uint `json:"favoriteTeamIds" example:"1"`
 }
 
 type LoginRequest struct {

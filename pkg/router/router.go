@@ -5,6 +5,7 @@ import (
 	"go-docker/internal/auth"
 	"go-docker/internal/expedition"
 	"go-docker/internal/sample"
+	"go-docker/internal/stadium"
 	"go-docker/internal/team"
 	"go-docker/internal/upload"
 	"go-docker/internal/user"
@@ -23,6 +24,7 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 	expeditionHandler := expedition.NewExpeditionHandler()
 	uploadHandler := upload.NewUploadHandler()
 	teamHandler := team.NewTeamHandler()
+	stadiumHandler := stadium.NewStadiumHandler()
 	adminToolHandler := adminTool.NewAdminToolHandler()
 
 	publicGroup := api.Group("")
@@ -130,18 +132,18 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 			protectedExpeditionGroup.DELETE("/delete/:expeditionId", func(c *gin.Context) {
 				expeditionHandler.DeleteExpedition(c, ik)
 			})
-			protectedExpeditionGroup.POST("/like/:expeditionId", func(c *gin.Context) {
-				expeditionHandler.LikeExpedition(c)
-			})
-			protectedExpeditionGroup.DELETE("/unlike/:expeditionId", func(c *gin.Context) {
-				expeditionHandler.UnlikeExpedition(c)
-			})
+			protectedExpeditionGroup.POST("/like/:expeditionId", expeditionHandler.LikeExpedition)
 			protectedExpeditionGroup.GET("/list", expeditionHandler.GetExpeditionList)
+			protectedExpeditionGroup.GET("/list/user", expeditionHandler.GetExpeditionListByUserId)
 		}
 
 		protectedTeamGroup := protectedGroup.Group("/team")
 		{
 			protectedTeamGroup.GET("/me", teamHandler.GetTeamsWithFavorites)
+		}
+		protectedStadiumGroup := protectedGroup.Group("/stadium")
+		{
+			protectedStadiumGroup.GET("/:stadiumId", stadiumHandler.GetStadium)
 		}
 	}
 

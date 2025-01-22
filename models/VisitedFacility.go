@@ -3,6 +3,7 @@ package models
 type VisitedFacility struct {
 	BaseModel
 	Name         string     `json:"name" gorm:"size:200;not null"`
+	CustomName   string     `json:"customName" gorm:"size:200;not null"`
 	Address      string     `json:"address" gorm:"size:200;not null"`
 	Latitude     float64    `json:"latitude" gorm:"not null"`
 	Longitude    float64    `json:"longitude" gorm:"not null"`

@@ -64,6 +64,7 @@ type UpdateGameScoreRequest struct {
 
 type VisitedFacilityRequest struct {
 	Name      string  `json:"name" binding:"required" example:"東京駅"`
+	CustomName      string  `json:"customName" binding:"required" example:"東京駅(おみやげ)"`
 	Address   string  `json:"address" binding:"required" example:"東京都千代田区丸の内1-1-1"`
 	Icon      string  `json:"icon" binding:"required" example:"train"`
 	Color     string  `json:"color" binding:"required" example:"#00FF00"`
@@ -73,6 +74,7 @@ type VisitedFacilityRequest struct {
 type VisitedFacilityResponse struct {
 	ID        int     `json:"id" example:"1"`
 	Name      string  `json:"name" example:"東京駅"`
+	CustomName string `json:"customName" example:"東京駅（おみやげ）"`
 	Address   string  `json:"address" example:"東京都千代田区丸の内1-1-1"`
 	Icon      string  `json:"icon" example:"train"`
 	Color     string  `json:"color" example:"#00FF00"`
@@ -97,7 +99,7 @@ type ExpeditionImageResponse struct {
 
 type BaseExpeditionRequest struct {
 	SportId   uint      `json:"sportId" binding:"required" example:"1"`
-	IsPublic  bool      `json:"isPublic" binding:"required" example:"true"`
+	IsPublic  *bool      `json:"isPublic" binding:"required" example:"true"`
 	Title     string    `json:"title" binding:"required" example:"野球観戦の遠征記録"`
 	StartDate time.Time `json:"startDate" binding:"required" example:"2025-01-01T00:00:00Z"`
 	EndDate   time.Time `json:"endDate" binding:"required" example:"2025-01-01T00:00:00Z"`
@@ -189,6 +191,7 @@ type DeleteExpeditionRequestPath struct {
 
 type ExpeditionListResponse struct {
 	ID          uint                   `json:"id" example:"1"`
+	IsPublic bool `json:"isPublic" example:"true"`
 	Title       string                 `json:"title" example:"野球観戦の遠征記録"`
 	StartDate   time.Time             `json:"startDate" example:"2025-01-01T00:00:00Z"`
 	EndDate     time.Time             `json:"endDate" example:"2025-01-01T00:00:00Z"`
@@ -197,16 +200,30 @@ type ExpeditionListResponse struct {
 	UserID      uint                   `json:"userId" example:"1"`
 	UserName    string                 `json:"userName" example:"user123"`
 	UserIcon    string                 `json:"userIcon" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	StadiumId uint      `json:"stadiumId" example:"1"`
+	StadiumName string `json:"stadiumName" example:"東京ドーム"`
+	IsLiked bool `json:"isLiked" example:"true"`
 	LikesCount  int64                  `json:"likesCount" example:"10"`
 	Images      []string               `json:"images" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
 	Team1Name   string                 `json:"team1Name" example:"ヤクルト"`
 	Team2Name   string                 `json:"team2Name" example:"ソフトバンク"`
 }
 
-type ExpeditionListRequest struct {
+type GetExpeditionListRequest struct {
 	Page     int        `form:"page" binding:"required,min=1" example:"1"`
 	SportId  *uint      `form:"sportId" example:"1"`
 	TeamId   *uint      `form:"teamId" example:"1"`
+	StadiumId *uint `form:"stadiumId" example:"1"`
+	UserId *uint `form:"userId" example:"1"`
+}
+
+type GetMyExpeditionListRequest struct {
+	Page     int        `form:"page" binding:"required,min=1" example:"1"`
+}
+
+type GetExpeditionListByUserIdRequest struct {
+	Page     int        `form:"page" binding:"required,min=1" example:"1"`
+	UserId     uint        `form:"userId" binding:"required" example:"1"`
 }
 
 type GetExpeditionDetailResponse struct {
@@ -222,6 +239,7 @@ type GetExpeditionDetailResponse struct {
 
 type LikeExpeditionResponse struct {
 	LikesCount  int64                  `json:"likesCount" example:"10"`
+	IsLiked bool `json:"isLiked" example:"true"`
 }
 type UnLikeExpeditionResponse struct {
 	LikesCount  int64                  `json:"likesCount" example:"10"`

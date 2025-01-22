@@ -293,6 +293,7 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 		visitedFacilities = append(visitedFacilities, VisitedFacilityResponse{
 			ID:        int(vf.ID),
 			Name:      vf.Name,
+			CustomName: vf.CustomName,
 			Address:   vf.Address,
 			Icon:      vf.Icon,
 			Color:     vf.Color,
@@ -373,7 +374,7 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 	return db.DB.Transaction(func(tx *gorm.DB) error {
 		newExpedition := models.Expedition{
 			SportId:   request.SportId,
-			IsPublic:  request.IsPublic,
+			IsPublic:  *request.IsPublic,
 			Title:     request.Title,
 			StartDate: request.StartDate,
 			EndDate:   request.EndDate,
@@ -450,6 +451,7 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 			newVisitedFacility := models.VisitedFacility{
 				ExpeditionId: newExpedition.ID,
 				Name:         visitedFacility.Name,
+				CustomName: visitedFacility.CustomName,
 				Address:      visitedFacility.Address,
 				Icon:         visitedFacility.Icon,
 				Color:        visitedFacility.Color,
@@ -652,6 +654,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 			newVisitedFacility := models.VisitedFacility{
 				ExpeditionId: *expeditionId,
 				Name:         visitedFacility.Name,
+				CustomName: visitedFacility.CustomName,
 				Address:      visitedFacility.Address,
 				Icon:         visitedFacility.Icon,
 				Color:        visitedFacility.Color,
@@ -668,6 +671,7 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 				return err
 			}
 			updateVisitedFacility.Name = visitedFacility.Name
+			updateVisitedFacility.CustomName = visitedFacility.CustomName
 			updateVisitedFacility.Address = visitedFacility.Address
 			updateVisitedFacility.Icon = visitedFacility.Icon
 			updateVisitedFacility.Color = visitedFacility.Color
@@ -700,26 +704,41 @@ func (s *ExpeditionService) CreateExpeditionLike(userId *uint, expeditionId *uin
 	return nil
 }
 
-func (s *ExpeditionService) CreateExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, error) {
-	var existingLike models.ExpeditionLike
-	if err := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).First(&existingLike).Error; err == nil {
-		return nil, utils.NewCustomError(http.StatusBadRequest, "既にいいね済みです")
+func (s *ExpeditionService) ExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, *bool, *string, error) {
+	var expeditionLike *models.ExpeditionLike
+	err := db.DB.Where("user_id = ? AND expedition_id = ?", *userId, *expeditionId).First(&expeditionLike).Error;
+	if err != nil {
+		log.Printf("いいね取得エラー: %v", err)
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil, nil, utils.NewCustomError(http.StatusBadRequest, "いいね取得に失敗しました。")
+		}
 	}
 
-	if _, err := s.FindExpeditionById(*expeditionId); err != nil {
-		return nil, err
+	if _, err := s.FindExpeditionById(*expeditionId);  err != nil {
+		return nil, nil, nil, err
 	}
-
-	if err := s.CreateExpeditionLike(userId, expeditionId); err != nil {
-		return nil, err
+	var message string
+	var isLiked bool
+	if(errors.Is(err, gorm.ErrRecordNotFound)) {
+		if err := s.CreateExpeditionLike(userId, expeditionId); err != nil {
+			return nil, nil, nil, err
+		}
+		message = "いいねしました。"
+		isLiked = true
+	} else {
+		if err := s.DeleteExpeditionLike(userId, expeditionId); err != nil {
+			return nil, nil, nil, err
+		}
+		message = "いいねを外しました。"
+		isLiked = false
 	}
 
 	likesCount, err := s.GetLikesCountByExpeditionId(*expeditionId);
 	if  err != nil {
-		return nil, err
+		return nil, nil, nil, err
 	}
 
-	return likesCount, nil
+	return likesCount, &isLiked, &message, nil
 }
 
 func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uint) error {
@@ -737,30 +756,19 @@ func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uin
 	return nil
 }
 
-func (s *ExpeditionService) DeleteExpeditionLikeService(userId *uint, expeditionId *uint) (*int64, error) {
-	if err := s.DeleteExpeditionLike(userId, expeditionId); err != nil {
-		return nil, err
-	}
-
-	likesCount, err := s.GetLikesCountByExpeditionId(*expeditionId);
-	if  err != nil {
-		return nil, err
-	}
-
-	return likesCount, nil
-}
-
-func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest) ([]ExpeditionListResponse, error) {
+func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, loginUserId *uint) ([]ExpeditionListResponse, error) {
 	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
 	var expeditions []ExpeditionListResponse
 
 	query := db.DB.Table("expeditions").
 		Select(`
 			expeditions.id,
+			expeditions.is_public,
 			expeditions.title,
 			expeditions.start_date,
 			expeditions.end_date,
 			stadia.name as stadium_name,
+			stadia.id as stadium_id,
 			expeditions.sport_id,
 			sports.name as sport_name,
 			expeditions.user_id,
@@ -782,18 +790,34 @@ func (s *ExpeditionService) GetExpeditionList(req *ExpeditionListRequest) ([]Exp
 				WHERE g.expedition_id = expeditions.id
 				ORDER BY g.created_at
 				LIMIT 1
-			) as team2_name
-		`).
+			) as team2_name,
+			EXISTS (
+				SELECT 1
+				FROM expedition_likes
+				WHERE expedition_likes.expedition_id = expeditions.id
+				AND expedition_likes.user_id = ?
+			) as is_liked
+		`, *loginUserId).
 		Joins("LEFT JOIN sports ON expeditions.sport_id = sports.id").
 		Joins("LEFT JOIN users ON expeditions.user_id = users.id").
-		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id").
-		Where("expeditions.is_public = ?", true)
-
-	if req.SportId != nil {
-		query = query.Where("expeditions.sport_id = ?", *req.SportId)
-	}
-	if req.TeamId != nil {
-		query = query.Where("EXISTS (SELECT 1 FROM games WHERE games.expedition_id = expeditions.id AND (games.team1_id = ? OR games.team2_id = ?))", *req.TeamId, *req.TeamId)
+		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id")
+	log.Printf("id: %v %v", req.UserId, loginUserId)
+	if req.UserId != nil && *req.UserId == *loginUserId {
+		query = query.Where("expeditions.user_id = ?", loginUserId)
+	} else {
+		query = query.Where("expeditions.is_public = ?", true)
+		if req.StadiumId != nil {
+			query = query.Where("expeditions.stadium_id = ?", *req.StadiumId)
+		}
+		if req.SportId != nil {
+			query = query.Where("expeditions.sport_id = ?", *req.SportId)
+		}
+		if req.UserId != nil {
+			query = query.Where("expeditions.user_id = ?", *req.UserId)
+		}
+		if req.TeamId != nil {
+			query = query.Where("EXISTS (SELECT 1 FROM games WHERE games.expedition_id = expeditions.id AND (games.team1_id = ? OR games.team2_id = ?))", *req.TeamId, *req.TeamId)
+		}
 	}
 
 	if err := query.

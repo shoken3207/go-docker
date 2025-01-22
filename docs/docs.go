@@ -30,7 +30,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストボディに削除対象のIDを指定してリーグ情報を削除します",
                 "tags": [
-                    "League"
+                    "adminLeague"
                 ],
                 "summary": "リーグ削除",
                 "parameters": [
@@ -68,7 +68,7 @@ const docTemplate = `{
             "get": {
                 "description": "idからリーグ情報のレコードを取得して表示する。",
                 "tags": [
-                    "League"
+                    "adminLeague"
                 ],
                 "summary": "リーグid検索",
                 "parameters": [
@@ -111,7 +111,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストからリーグ情報を取得後、重複確認を行い登録する。",
                 "tags": [
-                    "League"
+                    "adminLeague"
                 ],
                 "summary": "リーグの追加",
                 "parameters": [
@@ -151,7 +151,7 @@ const docTemplate = `{
             "get": {
                 "description": "リーグ情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
-                    "League"
+                    "adminLeague"
                 ],
                 "summary": "リーグ全件検索",
                 "parameters": [
@@ -193,7 +193,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストボディに更新対象のIDを指定してリーグ情報を更新します",
                 "tags": [
-                    "League"
+                    "adminLeague"
                 ],
                 "summary": "リーグ更新",
                 "parameters": [
@@ -245,7 +245,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストボディに削除対象のIDを指定してスポーツ情報を削除します",
                 "tags": [
-                    "Sports"
+                    "adminSports"
                 ],
                 "summary": "スポーツ削除",
                 "parameters": [
@@ -283,7 +283,7 @@ const docTemplate = `{
             "get": {
                 "description": "idからスポーツ情報のレコードを取得して表示する。",
                 "tags": [
-                    "Sports"
+                    "adminSports"
                 ],
                 "summary": "スポーツid検索",
                 "parameters": [
@@ -321,7 +321,7 @@ const docTemplate = `{
             "get": {
                 "description": "スポーツ情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
-                    "Sports"
+                    "adminSports"
                 ],
                 "summary": "スポーツ全件検索",
                 "parameters": [
@@ -363,7 +363,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストからスポーツ情報を取得後、重複確認を行い登録する。",
                 "tags": [
-                    "Sports"
+                    "adminSports"
                 ],
                 "summary": "スポーツの追加",
                 "parameters": [
@@ -408,7 +408,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストボディに更新対象のIDを指定してスポーツ情報を更新します",
                 "tags": [
-                    "Sports"
+                    "adminSports"
                 ],
                 "summary": "スポーツ更新",
                 "parameters": [
@@ -460,7 +460,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストボディに削除対象のIDを指定してスタジアムを削除します",
                 "tags": [
-                    "Stadium"
+                    "adminStadium"
                 ],
                 "summary": "スタジアム削除",
                 "parameters": [
@@ -498,7 +498,7 @@ const docTemplate = `{
             "get": {
                 "description": "idからスタジアム情報のレコードを取得して表示する。",
                 "tags": [
-                    "Stadium"
+                    "adminStadium"
                 ],
                 "summary": "スタジアムid検索",
                 "parameters": [
@@ -541,7 +541,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストからスタジアム情報を追加後、重複確認を行い登録する。",
                 "tags": [
-                    "Stadium"
+                    "adminStadium"
                 ],
                 "summary": "スタジアム追加",
                 "parameters": [
@@ -581,7 +581,7 @@ const docTemplate = `{
             "get": {
                 "description": "スタジアム情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
-                    "Stadium"
+                    "adminStadium"
                 ],
                 "summary": "スタジアム全件検索",
                 "parameters": [
@@ -623,7 +623,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストボディに更新対象のIDを指定してスタジアムを更新します",
                 "tags": [
-                    "Stadium"
+                    "adminStadium"
                 ],
                 "summary": "スタジアム更新",
                 "parameters": [
@@ -675,7 +675,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストボディに削除対象のIDを指定してチーム情報を削除します",
                 "tags": [
-                    "Team"
+                    "adminTeam"
                 ],
                 "summary": "チーム削除",
                 "parameters": [
@@ -713,7 +713,7 @@ const docTemplate = `{
             "get": {
                 "description": "idからチーム情報のレコードを取得して表示する。",
                 "tags": [
-                    "Team"
+                    "adminTeam"
                 ],
                 "summary": "チームid検索",
                 "parameters": [
@@ -756,7 +756,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストからチーム情報を取得後、重複確認を行い登録する。",
                 "tags": [
-                    "Team"
+                    "adminTeam"
                 ],
                 "summary": "チームの追加",
                 "parameters": [
@@ -796,7 +796,7 @@ const docTemplate = `{
             "get": {
                 "description": "チーム情報のレコードを全件取得して、一覧として表示する。",
                 "tags": [
-                    "Team"
+                    "adminTeam"
                 ],
                 "summary": "チーム全件検索",
                 "parameters": [
@@ -838,7 +838,7 @@ const docTemplate = `{
                 ],
                 "description": "リクエストボディに更新対象のIDを指定してチーム情報を更新します",
                 "tags": [
-                    "Team"
+                    "adminTeam"
                 ],
                 "summary": "チーム情報更新",
                 "parameters": [
@@ -1151,7 +1151,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1200,7 +1200,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1228,11 +1228,11 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "ユーザーが遠征記録にいいねを付ける",
+                "description": "ユーザーが遠征記録にいいね済みならいいねを付ける。いいねしていなかったらいいねする",
                 "tags": [
                     "expedition"
                 ],
-                "summary": "遠征記録にいいねする",
+                "summary": "遠征記録にいいね、いいね解除を行う",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1255,7 +1255,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1283,7 +1283,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "ページネーション付きで遠征記録一覧を取得します\u003cbr\u003eteamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します",
+                "description": "ページネーション付きで遠征記録一覧を取得します\u003cbr\u003eteamIdとsportIdを指定すると、そのチーム、スポーツの遠征記録一覧を取得します。指定しなければ全ての遠征記録一覧を取得します\u003cbr\u003estadiumIdを入力したらそのstadiumIdに関する遠征記録を取得します。",
                 "consumes": [
                     "application/json"
                 ],
@@ -1314,6 +1314,12 @@ const docTemplate = `{
                         "description": "チームID",
                         "name": "teamId",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "スタジアムID",
+                        "name": "stadiumId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1329,7 +1335,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1350,24 +1356,32 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/expedition/unlike/{expeditionId}": {
-            "delete": {
+        "/api/expedition/list/user": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "ユーザーが遠征記録のいいねを外す",
+                "description": "リクエストのuserIdからページネーション付きで遠征記録一覧を取得します\u003cbr\u003eログインユーザーの場合はisPublicがfalse（プライベート）な投稿も取得し、そうじゃなければisPublicがtrue（パブリック）な投稿だけ取得します。",
                 "tags": [
                     "expedition"
                 ],
-                "summary": "遠征記録のいいねを外す",
+                "summary": "ユーザーが投稿した遠征記録一覧を取得",
                 "parameters": [
                     {
+                        "minimum": 1,
                         "type": "integer",
-                        "description": "遠征記録ID",
-                        "name": "expeditionId",
-                        "in": "path",
+                        "description": "ページ番号",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ユーザID",
+                        "name": "userId",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -1375,7 +1389,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.ApiResponse-expedition_UnLikeExpeditionResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
                         }
                     },
                     "400": {
@@ -1384,14 +1398,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
                     "404": {
-                        "description": "いいねが見つかりません",
+                        "description": "遠征記録が見つかりません",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
@@ -1448,7 +1462,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1503,7 +1517,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "認証エラー",
                         "schema": {
                             "$ref": "#/definitions/utils.ErrorBasicResponse"
@@ -1547,6 +1561,61 @@ const docTemplate = `{
                 ],
                 "summary": "サンプルAPI",
                 "responses": {}
+            }
+        },
+        "/api/stadium/{stadiumId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "遠征記録は1ページ目（15件）だけ返し、2ページ目以降は別APIから返す\u003cbr\u003e周辺施設は20件を上限としてランキング形式で返す",
+                "tags": [
+                    "stadium"
+                ],
+                "summary": "スタジアム情報、そのスタジアムの遠征記録、周辺施設を取得するAPI",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "stadiumId",
+                        "name": "stadiumId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-stadium_GetStadiumResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "認証エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not foundエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
             }
         },
         "/api/team/me": {
@@ -2102,21 +2171,28 @@ const docTemplate = `{
         },
         "adminTool.Team": {
             "type": "object",
+            "required": [
+                "id",
+                "league_id",
+                "name",
+                "sport_id",
+                "stadium_id"
+            ],
             "properties": {
-                "LeagueId": {
-                    "type": "integer"
-                },
                 "id": {
                     "type": "integer"
                 },
-                "sportsId": {
+                "league_id": {
                     "type": "integer"
                 },
-                "stadiumId": {
-                    "type": "integer"
-                },
-                "teamName": {
+                "name": {
                     "type": "string"
+                },
+                "sport_id": {
+                    "type": "integer"
+                },
+                "stadium_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -2206,6 +2282,15 @@ const docTemplate = `{
                 "description": {
                     "type": "string",
                     "example": "野球が好きです！"
+                },
+                "favoriteTeamIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1
+                    ]
                 },
                 "name": {
                     "type": "string",
@@ -2382,6 +2467,14 @@ const docTemplate = `{
                         "https://ik.imagekit.io/your_imagekit_id/image.jpg"
                     ]
                 },
+                "isLiked": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "isPublic": {
+                    "type": "boolean",
+                    "example": true
+                },
                 "likesCount": {
                     "type": "integer",
                     "example": 10
@@ -2393,6 +2486,14 @@ const docTemplate = `{
                 "sportName": {
                     "type": "string",
                     "example": "野球"
+                },
+                "stadiumId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "stadiumName": {
+                    "type": "string",
+                    "example": "東京ドーム"
                 },
                 "startDate": {
                     "type": "string",
@@ -2623,6 +2724,10 @@ const docTemplate = `{
         "expedition.LikeExpeditionResponse": {
             "type": "object",
             "properties": {
+                "isLiked": {
+                    "type": "boolean",
+                    "example": true
+                },
                 "likesCount": {
                     "type": "integer",
                     "example": 10
@@ -2669,15 +2774,6 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "チケット代"
-                }
-            }
-        },
-        "expedition.UnLikeExpeditionResponse": {
-            "type": "object",
-            "properties": {
-                "likesCount": {
-                    "type": "integer",
-                    "example": 10
                 }
             }
         },
@@ -2937,6 +3033,7 @@ const docTemplate = `{
             "required": [
                 "address",
                 "color",
+                "customName",
                 "icon",
                 "id",
                 "latitude",
@@ -2951,6 +3048,10 @@ const docTemplate = `{
                 "color": {
                     "type": "string",
                     "example": "#00FF00"
+                },
+                "customName": {
+                    "type": "string",
+                    "example": "東京駅(おみやげ)"
                 },
                 "icon": {
                     "type": "string",
@@ -2979,6 +3080,7 @@ const docTemplate = `{
             "required": [
                 "address",
                 "color",
+                "customName",
                 "icon",
                 "latitude",
                 "longitude",
@@ -2992,6 +3094,10 @@ const docTemplate = `{
                 "color": {
                     "type": "string",
                     "example": "#00FF00"
+                },
+                "customName": {
+                    "type": "string",
+                    "example": "東京駅(おみやげ)"
                 },
                 "icon": {
                     "type": "string",
@@ -3022,6 +3128,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "#00FF00"
                 },
+                "customName": {
+                    "type": "string",
+                    "example": "東京駅（おみやげ）"
+                },
                 "icon": {
                     "type": "string",
                     "example": "train"
@@ -3041,6 +3151,64 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "東京駅"
+                }
+            }
+        },
+        "stadium.FacilityResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "東京都千代田区丸の内1-1-1"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "東京駅"
+                },
+                "visitCount": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "stadium.GetStadiumResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "大阪府大阪市西区千代崎3-1-1"
+                },
+                "capacity": {
+                    "type": "integer",
+                    "example": 36000
+                },
+                "description": {
+                    "type": "string",
+                    "example": "オリックス・バファローズのホーム球場"
+                },
+                "expeditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/stadium.FacilityResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "image": {
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "京セラドーム"
                 }
             }
         },
@@ -3122,7 +3290,6 @@ const docTemplate = `{
         "user.UpdateUserRequestBody": {
             "type": "object",
             "required": [
-                "description",
                 "name",
                 "username"
             ],
@@ -3130,6 +3297,15 @@ const docTemplate = `{
                 "description": {
                     "type": "string",
                     "example": "野球が好きです！"
+                },
+                "favoriteTeams": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1
+                    ]
                 },
                 "name": {
                     "type": "string",
@@ -3330,11 +3506,11 @@ const docTemplate = `{
                 }
             }
         },
-        "utils.ApiResponse-expedition_UnLikeExpeditionResponse": {
+        "utils.ApiResponse-stadium_GetStadiumResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/expedition.UnLikeExpeditionResponse"
+                    "$ref": "#/definitions/stadium.GetStadiumResponse"
                 },
                 "message": {
                     "type": "string",

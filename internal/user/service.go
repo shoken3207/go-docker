@@ -28,6 +28,14 @@ func (s *UserService) createUserResponse(user *models.User) *UserResponse {
 	return &userResponse
 }
 
+func (s *UserService) DeleteFavoriteTeams(tx *gorm.DB, userId uint) error {
+	if err := tx.Where("user_id = ?", userId).Delete(&models.FavoriteTeam{}).Error; err != nil {
+		log.Printf("お気に入りチーム削除エラー: %v", err)
+		return utils.NewCustomError(http.StatusInternalServerError, "お気に入りチーム削除に失敗しました。")
+	}
+	return nil
+}
+
 func (s *UserService) findUserById(userId uint) (*models.User, error) {
 	user := models.User{}
 	if err := db.DB.Where("id = ?", userId).First(&user).Error; err != nil {
@@ -131,22 +139,40 @@ func (s *UserService) validateUpdateUserRequest(c *gin.Context) (*uint, *UpdateU
 }
 
 func (s *UserService) updateUserService(ik *imagekit.ImageKit, userId *uint, requestBody *UpdateUserRequestBody) (*UserResponse, error) {
-	user, err := s.updateUser(ik, userId, requestBody)
-	if err != nil {
-		return nil, err
-	}
+	var userResponse UserResponse
+	return &userResponse, db.DB.Transaction(func (tx *gorm.DB) error {
+		user, err := s.updateUser(ik, userId, requestBody)
+		if err != nil {
+			return err
+		}
 
-	userResponse := UserResponse{
-		Id:           user.ID,
-		Username:     user.Username,
-		Email:        user.Email,
-		Name:         user.Name,
-		Description:  user.GetDescription(),
-		ProfileImage: user.GetProfileImage(),
-		FileId:       user.GetFileId(),
-	}
+		if(len(requestBody.FavoriteTeams) > 0) {
+			if err := s.DeleteFavoriteTeams(tx, user.ID); err != nil {
+				return err
+			}
+			var favoriteTeams []models.FavoriteTeam
+			for _, teamId := range requestBody.FavoriteTeams {
+				favoriteTeams = append(favoriteTeams, models.FavoriteTeam{
+					UserId: user.ID,
+					TeamId: uint(teamId),
+				})
+			}
+			if err := utils.CreateFavoriteTeams(tx, &favoriteTeams); err != nil {
+				return err
+			}
+		}
 
-	return &userResponse, nil
+		userResponse = UserResponse{
+			Id:           user.ID,
+			Username:     user.Username,
+			Email:        user.Email,
+			Name:         user.Name,
+			Description:  user.GetDescription(),
+			ProfileImage: user.GetProfileImage(),
+			FileId:       user.GetFileId(),
+		}
+		return nil
+	})
 }
 
 func NewUserService() *UserService {

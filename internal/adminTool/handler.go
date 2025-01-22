@@ -25,7 +25,8 @@ var adminToolService = NewAdminToolService()
 func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
 	log.Println("キーワード:", keyword)
-	stadiums := []models.Stadium{}
+
+	var stadiums []Stadium
 
 	stadiums, err := adminToolService.getStadiumsService(keyword)
 

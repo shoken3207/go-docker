@@ -69,7 +69,7 @@ type Stadium struct {
 	Address     string `json:"address" binding:"required"`
 	Capacity    uint   `json:"capacity" binding:"required"`
 	Image       string `json:"image" binding:"required"`
-	FileId      string `json:"fileId" binding:"required"`
+	FileId      string `json:"file_id" binding:"required"`
 }
 
 // スポーツ情報

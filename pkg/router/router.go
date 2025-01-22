@@ -62,9 +62,10 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 		publicAdminStadiumGroup := publicAdminGroup.Group("/stadium")
 		{
 			publicAdminStadiumGroup.GET("/stadiums", adminToolHandler.GetStadiums)
+			publicAdminStadiumGroup.GET("/idStadium/:id", adminToolHandler.GetIdStadiums)
 			publicAdminStadiumGroup.POST("/stadiumAdd", adminToolHandler.StadiumAdd)
-			publicAdminStadiumGroup.PUT("/update", adminToolHandler.StadiumUpdate)
-			publicAdminStadiumGroup.DELETE("/delete", adminToolHandler.DeleteStadium)
+			publicAdminStadiumGroup.PUT("/update/:id", adminToolHandler.StadiumUpdate)
+			publicAdminStadiumGroup.DELETE("/delete/:id", adminToolHandler.DeleteStadium)
 		}
 
 		publicAdminSportsGroup := publicAdminGroup.Group("/sports")
@@ -72,24 +73,26 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 			publicAdminSportsGroup.GET("/sports", adminToolHandler.GetSports)
 			publicAdminSportsGroup.GET("/idSports/:id", adminToolHandler.GetIdSports)
 			publicAdminSportsGroup.POST("/sportsAdd", adminToolHandler.SportsAdd)
-			publicAdminSportsGroup.PUT("/update", adminToolHandler.SportsUpdate)
+			publicAdminSportsGroup.PUT("/update/:id", adminToolHandler.SportsUpdate)
 			publicAdminSportsGroup.DELETE("/delete/:id", adminToolHandler.DeleteSports)
 		}
 
 		publicAdminLeagueGroup := publicAdminGroup.Group("/league")
 		{
 			publicAdminLeagueGroup.GET("/leagues", adminToolHandler.GetLeagues)
+			publicAdminLeagueGroup.GET("/idLeague/:id", adminToolHandler.GetIdLeague)
 			publicAdminLeagueGroup.POST("/leagueAdd", adminToolHandler.LeagueAdd)
-			publicAdminLeagueGroup.PUT("/update", adminToolHandler.LeagueUpdate)
-			publicAdminLeagueGroup.DELETE("/delete", adminToolHandler.DeleteLeague)
+			publicAdminLeagueGroup.PUT("/update/:id", adminToolHandler.LeagueUpdate)
+			publicAdminLeagueGroup.DELETE("/delete/:id", adminToolHandler.DeleteLeague)
 		}
 
 		publicAdminTeamGroup := publicAdminGroup.Group("/team")
 		{
 			publicAdminTeamGroup.GET("/teams", adminToolHandler.GetTeams)
+			publicAdminTeamGroup.GET("/idTeam/:id", adminToolHandler.GetIdTeam)
 			publicAdminTeamGroup.POST("/teamAdd", adminToolHandler.TeamAdd)
-			publicAdminTeamGroup.PUT("/update", adminToolHandler.TeamUpdate)
-			publicAdminTeamGroup.DELETE("/delete", adminToolHandler.DeleteTeam)
+			publicAdminTeamGroup.PUT("/update/:id", adminToolHandler.TeamUpdate)
+			publicAdminTeamGroup.DELETE("/delete/:id", adminToolHandler.DeleteTeam)
 		}
 
 	}

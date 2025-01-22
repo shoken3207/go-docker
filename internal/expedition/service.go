@@ -39,6 +39,60 @@ func (s *ExpeditionService) FindExpeditionById(expeditionId uint) (*models.Exped
 	}
 	return &expedition, nil
 }
+
+func (s *ExpeditionService) buildExpeditionQuery(baseQuery *gorm.DB, loginUserId *uint, req *GetExpeditionListRequest) {
+	if req.UserId != nil && *req.UserId == *loginUserId {
+		baseQuery.Where("expeditions.user_id = ?", loginUserId)
+	} else {
+		baseQuery.Where("expeditions.is_public = ?", true)
+		if req.StadiumId != nil {
+			baseQuery.Where("expeditions.stadium_id = ?", *req.StadiumId)
+		}
+		if req.SportId != nil {
+			baseQuery.Where("expeditions.sport_id = ?", *req.SportId)
+		}
+		if req.UserId != nil {
+			baseQuery.Where("expeditions.user_id = ?", *req.UserId)
+		}
+		if req.TeamId != nil {
+			baseQuery.Where("EXISTS (SELECT 1 FROM games WHERE games.expedition_id = expeditions.id AND (games.team1_id = ? OR games.team2_id = ?))", *req.TeamId, *req.TeamId)
+		}
+	}
+}
+
+func (s *ExpeditionService) buildLikedExpeditionQuery(baseQuery *gorm.DB, loginUserId *uint, req *GetExpeditionListRequest) {
+	if req.UserId != nil {
+		if *req.UserId == *loginUserId {
+			baseQuery.Where("expedition_likes.user_id = ?", loginUserId)
+		} else {
+			baseQuery.Where("expedition_likes.user_id = ? and expeditions.is_public = ?", *req.UserId, true)
+		}
+	}
+}
+
+func (s *ExpeditionService) getExpeditionImages(expeditionIds *[]uint) (map[uint][]string, error) {
+	var images []struct {
+		ExpeditionID uint
+		Image        string
+	}
+	if err := db.DB.Model(&models.ExpeditionImage{}).
+		Select("expedition_id, image").
+		Where("expedition_id IN ?", *expeditionIds).
+		Order("expedition_id, created_at").
+		Find(&images).Error; err != nil {
+		log.Printf("遠征記録画像の取得に失敗しました: %v", err)
+		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録画像の取得に失敗しました")
+	}
+
+	imageMap := make(map[uint][]string)
+	for _, img := range images {
+		imageMap[img.ExpeditionID] = append(imageMap[img.ExpeditionID], img.Image)
+	}
+
+	return imageMap, nil
+}
+
+
 func (s *ExpeditionService) CreateExpedition(tx *gorm.DB, newExpedition *models.Expedition) error {
 	if err := tx.Create(newExpedition).Error; err != nil {
 		log.Printf("遠征記録作成エラー: %v", err)
@@ -756,7 +810,7 @@ func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uin
 	return nil
 }
 
-func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, loginUserId *uint) ([]ExpeditionListResponse, error) {
+func (s *ExpeditionService) GetExpeditionListService(req *GetExpeditionListRequest, loginUserId *uint) ([]ExpeditionListResponse, error) {
 	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
 	var expeditions []ExpeditionListResponse
 
@@ -801,25 +855,8 @@ func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, log
 		Joins("LEFT JOIN sports ON expeditions.sport_id = sports.id").
 		Joins("LEFT JOIN users ON expeditions.user_id = users.id").
 		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id")
-	log.Printf("id: %v %v", req.UserId, loginUserId)
-	if req.UserId != nil && *req.UserId == *loginUserId {
-		query = query.Where("expeditions.user_id = ?", loginUserId)
-	} else {
-		query = query.Where("expeditions.is_public = ?", true)
-		if req.StadiumId != nil {
-			query = query.Where("expeditions.stadium_id = ?", *req.StadiumId)
-		}
-		if req.SportId != nil {
-			query = query.Where("expeditions.sport_id = ?", *req.SportId)
-		}
-		if req.UserId != nil {
-			query = query.Where("expeditions.user_id = ?", *req.UserId)
-		}
-		if req.TeamId != nil {
-			query = query.Where("EXISTS (SELECT 1 FROM games WHERE games.expedition_id = expeditions.id AND (games.team1_id = ? OR games.team2_id = ?))", *req.TeamId, *req.TeamId)
-		}
-	}
 
+	s.buildExpeditionQuery(query, loginUserId, req)
 	if err := query.
 		Order("expeditions.created_at DESC").
 		Limit(constants.LIMIT_EXPEDITION_LIST).
@@ -842,22 +879,9 @@ func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, log
 		expeditionIds = append(expeditionIds, exp.ID)
 	}
 
-	var images []struct {
-		ExpeditionID uint
-		Image        string
-	}
-	if err := db.DB.Model(&models.ExpeditionImage{}).
-		Select("expedition_id, image").
-		Where("expedition_id IN ?", expeditionIds).
-		Order("expedition_id, created_at").
-		Find(&images).Error; err != nil {
-		log.Printf("遠征記録画像の取得に失敗しました: %v", err)
-		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録一覧の取得に失敗しました")
-	}
-
-	imageMap := make(map[uint][]string)
-	for _, img := range images {
-		imageMap[img.ExpeditionID] = append(imageMap[img.ExpeditionID], img.Image)
+	imageMap, err := s.getExpeditionImages(&expeditionIds)
+	if err != nil {
+		return nil, err
 	}
 
 	for i := range expeditions {
@@ -869,6 +893,93 @@ func (s *ExpeditionService) GetExpeditionList(req *GetExpeditionListRequest, log
 
 	return expeditions, nil
 }
+
+func (s *ExpeditionService) GetLikedExpeditionListService(req *GetExpeditionListRequest, loginUserId *uint) ([]ExpeditionListResponse, error) {
+	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
+	var likedExpeditions []ExpeditionListResponse
+
+	query := db.DB.Table("expedition_likes").
+		Select(`
+			expeditions.id,
+			expeditions.is_public,
+			expeditions.title,
+			expeditions.start_date,
+			expeditions.end_date,
+			stadia.name as stadium_name,
+			stadia.id as stadium_id,
+			expeditions.sport_id,
+			sports.name as sport_name,
+			expeditions.user_id,
+			users.name as user_name,
+			users.profile_image as user_icon,
+			(SELECT COUNT(*) FROM expedition_likes WHERE expedition_likes.expedition_id = expeditions.id) as likes_count,
+			(
+				SELECT t1.name
+				FROM games g
+				JOIN teams t1 ON g.team1_id = t1.id
+				WHERE g.expedition_id = expeditions.id
+				ORDER BY g.created_at
+				LIMIT 1
+			) as team1_name,
+			(
+				SELECT t2.name
+				FROM games g
+				JOIN teams t2 ON g.team2_id = t2.id
+				WHERE g.expedition_id = expeditions.id
+				ORDER BY g.created_at
+				LIMIT 1
+			) as team2_name,
+			 EXISTS (
+			 	SELECT 1
+				FROM expedition_likes
+				WHERE expedition_likes.expedition_id = expeditions.id
+				AND expedition_likes.user_id = ?
+			 ) as is_liked
+		`, *loginUserId).
+		Joins("JOIN expeditions ON expedition_likes.expedition_id = expeditions.id").
+		Joins("LEFT JOIN sports ON expeditions.sport_id = sports.id").
+		Joins("LEFT JOIN users ON expeditions.user_id = users.id").
+		Joins("LEFT JOIN stadia ON expeditions.stadium_id = stadia.id")
+
+	s.buildLikedExpeditionQuery(query, loginUserId, req)
+
+	if err := query.
+		Order("expeditions.created_at DESC").
+		Limit(constants.LIMIT_EXPEDITION_LIST).
+		Offset(offset).
+		Find(&likedExpeditions).Error; err != nil {
+		log.Printf("いいねされた遠征記録一覧の取得に失敗しました: %v", err)
+		return nil, utils.NewCustomError(http.StatusInternalServerError, "いいねされた遠征記録の取得に失敗しました")
+	}
+
+	if len(likedExpeditions) == 0 {
+		if req.Page == 1 {
+			return nil, utils.NewCustomError(http.StatusNotFound, "いいねした遠征記録が見つかりません")
+		} else {
+			return nil, utils.NewCustomError(http.StatusNotFound, "最後のページです")
+		}
+	}
+
+	var expeditionIds []uint
+	for _, exp := range likedExpeditions {
+		expeditionIds = append(expeditionIds, exp.ID)
+	}
+	log.Printf("expeditionIds: %v", expeditionIds)
+	imageMap, err := s.getExpeditionImages(&expeditionIds)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range likedExpeditions {
+		likedExpeditions[i].Images = make([]string, 0)
+		if images, ok := imageMap[likedExpeditions[i].ID]; ok {
+			likedExpeditions[i].Images = images
+		}
+	}
+
+	return likedExpeditions, nil
+}
+
 
 func NewExpeditionService() *ExpeditionService {
 	return &ExpeditionService{}

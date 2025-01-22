@@ -99,7 +99,7 @@ type ExpeditionImageResponse struct {
 
 type BaseExpeditionRequest struct {
 	SportId   uint      `json:"sportId" binding:"required" example:"1"`
-	IsPublic  bool      `json:"isPublic" binding:"required" example:"true"`
+	IsPublic  *bool      `json:"isPublic" binding:"required" example:"true"`
 	Title     string    `json:"title" binding:"required" example:"野球観戦の遠征記録"`
 	StartDate time.Time `json:"startDate" binding:"required" example:"2025-01-01T00:00:00Z"`
 	EndDate   time.Time `json:"endDate" binding:"required" example:"2025-01-01T00:00:00Z"`
@@ -191,6 +191,7 @@ type DeleteExpeditionRequestPath struct {
 
 type ExpeditionListResponse struct {
 	ID          uint                   `json:"id" example:"1"`
+	IsPublic bool `json:"isPublic" example:"true"`
 	Title       string                 `json:"title" example:"野球観戦の遠征記録"`
 	StartDate   time.Time             `json:"startDate" example:"2025-01-01T00:00:00Z"`
 	EndDate     time.Time             `json:"endDate" example:"2025-01-01T00:00:00Z"`
@@ -208,11 +209,21 @@ type ExpeditionListResponse struct {
 	Team2Name   string                 `json:"team2Name" example:"ソフトバンク"`
 }
 
-type ExpeditionListRequest struct {
+type GetExpeditionListRequest struct {
 	Page     int        `form:"page" binding:"required,min=1" example:"1"`
 	SportId  *uint      `form:"sportId" example:"1"`
 	TeamId   *uint      `form:"teamId" example:"1"`
 	StadiumId *uint `form:"stadiumId" example:"1"`
+	UserId *uint `form:"userId" example:"1"`
+}
+
+type GetMyExpeditionListRequest struct {
+	Page     int        `form:"page" binding:"required,min=1" example:"1"`
+}
+
+type GetExpeditionListByUserIdRequest struct {
+	Page     int        `form:"page" binding:"required,min=1" example:"1"`
+	UserId     uint        `form:"userId" binding:"required" example:"1"`
 }
 
 type GetExpeditionDetailResponse struct {

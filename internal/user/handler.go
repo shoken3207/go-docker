@@ -96,24 +96,15 @@ func (h *UserHandler) IsUniqueUsername(c *gin.Context) {
 	request := IsUniqueUsernameRequest{}
 	if err := c.ShouldBindUri(&request); err != nil {
 		errorMessage := "リクエストに不備があります。"
-		// if validationErrors, ok := err.(validator.ValidationErrors); ok {
-		// 	log.Printf("validationErrors: %v", validationErrors)
-		// }
-		// for _, e := range validationErrors {
-		// 	log.Printf("e: %v", e)
-		// 	if e.Field() == "Username" {
-		// 		switch e.Tag() {
-		// 			case "required":
-		// 				if e.Field() == "Username" {
-		// 					errorMessage = "ユーザー名は必須です。"
-		// 				}
-		// 			case "max":
-		// 				if e.Field() == "Username" {
-		// 					errorMessage = "ユーザー名は255文字以内で入力してください。"
-		// 				}
-		// 		}
-		// 	}
-		// }
+
+		errorMessages, err := utils.GenerateErrorMessages(err, request)
+		if err != nil {
+			if customErr, ok := err.(*utils.CustomError); ok {
+				utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+				return
+			}
+		}
+		log.Printf("errorMessages: %v", errorMessages)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, errorMessage)
 		return
 	}

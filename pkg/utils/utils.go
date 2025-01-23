@@ -9,10 +9,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/imagekit-developer/imagekit-go"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -242,4 +245,85 @@ func CreateFavoriteTeams(tx *gorm.DB, favoriteTeams *[]models.FavoriteTeam) erro
 		return NewCustomError(http.StatusInternalServerError, "お気に入りチーム追加に失敗しました。")
 	}
 	return nil
+}
+
+func GetFieldDetail(fieldName string, structName any) (FieldDetail, error) {
+	val := reflect.ValueOf(structName)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+
+	fieldDetail := FieldDetail{
+		FieldName: fieldName,
+		Min:    nil,
+		Max:    nil,
+	}
+	field, found := val.Type().FieldByName(fieldName)
+	if !found {
+		log.Printf("フィールド %s が見つかりません", fieldName)
+		return fieldDetail, NewCustomError(http.StatusInternalServerError, "フィールド詳細取得に失敗しました。")
+	}
+
+
+	fieldTag := field.Tag.Get("field")
+	if fieldTag != "" {
+		fieldDetail.FieldName = fieldTag
+	}
+
+	bindingTag := field.Tag.Get("binding")
+	if bindingTag != "" {
+		tagParts := strings.Split(bindingTag, ",")
+		for _, part := range tagParts {
+			if strings.HasPrefix(part, "min=") {
+				if minValue, err := strconv.Atoi(strings.TrimPrefix(part, "min=")); err == nil {
+					fieldDetail.Min = &minValue
+				}
+			}
+			if strings.HasPrefix(part, "max=") {
+				if maxValue, err := strconv.Atoi(strings.TrimPrefix(part, "max=")); err == nil {
+					fieldDetail.Max = &maxValue
+				}
+			}
+		}
+	}
+
+	return fieldDetail, nil
+}
+
+
+func GenerateErrorMessages(err error, structName any) (*[]string, error) {
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		var errorMessages []string
+
+		for _, ve := range validationErrors {
+			fieldDetail, err := GetFieldDetail(ve.Field(), structName)
+			if err != nil {
+				return nil, err
+			}
+
+			var errorMessage string
+			switch ve.Tag() {
+				case "required":
+					errorMessage = fmt.Sprintf("%sは必須項目です。", fieldDetail.FieldName)
+				case "min":
+					if fieldDetail.Min == nil {
+						errorMessage = fmt.Sprintf("%sは下限文字数を下回っています。", fieldDetail.FieldName)
+						} else {
+							errorMessage = fmt.Sprintf("%sは%d文字以上で入力してください。", fieldDetail.FieldName, *fieldDetail.Min)
+						}
+					case "max":
+						if fieldDetail.Max == nil {
+							errorMessage = fmt.Sprintf("%sは上限文字数を上回っています。", fieldDetail.FieldName)
+						} else {
+							errorMessage = fmt.Sprintf("%sは%d文字以下で入力してください。", fieldDetail.FieldName, *fieldDetail.Max)
+						}
+				default:
+					errorMessage = fmt.Sprintf("%sは不正な値です。", fieldDetail.FieldName)
+			}
+			errorMessages = append(errorMessages, errorMessage)
+		}
+		return &errorMessages, nil
+	}
+
+	return &[]string{"リクエストに不備があります。"}, nil
 }

@@ -1849,7 +1849,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "ヘッダーのトークンからロ図イン済みのユーザーを取得する",
+                "description": "ヘッダーのトークンからログイン済みのユーザーを取得する",
                 "tags": [
                     "user"
                 ],

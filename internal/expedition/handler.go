@@ -225,8 +225,7 @@ func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
 			message = "最後のページです"
 		}
 		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, message)
-	} else {
-		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+		return
 	}
 
 	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
@@ -275,9 +274,9 @@ func (h *ExpeditionHandler) GetExpeditionListByUserId(c *gin.Context) {
 			message = "最後のページです"
 		}
 		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, message)
-	} else {
-		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+		return
 	}
+	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
 }
 
 // @Summary ユーザーがいいねした遠征記録一覧を取得
@@ -323,9 +322,9 @@ func (h *ExpeditionHandler) GetLikedExpeditionListByUserId(c *gin.Context) {
 			message = "最後のページです"
 		}
 		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, message)
-	} else {
-		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+		return
 	}
+	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
 }
 
 func NewExpeditionHandler() *ExpeditionHandler {

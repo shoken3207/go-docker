@@ -252,7 +252,6 @@ func (s *ExpeditionService) FindGameById(gameId uint) (*models.Game, error) {
 	return &game, nil
 }
 func (s *ExpeditionService) CreateGame(tx *gorm.DB, newGame *models.Game) error {
-	log.Printf("newGame: %v", newGame)
 	if err := tx.Create(newGame).Error; err != nil {
 		log.Printf("試合記録作成エラー: %v", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "試合記録作成に失敗しました。")
@@ -866,28 +865,22 @@ func (s *ExpeditionService) GetExpeditionListService(req *GetExpeditionListReque
 		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録一覧の取得に失敗しました")
 	}
 
-	if len(expeditions) == 0 {
-		if req.Page == 1 {
-			return nil, utils.NewCustomError(http.StatusNotFound, "遠征記録が登録されていません")
-		} else {
-			return nil, utils.NewCustomError(http.StatusNotFound, "最後のページです")
+	if len(expeditions) > 0 {
+		var expeditionIds []uint
+		for _, exp := range expeditions {
+			expeditionIds = append(expeditionIds, exp.ID)
 		}
-	}
 
-	var expeditionIds []uint
-	for _, exp := range expeditions {
-		expeditionIds = append(expeditionIds, exp.ID)
-	}
+		imageMap, err := s.getExpeditionImages(&expeditionIds)
+		if err != nil {
+			return nil, err
+		}
 
-	imageMap, err := s.getExpeditionImages(&expeditionIds)
-	if err != nil {
-		return nil, err
-	}
-
-	for i := range expeditions {
-		expeditions[i].Images = make([]string, 0)
-		if images, ok := imageMap[expeditions[i].ID]; ok {
-			expeditions[i].Images = images
+		for i := range expeditions {
+			expeditions[i].Images = make([]string, 0)
+			if images, ok := imageMap[expeditions[i].ID]; ok {
+				expeditions[i].Images = images
+			}
 		}
 	}
 
@@ -951,29 +944,21 @@ func (s *ExpeditionService) GetLikedExpeditionListService(req *GetExpeditionList
 		log.Printf("いいねされた遠征記録一覧の取得に失敗しました: %v", err)
 		return nil, utils.NewCustomError(http.StatusInternalServerError, "いいねされた遠征記録の取得に失敗しました")
 	}
-
-	if len(likedExpeditions) == 0 {
-		if req.Page == 1 {
-			return nil, utils.NewCustomError(http.StatusNotFound, "いいねした遠征記録が見つかりません")
-		} else {
-			return nil, utils.NewCustomError(http.StatusNotFound, "最後のページです")
+	if len(likedExpeditions) > 0 {
+		var expeditionIds []uint
+		for _, exp := range likedExpeditions {
+			expeditionIds = append(expeditionIds, exp.ID)
 		}
-	}
+		imageMap, err := s.getExpeditionImages(&expeditionIds)
+		if err != nil {
+			return nil, err
+		}
 
-	var expeditionIds []uint
-	for _, exp := range likedExpeditions {
-		expeditionIds = append(expeditionIds, exp.ID)
-	}
-	log.Printf("expeditionIds: %v", expeditionIds)
-	imageMap, err := s.getExpeditionImages(&expeditionIds)
-	if err != nil {
-		return nil, err
-	}
-
-	for i := range likedExpeditions {
-		likedExpeditions[i].Images = make([]string, 0)
-		if images, ok := imageMap[likedExpeditions[i].ID]; ok {
-			likedExpeditions[i].Images = images
+		for i := range likedExpeditions {
+			likedExpeditions[i].Images = make([]string, 0)
+			if images, ok := imageMap[likedExpeditions[i].ID]; ok {
+				likedExpeditions[i].Images = images
+			}
 		}
 	}
 

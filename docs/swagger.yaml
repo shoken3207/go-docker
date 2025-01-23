@@ -956,6 +956,38 @@ definitions:
     - name
     - username
     type: object
+  user.UserDetailResponse:
+    properties:
+      description:
+        example: 野球が好きです！
+        type: string
+      email:
+        example: tanaka@example.com
+        type: string
+      expeditions:
+        items:
+          $ref: '#/definitions/expedition.ExpeditionListResponse'
+        type: array
+      fileId:
+        example: "1234567890"
+        type: string
+      id:
+        example: 1
+        type: integer
+      likedExpeditions:
+        items:
+          $ref: '#/definitions/expedition.ExpeditionListResponse'
+        type: array
+      name:
+        example: tanaka taro
+        type: string
+      profileImage:
+        example: https://ik.imagekit.io/your_imagekit_id/image.jpg
+        type: string
+      username:
+        example: user123
+        type: string
+    type: object
   user.UserResponse:
     properties:
       description:
@@ -1109,6 +1141,17 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/user.IsUniqueUsernameResponse'
+      message:
+        example: 成功しました！！
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.ApiResponse-user_UserDetailResponse:
+    properties:
+      data:
+        $ref: '#/definitions/user.UserDetailResponse'
       message:
         example: 成功しました！！
         type: string
@@ -2030,7 +2073,7 @@ paths:
         "404":
           description: 遠征記録が見つかりません
           schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
+            $ref: '#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse'
         "500":
           description: 内部エラー
           schema:
@@ -2071,7 +2114,7 @@ paths:
         "404":
           description: 遠征記録が見つかりません
           schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
+            $ref: '#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse'
         "500":
           description: 内部エラー
           schema:
@@ -2112,7 +2155,7 @@ paths:
         "404":
           description: 遠征記録が見つかりません
           schema:
-            $ref: '#/definitions/utils.ErrorBasicResponse'
+            $ref: '#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse'
         "500":
           description: 内部エラー
           schema:
@@ -2327,7 +2370,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+            $ref: '#/definitions/utils.ApiResponse-user_UserDetailResponse'
         "401":
           description: 認証エラー
           schema:
@@ -2394,7 +2437,7 @@ paths:
         "200":
           description: ユーザー情報
           schema:
-            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+            $ref: '#/definitions/utils.ApiResponse-user_UserDetailResponse'
         "400":
           description: リクエストエラー
           schema:
@@ -2429,7 +2472,7 @@ paths:
         "200":
           description: ユーザー情報
           schema:
-            $ref: '#/definitions/utils.ApiResponse-user_UserResponse'
+            $ref: '#/definitions/utils.ApiResponse-user_UserDetailResponse'
         "400":
           description: リクエストエラー
           schema:

@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"go-docker/internal/db"
+	"go-docker/internal/expedition"
 	"go-docker/models"
 	"go-docker/pkg/utils"
 	"log"
@@ -15,6 +16,8 @@ import (
 
 type UserService struct{}
 
+var expeditionService = expedition.NewExpeditionService()
+
 func (s *UserService) createUserResponse(user *models.User) *UserResponse {
 	userResponse := UserResponse{
 		Id:           user.ID,
@@ -26,6 +29,14 @@ func (s *UserService) createUserResponse(user *models.User) *UserResponse {
 		FileId:       user.GetFileId(),
 	}
 	return &userResponse
+}
+func (s *UserService) createUserDetailResponse(user *models.User, expeditions *[]expedition.ExpeditionListResponse, likedExpeditions *[]expedition.ExpeditionListResponse) *UserDetailResponse {
+	userDetailResponse := UserDetailResponse{
+		UserResponse: *s.createUserResponse(user),
+		Expeditions: *expeditions,
+		LikedExpeditions: *likedExpeditions,
+	}
+	return &userDetailResponse
 }
 
 func (s *UserService) DeleteFavoriteTeams(tx *gorm.DB, userId uint) error {
@@ -103,24 +114,43 @@ func (s *UserService) updateUser(ik *imagekit.ImageKit, userId *uint, request *U
 
 }
 
-func (s *UserService) getUserByIdService(request *GetUserByIdRequest) (*UserResponse, error) {
+func (s *UserService) getUserByIdService(request *GetUserByIdRequest, loginUserId *uint) (*UserDetailResponse, error) {
 	user, err := userService.findUserById(request.UserId)
 	if err != nil {
 		return nil, err
 	}
-	userResponse := s.createUserResponse(user)
+	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	if err != nil {
+		return nil, err
+	}
 
-	return userResponse, nil
+	likedExpeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	if err != nil {
+		return nil, err
+	}
+	userDetailResponse := s.createUserDetailResponse(user, &expeditionList, &likedExpeditionList)
+
+
+	return userDetailResponse, nil
 }
 
-func (s *UserService) getUserByUsernameService(request *GetUserByUsernameRequest) (*UserResponse, error) {
+func (s *UserService) getUserByUsernameService(request *GetUserByUsernameRequest, loginUserId *uint) (*UserDetailResponse, error) {
 	user, err := utils.FindUserByUsername(request.Username)
 	if err != nil {
 		return nil, err
 	}
-	userResponse := s.createUserResponse(user)
+	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	if err != nil {
+		return nil, err
+	}
 
-	return userResponse, nil
+	likedExpeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	if err != nil {
+		return nil, err
+	}
+	userDetailResponse := s.createUserDetailResponse(user, &expeditionList, &likedExpeditionList)
+
+	return userDetailResponse, nil
 }
 
 func (s *UserService) validateUpdateUserRequest(c *gin.Context) (*uint, *UpdateUserRequestBody, error) {

@@ -191,7 +191,7 @@ func (h *ExpeditionHandler) LikeExpedition(c *gin.Context) {
 // @Success 200 {object} utils.ApiResponse[[]ExpeditionListResponse] "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
-// @Failure 404 {object} utils.ErrorBasicResponse "遠征記録が見つかりません"
+// @Failure 404 {object} utils.ApiResponse[[]ExpeditionListResponse] "遠征記録が見つかりません"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/list [get]
 func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
@@ -217,6 +217,18 @@ func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
 		}
 	}
 
+	if len(expeditions) == 0 {
+		var message string
+		if req.Page == 1 {
+			message = "いいねした遠征記録が見つかりません"
+		} else {
+			message = "最後のページです"
+		}
+		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, message)
+	} else {
+		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+	}
+
 	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
 }
 
@@ -229,7 +241,7 @@ func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
 // @Success 200 {object} utils.ApiResponse[[]ExpeditionListResponse] "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
-// @Failure 404 {object} utils.ErrorBasicResponse "遠征記録が見つかりません"
+// @Failure 404 {object} utils.ApiResponse[[]ExpeditionListResponse] "遠征記録が見つかりません"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/list/user [get]
 func (h *ExpeditionHandler) GetExpeditionListByUserId(c *gin.Context) {
@@ -255,7 +267,17 @@ func (h *ExpeditionHandler) GetExpeditionListByUserId(c *gin.Context) {
 		}
 	}
 
-	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+	if len(expeditions) == 0 {
+		var message string
+		if req.Page == 1 {
+			message = "いいねした遠征記録が見つかりません"
+		} else {
+			message = "最後のページです"
+		}
+		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, message)
+	} else {
+		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+	}
 }
 
 // @Summary ユーザーがいいねした遠征記録一覧を取得
@@ -267,7 +289,7 @@ func (h *ExpeditionHandler) GetExpeditionListByUserId(c *gin.Context) {
 // @Success 200 {object} utils.ApiResponse[[]ExpeditionListResponse] "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
-// @Failure 404 {object} utils.ErrorBasicResponse "遠征記録が見つかりません"
+// @Failure 404 {object} utils.ApiResponse[[]ExpeditionListResponse] "遠征記録が見つかりません"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/list/user/likes [get]
 func (h *ExpeditionHandler) GetLikedExpeditionListByUserId(c *gin.Context) {
@@ -293,7 +315,17 @@ func (h *ExpeditionHandler) GetLikedExpeditionListByUserId(c *gin.Context) {
 		}
 	}
 
-	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+	if len(expeditions) == 0 {
+		var message string
+		if req.Page == 1 {
+			message = "いいねした遠征記録が見つかりません"
+		} else {
+			message = "最後のページです"
+		}
+		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, message)
+	} else {
+		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+	}
 }
 
 func NewExpeditionHandler() *ExpeditionHandler {

@@ -2141,7 +2141,7 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
-                "fileId",
+                "file_id",
                 "id",
                 "image",
                 "name"
@@ -2156,7 +2156,7 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "fileId": {
+                "file_id": {
                     "type": "string"
                 },
                 "id": {
@@ -3337,6 +3337,26 @@ const docTemplate = `{
                 }
             }
         },
+        "user.FavoriteTeamResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "leagueName": {
+                    "type": "string"
+                },
+                "sportName": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "integer"
+                },
+                "teamName": {
+                    "type": "string"
+                }
+            }
+        },
         "user.IsUniqueUsernameResponse": {
             "type": "object",
             "properties": {
@@ -3401,6 +3421,12 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "favoriteTeams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.FavoriteTeamResponse"
                     }
                 },
                 "fileId": {

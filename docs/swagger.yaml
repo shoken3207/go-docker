@@ -64,7 +64,7 @@ definitions:
         type: integer
       description:
         type: string
-      fileId:
+      file_id:
         type: string
       id:
         type: integer
@@ -76,7 +76,7 @@ definitions:
     - address
     - capacity
     - description
-    - fileId
+    - file_id
     - id
     - image
     - name
@@ -921,6 +921,19 @@ definitions:
           type: string
         type: array
     type: object
+  user.FavoriteTeamResponse:
+    properties:
+      id:
+        type: integer
+      leagueName:
+        type: string
+      sportName:
+        type: string
+      teamId:
+        type: integer
+      teamName:
+        type: string
+    type: object
   user.IsUniqueUsernameResponse:
     properties:
       isUnique:
@@ -967,6 +980,10 @@ definitions:
       expeditions:
         items:
           $ref: '#/definitions/expedition.ExpeditionListResponse'
+        type: array
+      favoriteTeams:
+        items:
+          $ref: '#/definitions/user.FavoriteTeamResponse'
         type: array
       fileId:
         example: "1234567890"

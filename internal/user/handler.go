@@ -2,6 +2,7 @@ package user
 
 import (
 	"go-docker/pkg/utils"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -44,6 +45,7 @@ func (h *UserHandler) GetUserById(c *gin.Context) {
 			return
 		}
 	}
+	log.Printf("userDetailResponse: %v" ,userDetailResponse.FavoriteTeams)
 	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, "ユーザー情報の取得に成功しました。")
 }
 

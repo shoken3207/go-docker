@@ -24,6 +24,14 @@ type IsUniqueUsernameRequest struct {
 }
 
 // レスポンス
+type FavoriteTeamResponse struct {
+	ID        uint   `json:"id"`
+	TeamID    uint   `json:"teamId"`
+	TeamName  string `json:"teamName"`
+	LeagueName string `json:"leagueName"`
+	SportName  string `json:"sportName"`
+}
+
 type UserResponse struct {
 	Id           uint   `json:"id" example:"1"`
 	Username     string `json:"username" example:"user123"`
@@ -38,6 +46,7 @@ type UserDetailResponse struct {
 	UserResponse
 	Expeditions []expedition.ExpeditionListResponse `json:"expeditions"`
 	LikedExpeditions []expedition.ExpeditionListResponse `json:"likedExpeditions"`
+	FavoriteTeams []FavoriteTeamResponse `json:"favoriteTeams"`
 }
 
 type IsUniqueUsernameResponse struct {

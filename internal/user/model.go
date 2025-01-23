@@ -1,5 +1,7 @@
 package user
 
+import "go-docker/internal/expedition"
+
 // リクエスト
 type GetUserByIdRequest struct {
 	UserId uint `uri:"userId" binding:"required" example:"1"`
@@ -22,6 +24,14 @@ type IsUniqueUsernameRequest struct {
 }
 
 // レスポンス
+type FavoriteTeamResponse struct {
+	ID        uint   `json:"id"`
+	TeamID    uint   `json:"teamId"`
+	TeamName  string `json:"teamName"`
+	LeagueName string `json:"leagueName"`
+	SportName  string `json:"sportName"`
+}
+
 type UserResponse struct {
 	Id           uint   `json:"id" example:"1"`
 	Username     string `json:"username" example:"user123"`
@@ -31,6 +41,14 @@ type UserResponse struct {
 	Description  string `json:"description" example:"野球が好きです！"`
 	ProfileImage string `json:"profileImage" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
 }
+
+type UserDetailResponse struct {
+	UserResponse
+	Expeditions []expedition.ExpeditionListResponse `json:"expeditions"`
+	LikedExpeditions []expedition.ExpeditionListResponse `json:"likedExpeditions"`
+	FavoriteTeams []FavoriteTeamResponse `json:"favoriteTeams"`
+}
+
 type IsUniqueUsernameResponse struct {
 	IsUnique bool `json:"isUnique" example:"true"`
 	Message string `json:"message" example:"使用できます"`

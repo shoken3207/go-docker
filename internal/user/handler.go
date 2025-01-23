@@ -2,6 +2,7 @@ package user
 
 import (
 	"go-docker/pkg/utils"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,27 +18,35 @@ var userService = NewUserService()
 // @Tags user
 // @Security BearerAuth
 // @Param userId path integer true "userId"
-// @Success 200 {object} utils.ApiResponse[UserResponse] "ユーザー情報"
+// @Success 200 {object} utils.ApiResponse[UserDetailResponse] "ユーザー情報"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/userId/{userId} [get]
 func (h *UserHandler) GetUserById(c *gin.Context) {
-	request := GetUserByIdRequest{}
-	if err := c.ShouldBindUri(&request); err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
-
-	userResponse, err := userService.getUserByIdService(&request)
+	loginUserId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
-	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の取得に成功しました。")
+	request := GetUserByIdRequest{}
+	if err := c.ShouldBindUri(&request); err != nil {
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	userDetailResponse, err := userService.getUserByIdService(&request, loginUserId)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+	log.Printf("userDetailResponse: %v" ,userDetailResponse.FavoriteTeams)
+	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, "ユーザー情報の取得に成功しました。")
 }
 
 // @Summary usernameからユーザー情報取得
@@ -45,27 +54,34 @@ func (h *UserHandler) GetUserById(c *gin.Context) {
 // @Tags user
 // @Security BearerAuth
 // @Param username path string true "username"
-// @Success 200 {object} utils.ApiResponse[UserResponse] "ユーザー情報"
+// @Success 200 {object} utils.ApiResponse[UserDetailResponse] "ユーザー情報"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/username/{username} [get]
 func (h *UserHandler) GetUserByUsername(c *gin.Context) {
-	request := GetUserByUsernameRequest{}
-	if err := c.ShouldBindUri(&request); err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
-
-	userResponse, err := userService.getUserByUsernameService(&request)
+	loginUserId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
-	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の取得に成功しました。")
+	request := GetUserByUsernameRequest{}
+	if err := c.ShouldBindUri(&request); err != nil {
+		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		return
+	}
+
+	userDetailResponse, err := userService.getUserByUsernameService(&request, loginUserId)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			return
+		}
+	}
+	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, "ユーザー情報の取得に成功しました。")
 }
 
 // @Summary ユーザーネームの重複チェック
@@ -122,27 +138,27 @@ func (h *UserHandler) IsUniqueUsername(c *gin.Context) {
 // @Description ヘッダーのトークンからロ図イン済みのユーザーを取得する
 // @Tags user
 // @Security BearerAuth
-// @Success 200 {object} utils.ApiResponse[UserResponse] "成功"
+// @Success 200 {object} utils.ApiResponse[UserDetailResponse] "成功"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/logined [get]
 func (h *UserHandler) GetMyData(c *gin.Context) {
-	userId, err := utils.StringToUint(c.GetString("userId"))
+	loginUserId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
-	userResponse, err := userService.getUserByIdService(&GetUserByIdRequest{UserId: *userId})
+	userDetailResponse, err := userService.getUserByIdService(&GetUserByIdRequest{UserId: *loginUserId}, loginUserId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
 			return
 		}
 	}
-	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の取得に成功しました。")
+	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, "ユーザー情報の取得に成功しました。")
 }
 
 // @Summary ユーザー情報変更

@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"go-docker/internal/db"
+	"go-docker/internal/expedition"
 	"go-docker/models"
 	"go-docker/pkg/utils"
 	"log"
@@ -15,6 +16,8 @@ import (
 
 type UserService struct{}
 
+var expeditionService = expedition.NewExpeditionService()
+
 func (s *UserService) createUserResponse(user *models.User) *UserResponse {
 	userResponse := UserResponse{
 		Id:           user.ID,
@@ -26,6 +29,17 @@ func (s *UserService) createUserResponse(user *models.User) *UserResponse {
 		FileId:       user.GetFileId(),
 	}
 	return &userResponse
+}
+func (s *UserService) createUserDetailResponse(user *models.User, expeditions *[]expedition.ExpeditionListResponse, likedExpeditions *[]expedition.ExpeditionListResponse, favoriteTeams *[]FavoriteTeamResponse) *UserDetailResponse {
+	log.Printf("favoriteTeams: %v", *favoriteTeams)
+	log.Printf("Expeditions: %v", *expeditions)
+	userDetailResponse := UserDetailResponse{
+		UserResponse: *s.createUserResponse(user),
+		Expeditions: *expeditions,
+		LikedExpeditions: *likedExpeditions,
+		FavoriteTeams: *favoriteTeams,
+	}
+	return &userDetailResponse
 }
 
 func (s *UserService) DeleteFavoriteTeams(tx *gorm.DB, userId uint) error {
@@ -47,6 +61,27 @@ func (s *UserService) findUserById(userId uint) (*models.User, error) {
 		}
 	}
 	return &user, nil
+}
+func (s *UserService) getFavoriteTeamsByUserId(userId uint) (*[]FavoriteTeamResponse, error) {
+	var favoriteTeams []FavoriteTeamResponse
+	err := db.DB.Model(&models.FavoriteTeam{}).
+		Select(`favorite_teams.id,
+                favorite_teams.team_id,
+                teams.name AS team_name,
+                leagues.name AS league_name,
+                sports.name AS sport_name`).
+		Joins("JOIN teams ON teams.id = favorite_teams.team_id").
+		Joins("JOIN leagues ON leagues.id = teams.league_id").
+		Joins("JOIN sports ON sports.id = teams.sport_id").
+		Where("favorite_teams.user_id = ?", userId).
+		Scan(&favoriteTeams).Error
+	if err != nil {
+		log.Printf("お気に入りチーム取得エラー: %v", err)
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utils.NewCustomError(http.StatusInternalServerError, "お気に入りチーム取得に失敗しました。")
+		}
+	}
+	return &favoriteTeams, nil
 }
 
 func (s *UserService) updateUser(ik *imagekit.ImageKit, userId *uint, request *UpdateUserRequestBody) (*models.User, error) {
@@ -103,24 +138,51 @@ func (s *UserService) updateUser(ik *imagekit.ImageKit, userId *uint, request *U
 
 }
 
-func (s *UserService) getUserByIdService(request *GetUserByIdRequest) (*UserResponse, error) {
+func (s *UserService) getUserByIdService(request *GetUserByIdRequest, loginUserId *uint) (*UserDetailResponse, error) {
 	user, err := userService.findUserById(request.UserId)
 	if err != nil {
 		return nil, err
 	}
-	userResponse := s.createUserResponse(user)
+	favoriteTeams, err := s.getFavoriteTeamsByUserId(request.UserId)
+	if err != nil {
+		return nil, err
+	}
 
-	return userResponse, nil
+	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	if err != nil {
+		return nil, err
+	}
+
+	likedExpeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	if err != nil {
+		return nil, err
+	}
+	userDetailResponse := s.createUserDetailResponse(user, &expeditionList, &likedExpeditionList, favoriteTeams)
+	return userDetailResponse, nil
 }
 
-func (s *UserService) getUserByUsernameService(request *GetUserByUsernameRequest) (*UserResponse, error) {
+func (s *UserService) getUserByUsernameService(request *GetUserByUsernameRequest, loginUserId *uint) (*UserDetailResponse, error) {
 	user, err := utils.FindUserByUsername(request.Username)
 	if err != nil {
 		return nil, err
 	}
-	userResponse := s.createUserResponse(user)
+	favoriteTeams, err := s.getFavoriteTeamsByUserId(user.ID)
+	if err != nil {
+		return nil, err
+	}
 
-	return userResponse, nil
+	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	if err != nil {
+		return nil, err
+	}
+
+	likedExpeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	if err != nil {
+		return nil, err
+	}
+	userDetailResponse := s.createUserDetailResponse(user, &expeditionList, &likedExpeditionList, favoriteTeams)
+
+	return userDetailResponse, nil
 }
 
 func (s *UserService) validateUpdateUserRequest(c *gin.Context) (*uint, *UpdateUserRequestBody, error) {
@@ -146,10 +208,10 @@ func (s *UserService) updateUserService(ik *imagekit.ImageKit, userId *uint, req
 			return err
 		}
 
+		if err := s.DeleteFavoriteTeams(tx, user.ID); err != nil {
+			return err
+		}
 		if(len(requestBody.FavoriteTeams) > 0) {
-			if err := s.DeleteFavoriteTeams(tx, user.ID); err != nil {
-				return err
-			}
 			var favoriteTeams []models.FavoriteTeam
 			for _, teamId := range requestBody.FavoriteTeams {
 				favoriteTeams = append(favoriteTeams, models.FavoriteTeam{

@@ -7,7 +7,7 @@ type CustomError struct {
 
 type ApiResponse[T any] struct {
 	Success bool   `json:"success" example:"true"`
-	Data    T      `json:"data,omitempty"`
+	Data    T      `json:"data"`
 	Message string `json:"message,omitempty" example:"成功しました！！"`
 }
 

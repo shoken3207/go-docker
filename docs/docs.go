@@ -1344,7 +1344,7 @@ const docTemplate = `{
                     "404": {
                         "description": "遠征記録が見つかりません",
                         "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
                         }
                     },
                     "500": {
@@ -1407,7 +1407,7 @@ const docTemplate = `{
                     "404": {
                         "description": "遠征記録が見つかりません",
                         "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
                         }
                     },
                     "500": {
@@ -1470,7 +1470,7 @@ const docTemplate = `{
                     "404": {
                         "description": "遠征記録が見つかりません",
                         "schema": {
-                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-array_expedition_ExpeditionListResponse"
                         }
                     },
                     "500": {
@@ -1858,7 +1858,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserDetailResponse"
                         }
                     },
                     "401": {
@@ -1964,7 +1964,7 @@ const docTemplate = `{
                     "200": {
                         "description": "ユーザー情報",
                         "schema": {
-                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserDetailResponse"
                         }
                     },
                     "400": {
@@ -2019,7 +2019,7 @@ const docTemplate = `{
                     "200": {
                         "description": "ユーザー情報",
                         "schema": {
-                            "$ref": "#/definitions/utils.ApiResponse-user_UserResponse"
+                            "$ref": "#/definitions/utils.ApiResponse-user_UserDetailResponse"
                         }
                     },
                     "400": {
@@ -3337,6 +3337,26 @@ const docTemplate = `{
                 }
             }
         },
+        "user.FavoriteTeamResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "leagueName": {
+                    "type": "string"
+                },
+                "sportName": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "integer"
+                },
+                "teamName": {
+                    "type": "string"
+                }
+            }
+        },
         "user.IsUniqueUsernameResponse": {
             "type": "object",
             "properties": {
@@ -3382,6 +3402,57 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 1,
+                    "example": "user123"
+                }
+            }
+        },
+        "user.UserDetailResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "野球が好きです！"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "tanaka@example.com"
+                },
+                "expeditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "favoriteTeams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.FavoriteTeamResponse"
+                    }
+                },
+                "fileId": {
+                    "type": "string",
+                    "example": "1234567890"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "likedExpeditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/expedition.ExpeditionListResponse"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "example": "tanaka taro"
+                },
+                "profileImage": {
+                    "type": "string",
+                    "example": "https://ik.imagekit.io/your_imagekit_id/image.jpg"
+                },
+                "username": {
+                    "type": "string",
                     "example": "user123"
                 }
             }
@@ -3606,6 +3677,22 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/user.IsUniqueUsernameResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "成功しました！！"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-user_UserDetailResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/user.UserDetailResponse"
                 },
                 "message": {
                     "type": "string",

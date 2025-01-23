@@ -2133,7 +2133,7 @@
                 "address",
                 "capacity",
                 "description",
-                "fileId",
+                "file_id",
                 "id",
                 "image",
                 "name"
@@ -2148,7 +2148,7 @@
                 "description": {
                     "type": "string"
                 },
-                "fileId": {
+                "file_id": {
                     "type": "string"
                 },
                 "id": {

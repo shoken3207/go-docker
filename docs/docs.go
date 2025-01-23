@@ -2141,7 +2141,7 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
-                "fileId",
+                "file_id",
                 "id",
                 "image",
                 "name"
@@ -2156,7 +2156,7 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "fileId": {
+                "file_id": {
                     "type": "string"
                 },
                 "id": {

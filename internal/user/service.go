@@ -33,6 +33,10 @@ func (s *UserService) createUserResponse(user *models.User) *UserResponse {
 func (s *UserService) createUserDetailResponse(user *models.User, expeditions *[]expedition.ExpeditionListResponse, likedExpeditions *[]expedition.ExpeditionListResponse, favoriteTeams *[]FavoriteTeamResponse) *UserDetailResponse {
 	log.Printf("favoriteTeams: %v", *favoriteTeams)
 	log.Printf("Expeditions: %v", *expeditions)
+	if len(*favoriteTeams) == 0 {
+		favoriteTeams = &[]FavoriteTeamResponse{}
+	}
+
 	userDetailResponse := UserDetailResponse{
 		UserResponse: *s.createUserResponse(user),
 		Expeditions: *expeditions,

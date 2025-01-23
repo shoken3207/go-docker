@@ -135,7 +135,7 @@ func (h *UserHandler) IsUniqueUsername(c *gin.Context) {
 }
 
 // @Summary ログイン済みの場合、ログインユーザーの情報を取得
-// @Description ヘッダーのトークンからロ図イン済みのユーザーを取得する
+// @Description ヘッダーのトークンからログイン済みのユーザーを取得する
 // @Tags user
 // @Security BearerAuth
 // @Success 200 {object} utils.ApiResponse[UserDetailResponse] "成功"

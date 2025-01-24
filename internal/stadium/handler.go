@@ -2,7 +2,6 @@ package stadium
 
 import (
 	"go-docker/pkg/utils"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,28 +23,23 @@ var stadiumService = NewStadiumService()
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/stadium/{stadiumId} [get]
 func (h *StadiumHandler) GetStadium(c *gin.Context) {
-	loginUserId, err := utils.StringToUint(c.GetString("userId"))
+	var requestPath GetStadiumRequestPath
+	loginUserId, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, true)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestPath)
 			return
 		}
-	}
-	request := GetStadiumRequest{}
-	if err := c.ShouldBindUri(&request); err != nil {
-		log.Printf("リクエストエラー: %v", err.Error())
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
 	}
 
-	stadiumResponse, err := stadiumService.GetStadiumService(loginUserId, &request)
+	stadiumResponse, err := stadiumService.GetStadiumService(loginUserId, &requestPath)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
-	utils.SuccessResponse[GetStadiumResponse](c, http.StatusOK, *stadiumResponse, "スタジアムの取得に成功しました。")
+	utils.SuccessResponse[GetStadiumResponse](c, http.StatusOK, *stadiumResponse, utils.CreateSingleMessage("スタジアムの取得に成功しました。"))
 }
 
 func NewStadiumHandler() *StadiumHandler {

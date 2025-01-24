@@ -25,28 +25,24 @@ var userService = NewUserService()
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/userId/{userId} [get]
 func (h *UserHandler) GetUserById(c *gin.Context) {
-	loginUserId, err := utils.StringToUint(c.GetString("userId"))
+	var requestPath GetUserByIdRequestPath
+	loginUserId, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, true)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestPath)
 			return
 		}
 	}
-	request := GetUserByIdRequest{}
-	if err := c.ShouldBindUri(&request); err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
 
-	userDetailResponse, err := userService.getUserByIdService(&request, loginUserId)
+	userDetailResponse, err := userService.getUserByIdService(&requestPath, loginUserId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 	log.Printf("userDetailResponse: %v" ,userDetailResponse.FavoriteTeams)
-	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, "ユーザー情報の取得に成功しました。")
+	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, utils.CreateSingleMessage("ユーザー情報の取得に成功しました。"))
 }
 
 // @Summary usernameからユーザー情報取得
@@ -61,27 +57,23 @@ func (h *UserHandler) GetUserById(c *gin.Context) {
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/username/{username} [get]
 func (h *UserHandler) GetUserByUsername(c *gin.Context) {
-	loginUserId, err := utils.StringToUint(c.GetString("userId"))
+	var requestPath GetUserByUsernameRequestPath
+	loginUserId, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, true)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestPath)
 			return
 		}
-	}
-	request := GetUserByUsernameRequest{}
-	if err := c.ShouldBindUri(&request); err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
 	}
 
-	userDetailResponse, err := userService.getUserByUsernameService(&request, loginUserId)
+	userDetailResponse, err := userService.getUserByUsernameService(&requestPath, loginUserId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
-	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, "ユーザー情報の取得に成功しました。")
+	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, utils.CreateSingleMessage("ユーザー情報の取得に成功しました。"))
 }
 
 // @Summary ユーザーネームの重複チェック
@@ -93,26 +85,19 @@ func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/user/isUnique/{username} [get]
 func (h *UserHandler) IsUniqueUsername(c *gin.Context) {
-	request := IsUniqueUsernameRequest{}
-	if err := c.ShouldBindUri(&request); err != nil {
-		errorMessage := "リクエストに不備があります。"
-
-		errorMessages, err := utils.GenerateErrorMessages(err, request)
-		if err != nil {
-			if customErr, ok := err.(*utils.CustomError); ok {
-				utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
-				return
-			}
+	requestPath := IsUniqueUsernameRequestPath{}
+	_, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, false)
+	if err != nil {
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestPath)
+			return
 		}
-		log.Printf("errorMessages: %v", errorMessages)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, errorMessage)
-		return
 	}
 
-	isUnique, err := utils.CheckUsernameUnique(request.Username)
+	isUnique, err := utils.CheckUsernameUnique(requestPath.Username)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok && customErr.Code != http.StatusNotFound {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Message)
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Message))
 		}
 		return
 	}
@@ -122,7 +107,7 @@ func (h *UserHandler) IsUniqueUsername(c *gin.Context) {
 	} else {
 		message = "このユーザーネームは使用されています"
 	}
-	utils.SuccessResponse[IsUniqueUsernameResponse](c, http.StatusOK, IsUniqueUsernameResponse{IsUnique: isUnique, Message: message}, message)
+	utils.SuccessResponse[IsUniqueUsernameResponse](c, http.StatusOK, IsUniqueUsernameResponse{IsUnique: isUnique, Message: message}, utils.CreateSingleMessage(message))
 }
 
 // @Summary ログイン済みの場合、ログインユーザーの情報を取得
@@ -138,18 +123,18 @@ func (h *UserHandler) GetMyData(c *gin.Context) {
 	loginUserId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
-	userDetailResponse, err := userService.getUserByIdService(&GetUserByIdRequest{UserId: *loginUserId}, loginUserId)
+	userDetailResponse, err := userService.getUserByIdService(&GetUserByIdRequestPath{UserId: *loginUserId}, loginUserId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
-	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, "ユーザー情報の取得に成功しました。")
+	utils.SuccessResponse[UserDetailResponse](c, http.StatusOK, *userDetailResponse, utils.CreateSingleMessage("ユーザー情報の取得に成功しました。"))
 }
 
 // @Summary ユーザー情報変更
@@ -162,25 +147,25 @@ func (h *UserHandler) GetMyData(c *gin.Context) {
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 404 {object} utils.ErrorBasicResponse "not foundエラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
-// @Router /api/user/update/{userId} [put]
+// @Router /api/user/update [put]
 func (h *UserHandler) UpdateUser(c *gin.Context, ik *imagekit.ImageKit) {
-	userId, requestBody, err := userService.validateUpdateUserRequest(c)
+	var requestBody UpdateUserRequestBody
+	loginUserId, err, customErr := utils.ValidateRequest(c, nil, nil, &requestBody, true)
+	if err != nil {
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestBody)
+			return
+		}
+	}
+	userResponse, err := userService.updateUserService(ik, loginUserId, &requestBody)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	userResponse, err := userService.updateUserService(ik, userId, requestBody)
-	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
-			return
-		}
-	}
-
-	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, "ユーザー情報の更新に成功しました")
+	utils.SuccessResponse[UserResponse](c, http.StatusOK, *userResponse, utils.CreateSingleMessage("ユーザー情報の更新に成功しました"))
 }
 
 func NewUserHandler() *UserHandler {

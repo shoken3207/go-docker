@@ -1,34 +1,34 @@
 package auth
 
 // リクエスト
-type EmailVerificationRequest struct {
-	Email     string `form:"email" binding:"required,email" example:"tanaka@example.com"`
-	TokenType string `form:"tokenType" binding:"required,oneof=register reset" example:"register"`
+type EmailVerificationRequestQuery struct {
+	Email     string `form:"email" binding:"required,email" example:"tanaka@example.com" field:"メールアドレス"`
+	TokenType string `form:"tokenType" binding:"required,oneof=register reset" example:"register" field:"トークンタイプ"`
 }
 
-type RegisterRequest struct {
-	Token        string `json:"token" binding:"required" example:"1234567890"`
-	Username     string `json:"username" binding:"required,min=1,max=255" example:"user123"`
-	Name         string `json:"name" binding:"required,min=1,max=100" example:"tanaka taro"`
-	Password     string `json:"password" binding:"required,min=6,max=50" example:"password123"`
-	Description  string `json:"description" example:"野球が好きです！"`
-	ProfileImage string `json:"profileImage" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
-	FavoriteTeamIds []uint `json:"favoriteTeamIds" example:"1"`
+type RegisterRequestBody struct {
+	Token        string `json:"token" binding:"required" example:"1234567890" field:"トークン"`
+	Username     string `json:"username" binding:"required,min=1,max=255" example:"user123" field:"ユーザー名"`
+	Name         string `json:"name" binding:"required,min=1,max=100" example:"tanaka taro" field:"名前"`
+	Password     string `json:"password" binding:"required,min=6,max=50" example:"password123" field:"パスワード"`
+	Description  string `json:"description" example:"野球が好きです！" field:"紹介文"`
+	ProfileImage string `json:"profileImage" binding:"omitempty,url" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg" field:"プロフィール画像"`
+	FavoriteTeamIds []uint `json:"favoriteTeamIds" example:"1" field:"お気に入りチームのid配列"`
 }
 
-type LoginRequest struct {
-	Email    string `json:"email" binding:"required,email" example:"tanaka@example.com"`
-	Password string `json:"password" binding:"required,min=6,max=50" example:"password123"`
+type LoginRequestBody struct {
+	Email    string `json:"email" binding:"required,email" example:"tanaka@example.com" field:"メールアドレス"`
+	Password string `json:"password" binding:"required,min=6,max=50" example:"password123" field:"パスワード"`
 }
 
 type UpdatePassRequestBody struct {
-	BeforePassword string `json:"beforePassword" binding:"required,min=6,max=50" example:"password123"`
-	AfterPassword  string `json:"afterPassword" binding:"required,min=6,max=50" example:"password456"`
+	BeforePassword string `json:"beforePassword" binding:"required,min=6,max=50" example:"password123" field:"現在のパスワード"`
+	AfterPassword  string `json:"afterPassword" binding:"required,min=6,max=50" example:"password456" field:"新しいパスワード"`
 }
 
-type ResetPassRequest struct {
-	Token         string `json:"token" binding:"required" example:"1234567890"`
-	AfterPassword string `json:"afterPassword" binding:"required,min=6,max=50" example:"password456"`
+type ResetPassRequestBody struct {
+	Token         string `json:"token" binding:"required" example:"1234567890" field:"トークン"`
+	AfterPassword string `json:"afterPassword" binding:"required,min=6,max=50" example:"password456" field:"新しいパスワード"`
 }
 
 // レスポンス

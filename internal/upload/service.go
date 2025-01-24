@@ -51,26 +51,20 @@ func (s *UploadService) uploadToImageKit(ik *imagekit.ImageKit, folder *string, 
 	return &UploadToImageKitResponse{Url: resp.Data.Url, FileId: resp.Data.FileId}, nil
 }
 
-func (s *UploadService) validateUploadImagesRequest(c *gin.Context) (*UploadImagesRequestQuery, []*multipart.FileHeader, error) {
-	var query UploadImagesRequestQuery
-	if err := c.ShouldBindQuery(&query); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
-	}
-
+func (s *UploadService) validateUploadImages(c *gin.Context) ([]*multipart.FileHeader, error) {
 	form, err := c.MultipartForm()
 	if err != nil {
-		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "multipart formのパースに失敗")
+		return nil, utils.NewCustomError(http.StatusBadRequest, "multipart formのパースに失敗")
 	}
 
 	files := form.File["images"]
 	if len(files) == 0 {
-		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "ファイルが選択されていません。")
+		return nil, utils.NewCustomError(http.StatusBadRequest, "ファイルが選択されていません。")
 	} else if len(files) > 10 {
-		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "ファイルの上限選択数を超えています。")
+		return nil, utils.NewCustomError(http.StatusBadRequest, "ファイルの上限選択数を超えています。")
 	}
 
-	return &query, files, nil
+	return files, nil
 }
 
 func (s *UploadService) UploadImagesService(ik *imagekit.ImageKit, folder *string, files []*multipart.FileHeader) (*[]string, error) {

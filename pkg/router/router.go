@@ -109,7 +109,7 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 
 		protectedAuthGroup := protectedGroup.Group("/auth")
 		{
-			protectedAuthGroup.PUT("/updatePass/:userId", authHandler.UpdatePass)
+			protectedAuthGroup.PUT("/updatePass", authHandler.UpdatePass)
 		}
 
 		protectedUserGroup := protectedGroup.Group("/user")
@@ -117,7 +117,7 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 			protectedUserGroup.GET("/userId/:userId", userHandler.GetUserById)
 			protectedUserGroup.GET("/username/:username", userHandler.GetUserByUsername)
 			protectedUserGroup.GET("/logined", userHandler.GetMyData)
-			protectedUserGroup.PUT("/update/:userId", func(c *gin.Context) {
+			protectedUserGroup.PUT("/update", func(c *gin.Context) {
 				userHandler.UpdateUser(c, ik)
 			})
 		}

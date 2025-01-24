@@ -176,7 +176,7 @@ definitions:
     - sportsId
     - stadiumId
     type: object
-  auth.LoginRequest:
+  auth.LoginRequestBody:
     properties:
       email:
         example: tanaka@example.com
@@ -196,7 +196,7 @@ definitions:
         example: "1234567890"
         type: string
     type: object
-  auth.RegisterRequest:
+  auth.RegisterRequestBody:
     properties:
       description:
         example: 野球が好きです！
@@ -234,7 +234,7 @@ definitions:
     - token
     - username
     type: object
-  auth.ResetPassRequest:
+  auth.ResetPassRequestBody:
     properties:
       afterPassword:
         example: password456
@@ -264,7 +264,7 @@ definitions:
     - afterPassword
     - beforePassword
     type: object
-  expedition.CreateExpeditionRequest:
+  expedition.CreateExpeditionRequestBody:
     properties:
       endDate:
         example: "2025-01-01T00:00:00Z"
@@ -1033,9 +1033,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/adminTool.League'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1044,9 +1047,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/adminTool.Sports'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1055,9 +1061,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/adminTool.Stadium'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1066,9 +1075,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/adminTool.Team'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1079,9 +1091,12 @@ definitions:
         items:
           $ref: '#/definitions/expedition.ExpeditionListResponse'
         type: array
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1092,9 +1107,12 @@ definitions:
         items:
           $ref: '#/definitions/team.SportResponse'
         type: array
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1103,9 +1121,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/auth.LoginResponse'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1114,9 +1135,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/expedition.GetExpeditionDetailResponse'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1125,9 +1149,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/expedition.LikeExpeditionResponse'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1136,9 +1163,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/stadium.GetStadiumResponse'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1147,9 +1177,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/upload.UploadImagesResponse'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1158,9 +1191,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/user.IsUniqueUsernameResponse'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1169,9 +1205,12 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/user.UserDetailResponse'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1180,27 +1219,36 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/user.UserResponse'
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
     type: object
   utils.ErrorBasicResponse:
     properties:
-      message:
-        example: エラーメッセージ
-        type: string
+      messages:
+        example:
+        - エラーメッセージ
+        items:
+          type: string
+        type: array
       success:
         example: false
         type: boolean
     type: object
   utils.SuccessBasicResponse:
     properties:
-      message:
-        example: 成功しました！！
-        type: string
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
       success:
         example: true
         type: boolean
@@ -1798,7 +1846,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.LoginRequest'
+          $ref: '#/definitions/auth.LoginRequestBody'
       responses:
         "200":
           description: 成功
@@ -1828,7 +1876,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.RegisterRequest'
+          $ref: '#/definitions/auth.RegisterRequestBody'
       responses:
         "200":
           description: 成功
@@ -1854,7 +1902,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.ResetPassRequest'
+          $ref: '#/definitions/auth.ResetPassRequestBody'
       responses:
         "200":
           description: 成功
@@ -1875,7 +1923,7 @@ paths:
       summary: ログアウト状態からパスワードを変更
       tags:
       - auth
-  /api/auth/updatePass/{userId}:
+  /api/auth/updatePass:
     put:
       description: 現在のパスワードと新しいパスワードをリクエストで取得し、現在のパスワードが合致したら、新しいパスワードに更新する
       parameters:
@@ -1955,7 +2003,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/expedition.CreateExpeditionRequest'
+          $ref: '#/definitions/expedition.CreateExpeditionRequestBody'
       responses:
         "200":
           description: 成功
@@ -2382,7 +2430,7 @@ paths:
       - user
   /api/user/logined:
     get:
-      description: ヘッダーのトークンからロ図イン済みのユーザーを取得する
+      description: ヘッダーのトークンからログイン済みのユーザーを取得する
       responses:
         "200":
           description: 成功
@@ -2405,7 +2453,7 @@ paths:
       summary: ログイン済みの場合、ログインユーザーの情報を取得
       tags:
       - user
-  /api/user/update/{userId}:
+  /api/user/update:
     put:
       description: ユーザーの情報を変更する
       parameters:

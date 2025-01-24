@@ -2,7 +2,6 @@ package expedition
 
 import (
 	"go-docker/pkg/utils"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,51 +24,52 @@ var expeditionService = NewExpeditionService()
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/{expeditionId} [get]
 func (h *ExpeditionHandler) GetExpeditionDetail(c *gin.Context) {
-	var request GetExpeditionDetailRequest
-	if err := c.ShouldBindUri(&request); err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+	var requestPath GetExpeditionDetailRequestPath
+	_, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, true)
+	if err != nil {
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestPath)
+			return
+		}
 	}
-	expeditionDetail, err := expeditionService.GetExpeditionDetailService(&request)
+	expeditionDetail, err := expeditionService.GetExpeditionDetailService(&requestPath)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[GetExpeditionDetailResponse](c, http.StatusOK, *expeditionDetail, "遠征記録詳細取得に成功しました")
+	utils.SuccessResponse[GetExpeditionDetailResponse](c, http.StatusOK, *expeditionDetail, utils.CreateSingleMessage("遠征記録詳細取得に成功しました"))
 }
 
 // @Summary 遠征記録を作成
 // @Description 遠征、出費、試合、訪れた施設の情報を保存する。
 // @Tags expedition
 // @Security BearerAuth
-// @Param request body CreateExpeditionRequest true "遠征記録作成リクエスト"
+// @Param request body CreateExpeditionRequestBody true "遠征記録作成リクエスト"
 // @Success 200 {object} utils.SuccessBasicResponse "成功"
 // @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
 // @Failure 401 {object} utils.ErrorBasicResponse "認証エラー"
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/create [post]
 func (h *ExpeditionHandler) CreateExpedition(c *gin.Context) {
-	var request CreateExpeditionRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
-		return
-	}
-	userId, err := utils.StringToUint(c.GetString("userId"))
+	var requestBody CreateExpeditionRequestBody
+	loginUserId, err, customErr := utils.ValidateRequest(c, nil, nil, &requestBody, true)
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, err.Error())
-		return
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestBody)
+			return
+		}
 	}
-	if err := expeditionService.CreateExpeditionService(&request, userId); err != nil {
+	if err := expeditionService.CreateExpeditionService(&requestBody, loginUserId); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "遠征記録作成に成功しました")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("遠征記録作成に成功しました"))
 }
 
 // @Summary 遠征記録を更新
@@ -85,27 +85,23 @@ func (h *ExpeditionHandler) CreateExpedition(c *gin.Context) {
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/update/{expeditionId} [put]
 func (h *ExpeditionHandler) UpdateExpedition(c *gin.Context, ik *imagekit.ImageKit) {
-	expeditionId, requestBody, err := expeditionService.ValidateUpdateExpeditionRequest(c)
+	var requestBody UpdateExpeditionRequestBody
+	var requestPath UpdateExpeditionRequestPath
+	loginUserId, err, customErr := utils.ValidateRequest(c, &requestPath, nil, &requestBody, true)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestBody)
 			return
 		}
 	}
 
-	userId, err := utils.StringToUint(c.GetString("userId"))
-	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	if err := expeditionService.UpdateExpeditionService(expeditionId, userId, requestBody, ik); err != nil {
+	if err := expeditionService.UpdateExpeditionService(&requestPath.ExpeditionId, loginUserId, &requestBody, ik); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "遠征記録更新に成功しました")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("遠征記録更新に成功しました"))
 }
 
 // @Summary 遠征記録を削除
@@ -121,26 +117,22 @@ func (h *ExpeditionHandler) UpdateExpedition(c *gin.Context, ik *imagekit.ImageK
 // @Router /api/expedition/delete/{expeditionId} [delete]
 func (h *ExpeditionHandler) DeleteExpedition(c *gin.Context, ik *imagekit.ImageKit) {
 	var requestPath DeleteExpeditionRequestPath
-	if err := c.ShouldBindUri(&requestPath); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
-		return
-	}
-
-	userId, err := utils.StringToUint(c.GetString("userId"))
+	loginUserId, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, true)
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	if err := expeditionService.DeleteExpeditionService(&requestPath.ExpeditionId, userId, ik); err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestPath)
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "遠征記録を削除しました")
+	if err := expeditionService.DeleteExpeditionService(&requestPath.ExpeditionId, loginUserId, ik); err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
+			return
+		}
+	}
+
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("遠征記録を削除しました"))
 }
 
 // @Summary 遠征記録にいいね、いいね解除を行う
@@ -156,26 +148,23 @@ func (h *ExpeditionHandler) DeleteExpedition(c *gin.Context, ik *imagekit.ImageK
 // @Router /api/expedition/like/{expeditionId} [post]
 func (h *ExpeditionHandler) LikeExpedition(c *gin.Context) {
 	var requestPath LikeExpeditionRequestPath
-	if err := c.ShouldBindUri(&requestPath); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
-		return
-	}
-
-	userId, err := utils.StringToUint(c.GetString("userId"))
+	loginUserId, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, true)
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, err.Error())
-		return
-	}
-	likesCount, isLiked, message, err := expeditionService.ExpeditionLikeService(userId, &requestPath.ExpeditionId);
-	if  err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestPath)
 			return
 		}
 	}
 
-	utils.SuccessResponse[LikeExpeditionResponse](c, http.StatusOK, LikeExpeditionResponse{LikesCount: *likesCount, IsLiked: *isLiked}, *message)
+	likesCount, isLiked, message, err := expeditionService.ExpeditionLikeService(loginUserId, &requestPath.ExpeditionId);
+	if  err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
+			return
+		}
+	}
+
+	utils.SuccessResponse[LikeExpeditionResponse](c, http.StatusOK, LikeExpeditionResponse{LikesCount: *likesCount, IsLiked: *isLiked}, utils.CreateSingleMessage(*message))
 }
 
 // @Summary 遠征記録一覧を取得
@@ -195,40 +184,35 @@ func (h *ExpeditionHandler) LikeExpedition(c *gin.Context) {
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/list [get]
 func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
-	userId, err := utils.StringToUint(c.GetString("userId"))
+	var requestQuery GetExpeditionListRequestQuery
+	loginUserId, err, customErr := utils.ValidateRequest(c, nil, &requestQuery, nil, true)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestQuery)
 			return
 		}
 	}
-	var req GetExpeditionListRequest
-	if err := c.ShouldBindQuery(&req); err != nil {
-		log.Printf("リクエストパラメータが不正です: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストパラメータが不正です")
-		return
-	}
 
-	expeditions, err := expeditionService.GetExpeditionListService(&req, userId)
+	expeditions, err := expeditionService.GetExpeditionListService(&requestQuery, loginUserId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
 	if len(expeditions) == 0 {
 		var message string
-		if req.Page == 1 {
+		if requestQuery.Page == 1 {
 			message = "いいねした遠征記録が見つかりません"
 		} else {
 			message = "最後のページです"
 		}
-		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, message)
+		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, utils.CreateSingleMessage(message))
 		return
 	}
 
-	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, utils.CreateSingleMessage("遠征記録一覧を取得しました"))
 }
 
 // @Summary ユーザーが投稿した遠征記録一覧を取得
@@ -244,39 +228,34 @@ func (h *ExpeditionHandler) GetExpeditionList(c *gin.Context) {
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/list/user [get]
 func (h *ExpeditionHandler) GetExpeditionListByUserId(c *gin.Context) {
-	loginUserId, err := utils.StringToUint(c.GetString("userId"))
+	var requestQuery GetExpeditionListByUserIdRequestQuery
+	loginUserId, err, customErr := utils.ValidateRequest(c, nil, &requestQuery, nil, true)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestQuery)
 			return
 		}
 	}
-	var req GetExpeditionListByUserIdRequest
-	if err := c.ShouldBindQuery(&req); err != nil {
-		log.Printf("リクエストパラメータが不正です: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストパラメータが不正です")
-		return
-	}
 
-	expeditions, err := expeditionService.GetExpeditionListService(&GetExpeditionListRequest{Page: req.Page, UserId: &req.UserId}, loginUserId)
+	expeditions, err := expeditionService.GetExpeditionListService(&GetExpeditionListRequestQuery{Page: requestQuery.Page, UserId: &requestQuery.UserId}, loginUserId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
 	if len(expeditions) == 0 {
 		var message string
-		if req.Page == 1 {
+		if requestQuery.Page == 1 {
 			message = "いいねした遠征記録が見つかりません"
 		} else {
 			message = "最後のページです"
 		}
-		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, message)
+		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, utils.CreateSingleMessage(message))
 		return
 	}
-	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, utils.CreateSingleMessage("遠征記録一覧を取得しました"))
 }
 
 // @Summary ユーザーがいいねした遠征記録一覧を取得
@@ -292,39 +271,34 @@ func (h *ExpeditionHandler) GetExpeditionListByUserId(c *gin.Context) {
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/expedition/list/user/likes [get]
 func (h *ExpeditionHandler) GetLikedExpeditionListByUserId(c *gin.Context) {
-	loginUserId, err := utils.StringToUint(c.GetString("userId"))
+	var requestQuery GetExpeditionListByUserIdRequestQuery
+	loginUserId, err, customErr := utils.ValidateRequest(c, nil, &requestQuery, nil, true)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestQuery)
 			return
 		}
 	}
-	var req GetExpeditionListByUserIdRequest
-	if err := c.ShouldBindQuery(&req); err != nil {
-		log.Printf("リクエストパラメータが不正です: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストパラメータが不正です")
-		return
-	}
 
-	expeditions, err := expeditionService.GetLikedExpeditionListService(&GetExpeditionListRequest{Page: req.Page, UserId: &req.UserId}, loginUserId)
+	expeditions, err := expeditionService.GetLikedExpeditionListService(&GetExpeditionListRequestQuery{Page: requestQuery.Page, UserId: &requestQuery.UserId}, loginUserId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
 	if len(expeditions) == 0 {
 		var message string
-		if req.Page == 1 {
+		if requestQuery.Page == 1 {
 			message = "いいねした遠征記録が見つかりません"
 		} else {
 			message = "最後のページです"
 		}
-		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, message)
+		utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusNotFound, expeditions, utils.CreateSingleMessage(message))
 		return
 	}
-	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, "遠征記録一覧を取得しました")
+	utils.SuccessResponse[[]ExpeditionListResponse](c, http.StatusOK, expeditions, utils.CreateSingleMessage("遠征記録一覧を取得しました"))
 }
 
 func NewExpeditionHandler() *ExpeditionHandler {

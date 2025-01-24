@@ -34,13 +34,13 @@ func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	log.Println(stadiums)
 
-	utils.SuccessResponse[any](c, http.StatusOK, stadiums, "スタジアムの検索に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, stadiums, utils.CreateSingleMessage("スタジアムの検索に成功しました。"))
 }
 
 // @Summary スタジアムid検索
@@ -57,7 +57,7 @@ func (h *AdminToolHandler) GetIdStadiums(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		log.Println("エラー:", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります。"))
 		return
 	}
 
@@ -65,11 +65,11 @@ func (h *AdminToolHandler) GetIdStadiums(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, stadium, "スタジアムの検索に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, stadium, utils.CreateSingleMessage("スタジアムの検索に成功しました。"))
 }
 
 // @Summary スタジアム追加
@@ -85,18 +85,18 @@ func (h *AdminToolHandler) StadiumAdd(c *gin.Context) {
 	request := StadiumAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	if err := adminToolService.createStadiumService(&request); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "スタジアム登録に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("スタジアム登録に成功しました。"))
 }
 
 // @Summary スタジアム更新
@@ -114,26 +114,26 @@ func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&requestId); err != nil {
 		log.Println("エラー:", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります。"))
 		return
 	}
 
 	requestBody := StadiumUpdateRequest{}
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 	log.Println("重複検索が正常にリターンはされているよ:handler")
 	if err := adminToolService.UpdateStadiumService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "スタジアムが正常に更新更新されました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("スタジアムが正常に更新更新されました。"))
 }
 
 // @Summary スタジアム削除
@@ -150,18 +150,18 @@ func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	if err := adminToolService.deleteStadiumService(request.Id); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "スタジアムが正常に削除されました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("スタジアムが正常に削除されました。"))
 }
 
 // @Summary スポーツ全件検索
@@ -184,13 +184,13 @@ func (h *AdminToolHandler) GetSports(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	log.Println(sport)
 
-	utils.SuccessResponse[any](c, http.StatusOK, sport, "スポーツの検索に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, sport, utils.CreateSingleMessage("スポーツの検索に成功しました。"))
 }
 
 // @Summary スポーツid検索
@@ -207,7 +207,7 @@ func (h *AdminToolHandler) GetIdSports(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		log.Println("エラー:", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります。"))
 		return
 	}
 
@@ -215,11 +215,11 @@ func (h *AdminToolHandler) GetIdSports(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, sport, "スポーツの検索に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, sport, utils.CreateSingleMessage("スポーツの検索に成功しました。"))
 }
 
 // @Summary スポーツの追加
@@ -235,18 +235,18 @@ func (h *AdminToolHandler) SportsAdd(c *gin.Context) {
 	request := SportsAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	if err := adminToolService.createSportService(&request); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "スポーツ情報の登録に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("スポーツ情報の登録に成功しました。"))
 }
 
 // @Summary スポーツ更新
@@ -264,26 +264,26 @@ func (h *AdminToolHandler) SportsUpdate(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&requestId); err != nil {
 		log.Println("エラー:", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります。"))
 		return
 	}
 
 	requestBody := StadiumUpdateRequest{}
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 	log.Println("重複検索が正常にリターンはされているよ:handler")
 	if err := adminToolService.UpdateStadiumService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "スポーツが正常に更新されました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("スポーツが正常に更新されました。"))
 }
 
 // @Summary スポーツ削除
@@ -300,18 +300,18 @@ func (h *AdminToolHandler) DeleteSports(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		log.Printf("エラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	if err := adminToolService.deleteSportService(request.Id); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "スポーツが正常に削除されました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("スポーツが正常に削除されました。"))
 }
 
 // @Summary リーグ全件検索
@@ -332,7 +332,7 @@ func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
@@ -340,7 +340,7 @@ func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 
 	log.Println(league)
 
-	utils.SuccessResponse[any](c, http.StatusOK, league, "リーグの検索に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, league, utils.CreateSingleMessage("リーグの検索に成功しました。"))
 }
 
 // @Summary リーグid検索
@@ -357,7 +357,7 @@ func (h *AdminToolHandler) GetIdLeague(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		log.Println("エラー:", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります。"))
 		return
 	}
 
@@ -365,11 +365,11 @@ func (h *AdminToolHandler) GetIdLeague(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, league, "リーグの検索に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, league, utils.CreateSingleMessage("リーグの検索に成功しました。"))
 }
 
 // @Summary リーグの追加
@@ -385,18 +385,18 @@ func (h *AdminToolHandler) LeagueAdd(c *gin.Context) {
 	request := LeagueAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Println("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	if err := adminToolService.createLeagueService(&request); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "リーグ情報の登録に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("リーグ情報の登録に成功しました。"))
 }
 
 // @Summary リーグ更新
@@ -414,26 +414,26 @@ func (h *AdminToolHandler) LeagueUpdate(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&requestId); err != nil {
 		log.Println("エラー:", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります。"))
 		return
 	}
 
 	requestBody := LeagueUpdateRequest{}
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 	log.Println("重複検索が正常にリターンはされているよ:handler")
 	if err := adminToolService.UpdateLeagueService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "リーグが正常に更新されました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("リーグが正常に更新されました。"))
 }
 
 // @Summary リーグ削除
@@ -450,18 +450,18 @@ func (h *AdminToolHandler) DeleteLeague(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	if err := adminToolService.deleteLeagueService(request.Id); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "リーグが正常に削除されました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("リーグが正常に削除されました。"))
 }
 
 // @Summary チーム全件検索
@@ -482,13 +482,13 @@ func (h *AdminToolHandler) GetTeams(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	log.Println(team)
 
-	utils.SuccessResponse[any](c, http.StatusOK, team, "チームの検索に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, team, utils.CreateSingleMessage("チームの検索に成功しました。"))
 }
 
 // @Summary チームid検索
@@ -505,7 +505,7 @@ func (h *AdminToolHandler) GetIdTeam(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		log.Println("エラー:", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります。"))
 		return
 	}
 
@@ -513,12 +513,12 @@ func (h *AdminToolHandler) GetIdTeam(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 	log.Println("チーム名:", team.Name)
 
-	utils.SuccessResponse[any](c, http.StatusOK, team, "チームの検索に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, team, utils.CreateSingleMessage("チームの検索に成功しました。"))
 }
 
 // @Summary チームの追加
@@ -534,18 +534,18 @@ func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 	request := TeamAddRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Println("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	if err := adminToolService.createTeamService(&request); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "チーム情報の登録に成功しました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("チーム情報の登録に成功しました。"))
 }
 
 // @Summary チーム情報更新
@@ -563,25 +563,25 @@ func (h *AdminToolHandler) TeamUpdate(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&requestId); err != nil {
 		log.Println("リクエストエラー(URI):", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります。")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります。"))
 		return
 	}
 
 	requestBody := TeamUpdateRequest{}
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		log.Printf("リクエストエラー(ボディ): %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 	if err := adminToolService.UpdateTeamService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "チーム情報が正常に更新されました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("チーム情報が正常に更新されました。"))
 }
 
 // @Summary チーム削除
@@ -598,18 +598,18 @@ func (h *AdminToolHandler) DeleteTeam(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		log.Printf("リクエストエラー: %v", err)
-		utils.ErrorResponse[any](c, http.StatusBadRequest, "リクエストに不備があります")
+		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
 
 	if err := adminToolService.deleteTeamService(request.Id); err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
 
-	utils.SuccessResponse[any](c, http.StatusOK, nil, "チームが正常に削除されました。")
+	utils.SuccessResponse[any](c, http.StatusOK, nil, utils.CreateSingleMessage("チームが正常に削除されました。"))
 }
 
 func NewAdminToolHandler() *AdminToolHandler {

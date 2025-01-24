@@ -2,7 +2,7 @@ package upload
 
 // リクエスト
 type UploadImagesRequestQuery struct {
-	Folder string `form:"folder" binding:"required" example:"expedition"`
+	Folder string `form:"folder" binding:"required" example:"expedition" field:"フォルダ名"`
 }
 
 // レスポンス

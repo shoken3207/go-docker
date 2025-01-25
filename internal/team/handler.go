@@ -22,12 +22,12 @@ func (h *TeamHandler) GetTeamsWithoutFavorites(c *gin.Context) {
 	response, err := teamService.GetTeamsService(nil)
     if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
     }
 
-	utils.SuccessResponse[[]SportResponse](c,http.StatusOK, *response, "チームの取得に成功しました。")
+	utils.SuccessResponse[[]SportResponse](c,http.StatusOK, *response, utils.CreateSingleMessage("チームの取得に成功しました。"))
 }
 
 // @Summary クライアントで推しチームを選択する際に必要なチーム情報を取得するAPI
@@ -41,18 +41,20 @@ func (h *TeamHandler) GetTeamsWithoutFavorites(c *gin.Context) {
 func (h *TeamHandler) GetTeamsWithFavorites(c *gin.Context) {
 	userId, err := utils.StringToUint(c.GetString("userId"))
 	if err != nil {
-		utils.ErrorResponse[any](c, http.StatusBadRequest, err.Error())
-		return
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
+			return
+		}
 	}
 	response, err := teamService.GetTeamsService(userId)
     if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
     }
 
-	utils.SuccessResponse[[]SportResponse](c,http.StatusOK, *response, "チームの取得に成功しました。")
+	utils.SuccessResponse[[]SportResponse](c,http.StatusOK, *response, utils.CreateSingleMessage("チームの取得に成功しました。"))
 }
 
 

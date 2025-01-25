@@ -2,8 +2,8 @@ package stadium
 
 import "go-docker/internal/expedition"
 
-type GetStadiumRequest struct {
-	StadiumId uint `uri:"stadiumId" binding:"required" example:"1"`
+type GetStadiumRequestPath struct {
+	StadiumId uint `uri:"stadiumId" binding:"required" example:"1" field:"スタジアムID"`
 }
 
 type FacilityResponse struct {

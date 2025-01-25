@@ -940,7 +940,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginRequest"
+                            "$ref": "#/definitions/auth.LoginRequestBody"
                         }
                     }
                 ],
@@ -986,7 +986,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.RegisterRequest"
+                            "$ref": "#/definitions/auth.RegisterRequestBody"
                         }
                     }
                 ],
@@ -1026,7 +1026,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.ResetPassRequest"
+                            "$ref": "#/definitions/auth.ResetPassRequestBody"
                         }
                     }
                 ],
@@ -1058,7 +1058,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/updatePass/{userId}": {
+        "/api/auth/updatePass": {
             "put": {
                 "security": [
                     {
@@ -1134,7 +1134,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/expedition.CreateExpeditionRequest"
+                            "$ref": "#/definitions/expedition.CreateExpeditionRequestBody"
                         }
                     }
                 ],
@@ -1882,7 +1882,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/update/{userId}": {
+        "/api/user/update": {
             "put": {
                 "security": [
                     {
@@ -2296,7 +2296,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.LoginRequest": {
+        "auth.LoginRequestBody": {
             "type": "object",
             "required": [
                 "email",
@@ -2324,7 +2324,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.RegisterRequest": {
+        "auth.RegisterRequestBody": {
             "type": "object",
             "required": [
                 "name",
@@ -2374,7 +2374,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.ResetPassRequest": {
+        "auth.ResetPassRequestBody": {
             "type": "object",
             "required": [
                 "afterPassword",
@@ -2414,7 +2414,7 @@ const docTemplate = `{
                 }
             }
         },
-        "expedition.CreateExpeditionRequest": {
+        "expedition.CreateExpeditionRequestBody": {
             "type": "object",
             "required": [
                 "endDate",
@@ -3487,9 +3487,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/adminTool.League"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3503,9 +3508,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/adminTool.Sports"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3519,9 +3529,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/adminTool.Stadium"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3535,9 +3550,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/adminTool.Team"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3554,9 +3574,14 @@ const docTemplate = `{
                         "$ref": "#/definitions/expedition.ExpeditionListResponse"
                     }
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3573,9 +3598,14 @@ const docTemplate = `{
                         "$ref": "#/definitions/team.SportResponse"
                     }
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3589,9 +3619,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/auth.LoginResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3605,9 +3640,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/expedition.GetExpeditionDetailResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3621,9 +3661,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/expedition.LikeExpeditionResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3637,9 +3682,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/stadium.GetStadiumResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3653,9 +3703,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/upload.UploadImagesResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3669,9 +3724,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/user.IsUniqueUsernameResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3685,9 +3745,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/user.UserDetailResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3701,9 +3766,14 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/user.UserResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3714,9 +3784,14 @@ const docTemplate = `{
         "utils.ErrorBasicResponse": {
             "type": "object",
             "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "エラーメッセージ"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "エラーメッセージ"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3727,9 +3802,14 @@ const docTemplate = `{
         "utils.SuccessBasicResponse": {
             "type": "object",
             "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",

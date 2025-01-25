@@ -39,13 +39,13 @@ func checkAdminPermission() gin.HandlerFunc {
 		}
 
 		if origin != "" && strings.Contains(origin, readonlyPath) {
-			utils.ErrorResponse[any](c, http.StatusForbidden, "読み取り専用モードではAPIの実行はできません。")
+			utils.ErrorResponse[any](c, http.StatusForbidden, utils.CreateSingleMessage("読み取り専用モードではAPIの実行はできません。"))
 			log.Printf("読み取り専用UIからのAPIリクエストをOriginでブロック: Origin=%s", origin)
 			c.Abort()
 			return
 		}
 		if origin == "" && strings.Contains(referer, readonlyPath) {
-			utils.ErrorResponse[any](c, http.StatusForbidden, "読み取り専用モードではAPIの実行はできません。")
+			utils.ErrorResponse[any](c, http.StatusForbidden, utils.CreateSingleMessage("読み取り専用モードではAPIの実行はできません。"))
 			log.Printf("読み取り専用UIからのAPIリクエストをRefererでブロック: Referer=%s", referer)
 			c.Abort()
 			return
@@ -71,7 +71,7 @@ func customCorsMiddleware() gin.HandlerFunc {
 
 			parsedURL, err := url.Parse(origin)
 			if err != nil {
-				utils.ErrorResponse[any](c, http.StatusForbidden, "無効なオリジンです")
+				utils.ErrorResponse[any](c, http.StatusForbidden, utils.CreateSingleMessage("無効なオリジンです"))
 				c.Abort()
 				return
 			}
@@ -91,7 +91,7 @@ func customCorsMiddleware() gin.HandlerFunc {
 			}
 
 			if !allowed {
-				utils.ErrorResponse[any](c, http.StatusForbidden, "このオリジンからのアクセスは許可されていません")
+				utils.ErrorResponse[any](c, http.StatusForbidden, utils.CreateSingleMessage("このオリジンからのアクセスは許可されていません"))
 				c.Abort()
 				return
 			}

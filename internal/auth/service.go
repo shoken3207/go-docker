@@ -130,7 +130,7 @@ func (s *AuthService) updatePass(userId *uint, request *UpdatePassRequestBody) e
 	return nil
 }
 
-func (s *AuthService) emailVerificationService(request *EmailVerificationRequest) error {
+func (s *AuthService) emailVerificationService(request *EmailVerificationRequestQuery) error {
 	user, err := authService.findUserByEmail(request.Email)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
@@ -166,7 +166,7 @@ func (s *AuthService) emailVerificationService(request *EmailVerificationRequest
 	return nil
 }
 
-func (s *AuthService) registerService(request *RegisterRequest) error {
+func (s *AuthService) registerService(request *RegisterRequestBody) error {
 	claims, err := utils.ParseJWTToken(request.Token)
 	if err != nil {
 		return err
@@ -250,7 +250,7 @@ func (s *AuthService) registerService(request *RegisterRequest) error {
 	})
 }
 
-func (s *AuthService) loginService(request *LoginRequest) (*string, error) {
+func (s *AuthService) loginService(request *LoginRequestBody) (*string, error) {
 	user, err := authService.findUserByEmail(request.Email)
 	if err != nil {
 		return nil, err
@@ -282,7 +282,7 @@ func (s *AuthService) validateUpdatePassRequest(c *gin.Context) (*uint, *UpdateP
 	return userId, &requestBody, nil
 }
 
-func (s *AuthService) resetPassService(request *ResetPassRequest) error {
+func (s *AuthService) resetPassService(request *ResetPassRequestBody) error {
 	claims, err := utils.ParseJWTToken(request.Token)
 	if err != nil {
 		return err

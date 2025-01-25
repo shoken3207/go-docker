@@ -25,21 +25,29 @@ var uploadService = NewUploadService()
 // @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
 // @Router /api/upload/images [post]
 func (h *UploadHandler) UploadImages(c *gin.Context, ik *imagekit.ImageKit) {
-	query, files, err := uploadService.validateUploadImagesRequest(c)
+	var requestQuery UploadImagesRequestQuery
+	_, err, customErr := utils.ValidateRequest(c, nil, &requestQuery, nil, false)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestQuery)
 			return
 		}
 	}
-	imageUrls, err := uploadService.UploadImagesService(ik, &query.Folder, files)
+	files, err := uploadService.validateUploadImages(c)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
-			utils.ErrorResponse[any](c, customErr.Code, customErr.Error())
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
 			return
 		}
 	}
-	utils.SuccessResponse[UploadImagesResponse](c, http.StatusOK, UploadImagesResponse{ImageUrls: *imageUrls}, "画像のアップロードに成功しました")
+	imageUrls, err := uploadService.UploadImagesService(ik, &requestQuery.Folder, files)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
+			return
+		}
+	}
+	utils.SuccessResponse[UploadImagesResponse](c, http.StatusOK, UploadImagesResponse{ImageUrls: *imageUrls}, utils.CreateSingleMessage("画像のアップロードに成功しました"))
 }
 
 func NewUploadHandler() *UploadHandler {

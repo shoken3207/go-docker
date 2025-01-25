@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/imagekit-developer/imagekit-go"
 	"gorm.io/gorm"
 )
@@ -40,7 +39,7 @@ func (s *ExpeditionService) FindExpeditionById(expeditionId uint) (*models.Exped
 	return &expedition, nil
 }
 
-func (s *ExpeditionService) buildExpeditionQuery(baseQuery *gorm.DB, loginUserId *uint, req *GetExpeditionListRequest) {
+func (s *ExpeditionService) buildExpeditionQuery(baseQuery *gorm.DB, loginUserId *uint, req *GetExpeditionListRequestQuery) {
 	if req.UserId != nil && *req.UserId == *loginUserId {
 		baseQuery.Where("expeditions.user_id = ?", loginUserId)
 	} else {
@@ -60,7 +59,7 @@ func (s *ExpeditionService) buildExpeditionQuery(baseQuery *gorm.DB, loginUserId
 	}
 }
 
-func (s *ExpeditionService) buildLikedExpeditionQuery(baseQuery *gorm.DB, loginUserId *uint, req *GetExpeditionListRequest) {
+func (s *ExpeditionService) buildLikedExpeditionQuery(baseQuery *gorm.DB, loginUserId *uint, req *GetExpeditionListRequestQuery) {
 	if req.UserId != nil {
 		if *req.UserId == *loginUserId {
 			baseQuery.Where("expedition_likes.user_id = ?", loginUserId)
@@ -322,7 +321,7 @@ func (s *ExpeditionService) DeleteGameScores(tx *gorm.DB, gameScoreIds *[]uint) 
 	return nil
 }
 
-func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDetailRequest) (*GetExpeditionDetailResponse, error) {
+func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDetailRequestPath) (*GetExpeditionDetailResponse, error) {
 	var expedition models.Expedition
 
 	if err := db.DB.Preload("VisitedFacilities").
@@ -423,7 +422,7 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 	return response, nil
 }
 
-func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequest, userId *uint) error {
+func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequestBody, userId *uint) error {
 	return db.DB.Transaction(func(tx *gorm.DB) error {
 		newExpedition := models.Expedition{
 			SportId:   request.SportId,
@@ -518,21 +517,6 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 
 		return nil
 	})
-}
-
-func (s *ExpeditionService) ValidateUpdateExpeditionRequest(c *gin.Context) (*uint, *UpdateExpeditionRequestBody, error) {
-	var requestBody UpdateExpeditionRequestBody
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
-	}
-	var requestPath UpdateExpeditionRequestPath
-	if err := c.ShouldBindUri(&requestPath); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
-	}
-
-	return &requestPath.ExpeditionId, &requestBody, nil
 }
 
 func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *uint, requestBody *UpdateExpeditionRequestBody, ik *imagekit.ImageKit) error {
@@ -809,7 +793,7 @@ func (s *ExpeditionService) DeleteExpeditionLike(userId *uint, expeditionId *uin
 	return nil
 }
 
-func (s *ExpeditionService) GetExpeditionListService(req *GetExpeditionListRequest, loginUserId *uint) ([]ExpeditionListResponse, error) {
+func (s *ExpeditionService) GetExpeditionListService(req *GetExpeditionListRequestQuery, loginUserId *uint) ([]ExpeditionListResponse, error) {
 	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
 	var expeditions []ExpeditionListResponse
 
@@ -887,7 +871,7 @@ func (s *ExpeditionService) GetExpeditionListService(req *GetExpeditionListReque
 	return expeditions, nil
 }
 
-func (s *ExpeditionService) GetLikedExpeditionListService(req *GetExpeditionListRequest, loginUserId *uint) ([]ExpeditionListResponse, error) {
+func (s *ExpeditionService) GetLikedExpeditionListService(req *GetExpeditionListRequestQuery, loginUserId *uint) ([]ExpeditionListResponse, error) {
 	offset := (req.Page - 1) * constants.LIMIT_EXPEDITION_LIST
 	var likedExpeditions []ExpeditionListResponse
 

@@ -932,7 +932,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginRequest"
+                            "$ref": "#/definitions/auth.LoginRequestBody"
                         }
                     }
                 ],
@@ -978,7 +978,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.RegisterRequest"
+                            "$ref": "#/definitions/auth.RegisterRequestBody"
                         }
                     }
                 ],
@@ -1018,7 +1018,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.ResetPassRequest"
+                            "$ref": "#/definitions/auth.ResetPassRequestBody"
                         }
                     }
                 ],
@@ -1050,7 +1050,7 @@
                 }
             }
         },
-        "/api/auth/updatePass/{userId}": {
+        "/api/auth/updatePass": {
             "put": {
                 "security": [
                     {
@@ -1126,7 +1126,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/expedition.CreateExpeditionRequest"
+                            "$ref": "#/definitions/expedition.CreateExpeditionRequestBody"
                         }
                     }
                 ],
@@ -1874,7 +1874,7 @@
                 }
             }
         },
-        "/api/user/update/{userId}": {
+        "/api/user/update": {
             "put": {
                 "security": [
                     {
@@ -2288,7 +2288,7 @@
                 }
             }
         },
-        "auth.LoginRequest": {
+        "auth.LoginRequestBody": {
             "type": "object",
             "required": [
                 "email",
@@ -2316,7 +2316,7 @@
                 }
             }
         },
-        "auth.RegisterRequest": {
+        "auth.RegisterRequestBody": {
             "type": "object",
             "required": [
                 "name",
@@ -2366,7 +2366,7 @@
                 }
             }
         },
-        "auth.ResetPassRequest": {
+        "auth.ResetPassRequestBody": {
             "type": "object",
             "required": [
                 "afterPassword",
@@ -2406,7 +2406,7 @@
                 }
             }
         },
-        "expedition.CreateExpeditionRequest": {
+        "expedition.CreateExpeditionRequestBody": {
             "type": "object",
             "required": [
                 "endDate",
@@ -3479,9 +3479,14 @@
                 "data": {
                     "$ref": "#/definitions/adminTool.League"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3495,9 +3500,14 @@
                 "data": {
                     "$ref": "#/definitions/adminTool.Sports"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3511,9 +3521,14 @@
                 "data": {
                     "$ref": "#/definitions/adminTool.Stadium"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3527,9 +3542,14 @@
                 "data": {
                     "$ref": "#/definitions/adminTool.Team"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3546,9 +3566,14 @@
                         "$ref": "#/definitions/expedition.ExpeditionListResponse"
                     }
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3565,9 +3590,14 @@
                         "$ref": "#/definitions/team.SportResponse"
                     }
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3581,9 +3611,14 @@
                 "data": {
                     "$ref": "#/definitions/auth.LoginResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3597,9 +3632,14 @@
                 "data": {
                     "$ref": "#/definitions/expedition.GetExpeditionDetailResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3613,9 +3653,14 @@
                 "data": {
                     "$ref": "#/definitions/expedition.LikeExpeditionResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3629,9 +3674,14 @@
                 "data": {
                     "$ref": "#/definitions/stadium.GetStadiumResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3645,9 +3695,14 @@
                 "data": {
                     "$ref": "#/definitions/upload.UploadImagesResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3661,9 +3716,14 @@
                 "data": {
                     "$ref": "#/definitions/user.IsUniqueUsernameResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3677,9 +3737,14 @@
                 "data": {
                     "$ref": "#/definitions/user.UserDetailResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3693,9 +3758,14 @@
                 "data": {
                     "$ref": "#/definitions/user.UserResponse"
                 },
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3706,9 +3776,14 @@
         "utils.ErrorBasicResponse": {
             "type": "object",
             "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "エラーメッセージ"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "エラーメッセージ"
+                    ]
                 },
                 "success": {
                     "type": "boolean",
@@ -3719,9 +3794,14 @@
         "utils.SuccessBasicResponse": {
             "type": "object",
             "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "成功しました！！"
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
                 },
                 "success": {
                     "type": "boolean",

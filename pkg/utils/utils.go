@@ -9,10 +9,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/imagekit-developer/imagekit-go"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -45,26 +48,23 @@ func StringToUint(s string) (*uint, error) {
 	return &parseValue, nil
 }
 
-func SuccessResponse[T any](c *gin.Context, statusCode int, data T, message string) {
+func SuccessResponse[T any](c *gin.Context, statusCode int, data T, messages []string) {
 	c.JSON(statusCode, ApiResponse[T]{
 		Success: true,
 		Data:    data,
-		Message: message,
+		Messages: messages,
 	})
 }
 
-func ErrorDataResponse[T any](c *gin.Context, statusCode int, data T, message string) {
+func ErrorResponse[T any](c *gin.Context, statusCode int, messages []string) {
 	c.JSON(statusCode, ApiResponse[T]{
 		Success: false,
-		Data: data,
-		Message: message,
+		Messages: messages,
 	})
 }
-func ErrorResponse[T any](c *gin.Context, statusCode int, message string) {
-	c.JSON(statusCode, ApiResponse[T]{
-		Success: false,
-		Message: message,
-	})
+
+func CreateSingleMessage (message string) []string {
+	return []string{message}
 }
 
 func ParseJWTToken(tokenStr string) (jwt.MapClaims, error) {
@@ -87,14 +87,14 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.GetHeader("Authorization")
 		if tokenStr == "" {
-			ErrorResponse[any](c, http.StatusUnauthorized, "jwtトークンがありません。")
+			ErrorResponse[any](c, http.StatusUnauthorized, CreateSingleMessage("jwtトークンがありません。"))
 			c.Abort()
 			return
 		}
 		claims, err := ParseJWTToken(tokenStr)
 		if err != nil {
 			if customErr, ok := err.(*CustomError); ok {
-				ErrorResponse[any](c, customErr.Code, customErr.Error())
+				ErrorResponse[any](c, customErr.Code, CreateSingleMessage(customErr.Error()))
 				c.Abort()
 				return
 			}
@@ -102,7 +102,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		userId, ok := claims["userId"].(float64)
 		if !ok {
-			ErrorResponse[any](c, http.StatusUnauthorized, "トークンデータが不正な値です。")
+			ErrorResponse[any](c, http.StatusUnauthorized, CreateSingleMessage("トークンデータが不正な値です。"))
 			c.Abort()
 			return
 		}
@@ -243,3 +243,133 @@ func CreateFavoriteTeams(tx *gorm.DB, favoriteTeams *[]models.FavoriteTeam) erro
 	}
 	return nil
 }
+
+func GetFieldDetail(fieldName string, structName any) (FieldDetail, error) {
+	val := reflect.ValueOf(structName)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+
+	fieldDetail := FieldDetail{
+		FieldName: fieldName,
+		Min:    nil,
+		Max:    nil,
+	}
+	field, found := val.Type().FieldByName(fieldName)
+	if !found {
+		log.Printf("フィールド %s が見つかりません", fieldName)
+		return fieldDetail, NewCustomError(http.StatusInternalServerError, "フィールド詳細取得に失敗しました。")
+	}
+
+
+	fieldTag := field.Tag.Get("field")
+	if fieldTag != "" {
+		fieldDetail.FieldName = fieldTag
+	}
+
+	bindingTag := field.Tag.Get("binding")
+	if bindingTag != "" {
+		tagParts := strings.Split(bindingTag, ",")
+		for _, part := range tagParts {
+			if strings.HasPrefix(part, "min=") {
+				if minValue, err := strconv.Atoi(strings.TrimPrefix(part, "min=")); err == nil {
+					fieldDetail.Min = &minValue
+				}
+			}
+			if strings.HasPrefix(part, "max=") {
+				if maxValue, err := strconv.Atoi(strings.TrimPrefix(part, "max=")); err == nil {
+					fieldDetail.Max = &maxValue
+				}
+			}
+		}
+	}
+
+	return fieldDetail, nil
+}
+
+
+func GenerateRequestErrorMessages(err error, structName any) (*[]string, error) {
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		var errorMessages []string
+
+		for _, ve := range validationErrors {
+			fieldDetail, err := GetFieldDetail(ve.Field(), structName)
+			if err != nil {
+				return nil, err
+			}
+
+			var errorMessage string
+			switch ve.Tag() {
+				case "required":
+					errorMessage = fmt.Sprintf("%sは必須項目です。", fieldDetail.FieldName)
+				case "min":
+					if fieldDetail.Min == nil {
+						errorMessage = fmt.Sprintf("%sは下限文字数を下回っています。", fieldDetail.FieldName)
+						} else {
+							errorMessage = fmt.Sprintf("%sは%d文字以上で入力してください。", fieldDetail.FieldName, *fieldDetail.Min)
+						}
+					case "max":
+						if fieldDetail.Max == nil {
+							errorMessage = fmt.Sprintf("%sは上限文字数を上回っています。", fieldDetail.FieldName)
+						} else {
+							errorMessage = fmt.Sprintf("%sは%d文字以下で入力してください。", fieldDetail.FieldName, *fieldDetail.Max)
+						}
+				default:
+					errorMessage = fmt.Sprintf("%sは不正な値です。", fieldDetail.FieldName)
+			}
+			errorMessages = append(errorMessages, errorMessage)
+		}
+		return &errorMessages, nil
+	}
+
+	return &[]string{"リクエストに不備があります。"}, nil
+}
+
+func HandleCustomError(c *gin.Context, customErr *CustomError, err error, request any) {
+	log.Println(customErr.Code)
+	switch customErr.Code {
+	case http.StatusBadRequest:
+		errorMessages, genErr := GenerateRequestErrorMessages(err, request)
+		if genErr != nil {
+			ErrorResponse[any](c, http.StatusInternalServerError, CreateSingleMessage(genErr.Error()))
+		} else {
+			ErrorResponse[any](c, http.StatusBadRequest, *errorMessages)
+		}
+		return
+	default:
+		ErrorResponse[any](c, customErr.Code, CreateSingleMessage(customErr.Error()))
+	}
+}
+
+func ValidateRequest(c *gin.Context, requestPath any, requestQuery any, requestBody any, isProtected bool) (*uint, error, error) {
+	if requestPath != nil {
+		log.Printf("Path parameters: %v", c.Params)
+		if err := c.ShouldBindUri(requestPath); err != nil {
+			log.Printf("リクエストエラー: %v", err)
+				return nil, err, NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
+			}
+	}
+	if requestQuery != nil {
+		log.Printf("Query parameters: %v", c.Request.URL.Query())
+		if err := c.ShouldBindQuery(requestQuery); err != nil {
+			log.Printf("リクエストエラー: %v", err)
+			return nil, err, NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
+		}
+	}
+	if requestBody != nil {
+		log.Printf("Request body: %v", c.Request.Body)
+		if err := c.ShouldBindJSON(requestBody); err != nil {
+			log.Printf("リクエストエラー: %v", err)
+			return nil, err, NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
+		}
+	}
+	if isProtected {
+		loginUserId, err := StringToUint(c.GetString("userId"))
+		if err != nil {
+			return nil, err, NewCustomError(http.StatusInternalServerError, err.Error())
+		}
+		return loginUserId, nil, nil
+	}
+	return nil, nil, nil
+}
+

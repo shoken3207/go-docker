@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/imagekit-developer/imagekit-go"
 	"gorm.io/gorm"
 )
@@ -142,7 +141,7 @@ func (s *UserService) updateUser(ik *imagekit.ImageKit, userId *uint, request *U
 
 }
 
-func (s *UserService) getUserByIdService(request *GetUserByIdRequest, loginUserId *uint) (*UserDetailResponse, error) {
+func (s *UserService) getUserByIdService(request *GetUserByIdRequestPath, loginUserId *uint) (*UserDetailResponse, error) {
 	user, err := userService.findUserById(request.UserId)
 	if err != nil {
 		return nil, err
@@ -152,12 +151,12 @@ func (s *UserService) getUserByIdService(request *GetUserByIdRequest, loginUserI
 		return nil, err
 	}
 
-	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequestQuery{Page: 1, UserId: &user.ID}, loginUserId)
 	if err != nil {
 		return nil, err
 	}
 
-	likedExpeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	likedExpeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequestQuery{Page: 1, UserId: &user.ID}, loginUserId)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +164,7 @@ func (s *UserService) getUserByIdService(request *GetUserByIdRequest, loginUserI
 	return userDetailResponse, nil
 }
 
-func (s *UserService) getUserByUsernameService(request *GetUserByUsernameRequest, loginUserId *uint) (*UserDetailResponse, error) {
+func (s *UserService) getUserByUsernameService(request *GetUserByUsernameRequestPath, loginUserId *uint) (*UserDetailResponse, error) {
 	user, err := utils.FindUserByUsername(request.Username)
 	if err != nil {
 		return nil, err
@@ -175,33 +174,18 @@ func (s *UserService) getUserByUsernameService(request *GetUserByUsernameRequest
 		return nil, err
 	}
 
-	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequestQuery{Page: 1, UserId: &user.ID}, loginUserId)
 	if err != nil {
 		return nil, err
 	}
 
-	likedExpeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequest{Page: 1, UserId: &user.ID}, loginUserId)
+	likedExpeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequestQuery{Page: 1, UserId: &user.ID}, loginUserId)
 	if err != nil {
 		return nil, err
 	}
 	userDetailResponse := s.createUserDetailResponse(user, &expeditionList, &likedExpeditionList, favoriteTeams)
 
 	return userDetailResponse, nil
-}
-
-func (s *UserService) validateUpdateUserRequest(c *gin.Context) (*uint, *UpdateUserRequestBody, error) {
-	var requestBody UpdateUserRequestBody
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		log.Printf("リクエストエラー: %v", err)
-		return nil, nil, utils.NewCustomError(http.StatusBadRequest, "リクエストに不備があります。")
-	}
-
-	userId, err := utils.StringToUint(c.GetString("userId"))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return userId, &requestBody, nil
 }
 
 func (s *UserService) updateUserService(ik *imagekit.ImageKit, userId *uint, requestBody *UpdateUserRequestBody) (*UserResponse, error) {

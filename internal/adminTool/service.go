@@ -28,7 +28,7 @@ func (s *AdminToolService) stadiumSearchId(id uint) (*models.Stadium, error) {
 // ※スタジアム情報追加時
 func (s *AdminToolService) stadiumAddCheck(address string) (*models.Stadium, error) {
 	stadium := models.Stadium{}
-	if err := db.DB.Select("id", "name", "description", "address", "capacity", "description", "file_id").Where("address = ?", address).First(&stadium).Error; err != nil {
+	if err := db.DB.Select("id", "name", "description", "address", "capacity", "file_id").Where("address = ?", address).First(&stadium).Error; err != nil {
 		return nil, err
 	}
 	return &stadium, nil
@@ -76,11 +76,11 @@ func (s *AdminToolService) getStadiumsService(keyword string) ([]Stadium, error)
 // スタジアム検索
 func (s *AdminToolService) stadiumSearchKeyword(keyword string) ([]Stadium, error) {
 	var stadiums []models.Stadium
-
+	log.Println("キーワード:", keyword)
 	query := db.DB.Model(&models.Stadium{})
 
 	if keyword != "" {
-		if err := db.DB.Select("id", "name", "description", "address", "capacity", "description", "image", "file_id").Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&stadiums).Error; err != nil {
+		if err := query.Select("id", "name", "description", "address", "capacity", "image").Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&stadiums).Error; err != nil {
 			return nil, err
 		}
 	} else {
@@ -115,11 +115,43 @@ func (s *AdminToolService) createStadiumService(request *StadiumAddRequest) erro
 		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのスタジアムです")
 	}
 
-	request.FileId = adminToolService.stadiumFileIdCheck(request.FileId)
+	log.Println("リクエスト:", request)
+	log.Println("リクエスト:", request.Image)
 
-	newStadium := models.Stadium{Name: request.Name, Description: request.Description, Address: request.Address, Capacity: int(request.Capacity), Image: request.Image, FileId: request.FileId}
+	return db.DB.Transaction(func(tx *gorm.DB) error {
+		var fileId string
+		if request.Image != "" {
+			tempImages, err := utils.ValidateAndPersistImages(tx, []string{request.Image})
+			if err != nil {
+				return err
+			}
+			if len(tempImages) > 0 {
+				fileId = tempImages[0].FileId
+			}
+		}
 
-	if err := db.DB.Create(&newStadium).Error; err != nil {
+		newStadium := models.Stadium{
+			Name:        request.Name,
+			Description: request.Description,
+			Address:     request.Address,
+			Capacity:    int(request.Capacity),
+			Image:       request.Image,
+		}
+		newStadium.SetFileId(fileId)
+
+		fileId = adminToolService.stadiumFileIdCheck(fileId)
+		log.Println("ファイルID:", fileId)
+
+		if err := adminToolService.createStadium(tx, &newStadium); err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func (s *AdminToolService) createStadium(tx *gorm.DB, newStadium *models.Stadium) error {
+	if err := tx.Create(&newStadium).Error; err != nil {
 		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")
 	}
 	return nil
@@ -132,16 +164,48 @@ func (s *AdminToolService) UpdateStadiumService(id uint, request *StadiumUpdateR
 		return err
 	}
 
-	request.FileId = adminToolService.stadiumFileIdCheck(request.FileId)
+	log.Println(request.Name, request.Description, request.Address, int(request.Capacity), request.Image)
 
-	log.Println(request.Name, request.Description, request.Address, int(request.Capacity), request.Image, request.FileId)
-	updateStadium := models.Stadium{Name: request.Name, Description: request.Description, Address: request.Address, Capacity: int(request.Capacity), Image: request.Image, FileId: request.FileId}
+	return db.DB.Transaction(func(tx *gorm.DB) error {
+		var fileId string
+		if request.Image != "" {
+			tempImages, err := utils.ValidateAndPersistImages(tx, []string{request.Image})
+			if err != nil {
+				return err
+			}
+			if len(tempImages) > 0 {
+				fileId = tempImages[0].FileId
+			}
+		}
 
-	if err := db.DB.Model(&models.Stadium{}).Where("id = ?", id).Updates(updateStadium).Error; err != nil {
+		updateStadium := models.Stadium{
+			Name:        request.Name,
+			Description: request.Description,
+			Address:     request.Address,
+			Capacity:    int(request.Capacity),
+			Image:       request.Image,
+		}
+
+		fileId = adminToolService.stadiumFileIdCheck(fileId)
+
+		updateStadium.SetFileId(fileId)
+
+		fileId = adminToolService.stadiumFileIdCheck(fileId)
+		log.Println("ファイルID:", fileId)
+
+		if err := adminToolService.updateStadium(tx, id, &updateStadium); err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func (s *AdminToolService) updateStadium(tx *gorm.DB, id uint, updateStadium *models.Stadium) error {
+	if err := tx.Model(&models.Stadium{}).Where("id = ?", id).Updates(updateStadium).Error; err != nil {
 		log.Println("エラー", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "レコードが更新されませんでした")
 	}
-	log.Println("SQLは成功したよ")
 	return nil
 }
 
@@ -446,6 +510,8 @@ func (s *AdminToolService) LeagueGetIdService(id uint) (*League, error) {
 		}
 		return nil, utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました")
 	}
+
+	log.Println("取得したレコード", &league)
 	return &league, nil
 }
 

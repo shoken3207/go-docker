@@ -1849,7 +1849,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "ヘッダーのトークンからロ図イン済みのユーザーを取得する",
+                "description": "ヘッダーのトークンからログイン済みのユーザーを取得する",
                 "tags": [
                     "user"
                 ],
@@ -2176,7 +2176,6 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
-                "fileId",
                 "image",
                 "name"
             ],
@@ -2188,9 +2187,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "fileId": {
                     "type": "string"
                 },
                 "image": {
@@ -2205,9 +2201,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "address",
-                "capacity",
                 "description",
-                "fileId",
                 "image",
                 "name"
             ],
@@ -2219,9 +2213,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "fileId": {
                     "type": "string"
                 },
                 "image": {

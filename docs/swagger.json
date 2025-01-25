@@ -1841,7 +1841,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "ヘッダーのトークンからロ図イン済みのユーザーを取得する",
+                "description": "ヘッダーのトークンからログイン済みのユーザーを取得する",
                 "tags": [
                     "user"
                 ],
@@ -2168,7 +2168,6 @@
                 "address",
                 "capacity",
                 "description",
-                "fileId",
                 "image",
                 "name"
             ],
@@ -2180,9 +2179,6 @@
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "fileId": {
                     "type": "string"
                 },
                 "image": {
@@ -2197,9 +2193,7 @@
             "type": "object",
             "required": [
                 "address",
-                "capacity",
                 "description",
-                "fileId",
                 "image",
                 "name"
             ],
@@ -2211,9 +2205,6 @@
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "fileId": {
                     "type": "string"
                 },
                 "image": {

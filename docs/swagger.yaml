@@ -89,8 +89,6 @@ definitions:
         type: integer
       description:
         type: string
-      fileId:
-        type: string
       image:
         type: string
       name:
@@ -99,7 +97,6 @@ definitions:
     - address
     - capacity
     - description
-    - fileId
     - image
     - name
     type: object
@@ -111,17 +108,13 @@ definitions:
         type: integer
       description:
         type: string
-      fileId:
-        type: string
       image:
         type: string
       name:
         type: string
     required:
     - address
-    - capacity
     - description
-    - fileId
     - image
     - name
     type: object
@@ -2382,7 +2375,7 @@ paths:
       - user
   /api/user/logined:
     get:
-      description: ヘッダーのトークンからロ図イン済みのユーザーを取得する
+      description: ヘッダーのトークンからログイン済みのユーザーを取得する
       responses:
         "200":
           description: 成功

@@ -361,6 +361,8 @@ func (h *AdminToolHandler) GetIdLeague(c *gin.Context) {
 		return
 	}
 
+	log.Println("リクエストID:", request.Id)
+
 	league, err := adminToolService.LeagueGetIdService(request.Id)
 
 	if err != nil {

@@ -277,7 +277,7 @@ func (s *AdminToolService) UpdateSportService(id uint, request *SportsUpdateRequ
 // スポーツ削除
 func (s *AdminToolService) deleteSportService(id uint) error {
 	log.Println("受け取った値(重複検索前):", id)
-	sport, err := adminToolService.sportSearchId(id)
+	sport, err := adminToolService.SportGetIdService(id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return utils.NewCustomError(http.StatusUnauthorized, "スポーツが見つかりませんでした")
@@ -333,15 +333,15 @@ func (s *AdminToolService) sportUppdateCheck(id uint, name string) error {
 }
 
 // スポーツ検索(id)
-func (s *AdminToolService) sportSearchId(id uint) (*models.Sport, error) {
-	var sport models.Sport
-	log.Println("受け取った値(id検索):", id)
-	if err := db.DB.First(&sport, id).Error; err != nil {
-		log.Printf("Error: %v", err)
-		return nil, err
-	}
-	return &sport, nil
-}
+// func (s *AdminToolService) sportSearchId(id uint) (*models.Sport, error) {
+// 	var sport models.Sport
+// 	log.Println("受け取った値(id検索):", id)
+// 	if err := db.DB.First(&sport, id).Error; err != nil {
+// 		log.Printf("Error: %v", err)
+// 		return nil, err
+// 	}
+// 	return &sport, nil
+// }
 
 // スポーツ検索
 func (s *AdminToolService) sportSearchKeyword(keyword string) ([]models.Sport, error) {
@@ -365,6 +365,7 @@ func (s *AdminToolService) sportSearchKeyword(keyword string) ([]models.Sport, e
 
 // 該当idからレコードを取得
 func (s *AdminToolService) SportGetIdService(id uint) (*Sports, error) {
+	log.Println("取得id:", id)
 	var sport Sports
 	if err := db.DB.Select("id", "name").Where("id = ?", id).Find(&sport).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -372,6 +373,7 @@ func (s *AdminToolService) SportGetIdService(id uint) (*Sports, error) {
 		}
 		return nil, utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました")
 	}
+	log.Println("取得レコード:", &sport)
 	return &sport, nil
 }
 

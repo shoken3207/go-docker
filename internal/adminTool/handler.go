@@ -24,21 +24,16 @@ var adminToolService = NewAdminToolService()
 // @Router /api/admin/stadium/stadiums [get]
 func (h *AdminToolHandler) GetStadiums(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
-	log.Println("キーワード:", keyword)
 
 	var stadiums []Stadium
 
 	stadiums, err := adminToolService.getStadiumsService(keyword)
-
-	log.Println("返却値：", stadiums)
 
 	if err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
-
-	log.Println(stadiums)
 
 	utils.SuccessResponse[any](c, http.StatusOK, stadiums, utils.CreateSingleMessage("スタジアムの検索に成功しました。"))
 }
@@ -124,7 +119,6 @@ func (h *AdminToolHandler) StadiumUpdate(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
-	log.Println("重複検索が正常にリターンはされているよ:handler")
 	if err := adminToolService.UpdateStadiumService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
@@ -175,7 +169,6 @@ func (h *AdminToolHandler) DeleteStadium(c *gin.Context) {
 // @Router /api/admin/sports/sports [get]
 func (h *AdminToolHandler) GetSports(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
-	log.Println("キーワード:", keyword)
 	sport := []models.Sport{}
 
 	sport, err := adminToolService.getSportService(keyword)
@@ -187,8 +180,6 @@ func (h *AdminToolHandler) GetSports(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
-
-	log.Println(sport)
 
 	utils.SuccessResponse[any](c, http.StatusOK, sport, utils.CreateSingleMessage("スポーツの検索に成功しました。"))
 }
@@ -325,7 +316,6 @@ func (h *AdminToolHandler) DeleteSports(c *gin.Context) {
 // @Router /api/admin/league/leagues [get]
 func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
-	log.Println("キーワード:", keyword)
 	league := []models.League{}
 
 	league, err := adminToolService.getLeagueService(keyword)
@@ -335,10 +325,6 @@ func (h *AdminToolHandler) GetLeagues(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
-
-	log.Println("返却値：", league)
-
-	log.Println(league)
 
 	utils.SuccessResponse[any](c, http.StatusOK, league, utils.CreateSingleMessage("リーグの検索に成功しました。"))
 }
@@ -360,8 +346,6 @@ func (h *AdminToolHandler) GetIdLeague(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります。"))
 		return
 	}
-
-	log.Println("リクエストID:", request.Id)
 
 	league, err := adminToolService.LeagueGetIdService(request.Id)
 
@@ -426,7 +410,6 @@ func (h *AdminToolHandler) LeagueUpdate(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
-	log.Println("重複検索が正常にリターンはされているよ:handler")
 	if err := adminToolService.UpdateLeagueService(requestId.Id, &requestBody); err != nil {
 		log.Printf("リクエストエラー: %v", err)
 		if customErr, ok := err.(*utils.CustomError); ok {
@@ -477,7 +460,6 @@ func (h *AdminToolHandler) DeleteLeague(c *gin.Context) {
 // @Router /api/admin/team/teams [get]
 func (h *AdminToolHandler) GetTeams(c *gin.Context) {
 	keyword := c.DefaultQuery("keyword", "")
-	log.Println("キーワード:", keyword)
 	team := []models.Team{}
 
 	team, err := adminToolService.getTeamService(keyword)
@@ -518,7 +500,6 @@ func (h *AdminToolHandler) GetIdTeam(c *gin.Context) {
 		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))
 		return
 	}
-	log.Println("チーム名:", team.Name)
 
 	utils.SuccessResponse[any](c, http.StatusOK, team, utils.CreateSingleMessage("チームの検索に成功しました。"))
 }

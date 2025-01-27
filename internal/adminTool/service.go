@@ -45,11 +45,9 @@ func (s *AdminToolService) stadiumFileIdCheck(fileId string) string {
 // ※スタジアム情報更新時
 func (s *AdminToolService) stadiumUpdateCheck(id uint, name, address string) error {
 	stadium := models.Stadium{}
-	log.Println("モデル生成直後")
 	if err := db.DB.Select("id", "name").Where("id != ?", id).Where("name = ? OR address = ?", name, address).First(&stadium).Error; err != nil {
-		log.Println("SQL実行直後")
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			// レコードが見つからなかった場合の処理
+
 			log.Println("該当するレコードがないため処理を継続")
 			return nil
 		}
@@ -76,7 +74,6 @@ func (s *AdminToolService) getStadiumsService(keyword string) ([]Stadium, error)
 // スタジアム検索
 func (s *AdminToolService) stadiumSearchKeyword(keyword string) ([]Stadium, error) {
 	var stadiums []models.Stadium
-	log.Println("キーワード:", keyword)
 	query := db.DB.Model(&models.Stadium{})
 
 	if keyword != "" {
@@ -115,9 +112,6 @@ func (s *AdminToolService) createStadiumService(request *StadiumAddRequest) erro
 		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのスタジアムです")
 	}
 
-	log.Println("リクエスト:", request)
-	log.Println("リクエスト:", request.Image)
-
 	return db.DB.Transaction(func(tx *gorm.DB) error {
 		var fileId string
 		if request.Image != "" {
@@ -140,7 +134,6 @@ func (s *AdminToolService) createStadiumService(request *StadiumAddRequest) erro
 		newStadium.SetFileId(fileId)
 
 		fileId = adminToolService.stadiumFileIdCheck(fileId)
-		log.Println("ファイルID:", fileId)
 
 		if err := adminToolService.createStadium(tx, &newStadium); err != nil {
 			return err
@@ -164,14 +157,10 @@ func (s *AdminToolService) UpdateStadiumService(id uint, request *StadiumUpdateR
 		return err
 	}
 
-	log.Println(request.Name, request.Description, request.Address, int(request.Capacity), request.Image)
-
 	oldStadium, err := adminToolService.StadiumGetIdService(id)
 	if err != nil {
-		log.Println("値の取得に失敗しました。")
 		return err
 	}
-	log.Println("oldStadium.FileId:", oldStadium.FileId)
 
 	return db.DB.Transaction(func(tx *gorm.DB) error {
 		var fileId string
@@ -200,7 +189,6 @@ func (s *AdminToolService) UpdateStadiumService(id uint, request *StadiumUpdateR
 		updateStadium.SetFileId(fileId)
 
 		fileId = adminToolService.stadiumFileIdCheck(fileId)
-		log.Println("ファイルID:", fileId)
 
 		if err := adminToolService.updateStadium(tx, id, &updateStadium); err != nil {
 			return err
@@ -272,20 +260,17 @@ func (s *AdminToolService) UpdateSportService(id uint, request *SportsUpdateRequ
 	if err != nil {
 		return err
 	}
-	log.Println(id, request.Name)
 	updateSport := models.Sport{Name: request.Name}
 
 	if err := db.DB.Model(&models.Sport{}).Where("id = ?", id).Updates(updateSport).Error; err != nil {
 		log.Println("エラー", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "レコードが更新されませんでした")
 	}
-	log.Println("SQLは成功したよ")
 	return nil
 }
 
 // スポーツ削除
 func (s *AdminToolService) deleteSportService(id uint) error {
-	log.Println("受け取った値(重複検索前):", id)
 	sport, err := adminToolService.SportGetIdService(id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -327,9 +312,7 @@ func (s *AdminToolService) sportsAddCheck(name string) (*models.Sport, error) {
 // 　※スポーツ情報更新時
 func (s *AdminToolService) sportUppdateCheck(id uint, name string) error {
 	sport := models.Sport{}
-	log.Println("モデル生成直後")
 	if err := db.DB.Select("id", "name").Where("id != ?", id).Where("name = ?", name).First(&sport).Error; err != nil {
-		log.Println("SQL実行直後")
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// レコードが見つからなかった場合の処理
 			log.Println("該当するレコードがないため処理を継続")
@@ -340,17 +323,6 @@ func (s *AdminToolService) sportUppdateCheck(id uint, name string) error {
 	}
 	return utils.NewCustomError(http.StatusInternalServerError, "更新データが他の登録済みデータと重複しています。")
 }
-
-// スポーツ検索(id)
-// func (s *AdminToolService) sportSearchId(id uint) (*models.Sport, error) {
-// 	var sport models.Sport
-// 	log.Println("受け取った値(id検索):", id)
-// 	if err := db.DB.First(&sport, id).Error; err != nil {
-// 		log.Printf("Error: %v", err)
-// 		return nil, err
-// 	}
-// 	return &sport, nil
-// }
 
 // スポーツ検索
 func (s *AdminToolService) sportSearchKeyword(keyword string) ([]models.Sport, error) {
@@ -374,7 +346,6 @@ func (s *AdminToolService) sportSearchKeyword(keyword string) ([]models.Sport, e
 
 // 該当idからレコードを取得
 func (s *AdminToolService) SportGetIdService(id uint) (*Sports, error) {
-	log.Println("取得id:", id)
 	var sport Sports
 	if err := db.DB.Select("id", "name").Where("id = ?", id).Find(&sport).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -382,7 +353,6 @@ func (s *AdminToolService) SportGetIdService(id uint) (*Sports, error) {
 		}
 		return nil, utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました")
 	}
-	log.Println("取得レコード:", &sport)
 	return &sport, nil
 }
 
@@ -413,14 +383,12 @@ func (s *AdminToolService) UpdateLeagueService(id uint, request *LeagueUpdateReq
 	if err != nil {
 		return err
 	}
-	log.Println(id, request.SportsId, request.Name)
 	updateLeague := models.League{Name: request.Name, SportId: request.SportsId}
 
 	if err := db.DB.Model(&models.League{}).Where("id = ?", id).Updates(updateLeague).Error; err != nil {
 		log.Println("エラー", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "レコードが更新されませんでした")
 	}
-	log.Println("SQLは成功したよ")
 	return nil
 }
 
@@ -468,9 +436,7 @@ func (s *AdminToolService) LeagueAddCheck(name string, sport_id uint) (*models.L
 // 　※リーグ情報更新時
 func (s *AdminToolService) LeagueUpdateCheck(id, sport_id uint, name string) error {
 	league := models.League{}
-	log.Println("モデル生成直後")
 	if err := db.DB.Select("id", "name", "sport_id").Where("id != ?", id).Where("name = ? AND sport_id = ?", name, sport_id).First(&league).Error; err != nil {
-		log.Println("SQL実行直後")
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// レコードが見つからなかった場合の処理
 			log.Println("該当するレコードがないため処理を継続")
@@ -495,7 +461,6 @@ func (s *AdminToolService) LeagueSearchId(id uint) (*models.League, error) {
 // リーグ検索
 func (s *AdminToolService) leagueSearchKeyword(keyword string) ([]models.League, error) {
 	league := []models.League{}
-	log.Println(keyword)
 	if keyword != "" {
 		if err := db.DB.Order("id ASC").Where("name LIKE ?", "%"+keyword+"%").First(&league).Error; err != nil {
 			return nil, err
@@ -521,8 +486,6 @@ func (s *AdminToolService) LeagueGetIdService(id uint) (*League, error) {
 		}
 		return nil, utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました")
 	}
-
-	log.Println("取得したレコード", &league)
 	return &league, nil
 }
 
@@ -537,7 +500,6 @@ func (s *AdminToolService) createTeamService(request *TeamAddRequest) error {
 	if sports != nil {
 		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのチームです")
 	}
-	log.Println("リクエスト値[チーム名:", request.Name, "  スタジアムid:", request.StadiumId, "  スポーツid:", request.SportsId, "  リーグid:", request.LeagueId)
 	newTeam := models.Team{StadiumId: request.StadiumId, SportId: request.SportsId, LeagueId: request.LeagueId, Name: request.Name}
 
 	if err := db.DB.Create(&newTeam).Error; err != nil {
@@ -553,14 +515,12 @@ func (s *AdminToolService) UpdateTeamService(id uint, request *TeamUpdateRequest
 	if err != nil {
 		return err
 	}
-	log.Println(id, request.StadiumId, request.LeagueId, request.SportsId, request.Name)
 	updateTeam := models.Team{Name: request.Name, StadiumId: request.StadiumId, LeagueId: request.LeagueId, SportId: request.SportsId}
 
 	if err := db.DB.Model(&models.Team{}).Where("id = ?", id).Updates(updateTeam).Error; err != nil {
 		log.Println("エラー", err)
 		return utils.NewCustomError(http.StatusInternalServerError, "レコードが更新されませんでした")
 	}
-	log.Println("SQLは成功したよ")
 	return nil
 }
 
@@ -608,9 +568,7 @@ func (s *AdminToolService) teamAddCheck(name string) (*models.Team, error) {
 // 　※チーム情報更新時
 func (s *AdminToolService) teamUpdateCheck(id, sport_id uint, name string) error {
 	league := models.Team{}
-	log.Println("モデル生成直後")
 	if err := db.DB.Select("id", "stadium_id", "league_id", "sport_id", "name").Where("id != ?", id).Where("name = ? AND sport_id = ?", name, sport_id).First(&league).Error; err != nil {
-		log.Println("SQL実行直後")
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// レコードが見つからなかった場合の処理
 			log.Println("該当するレコードがないため処理を継続")
@@ -635,7 +593,6 @@ func (s *AdminToolService) teamSearchId(id uint) (*models.Team, error) {
 // チーム検索
 func (s *AdminToolService) teamSearchKeyword(keyword string) ([]models.Team, error) {
 	team := []models.Team{}
-	log.Println(keyword)
 	if keyword != "" {
 		if err := db.DB.Order("id ASC").Where("name LIKE ? ", "%"+keyword+"%").Find(&team).Error; err != nil {
 			return team, err
@@ -657,8 +614,6 @@ func (s *AdminToolService) TeamGetIdService(id uint) (*Team, error) {
 		}
 		return nil, utils.NewCustomError(http.StatusUnauthorized, "内部エラーが発生しました")
 	}
-
-	log.Println("チーム名:", team.Name)
 
 	return &team, nil
 }

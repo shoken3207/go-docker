@@ -49,7 +49,7 @@ type TeamAddRequest struct {
 type TeamUpdateRequest struct {
 	StadiumId uint   `json:"stadiumId" binding:"required"`
 	SportsId  uint   `json:"sportsId" binding:"required"`
-	LeagueId  uint   `json:"LeagueId" binding:"required"`
+	LeagueId  uint   `json:"leagueId" binding:"required"`
 	Name      string `json:"name" binding:"required"`
 }
 

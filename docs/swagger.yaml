@@ -114,8 +114,8 @@ definitions:
         type: string
     required:
     - address
+    - capacity
     - description
-    - image
     - name
     type: object
   adminTool.Team:
@@ -139,7 +139,7 @@ definitions:
     type: object
   adminTool.TeamAddRequest:
     properties:
-      LeagueId:
+      leagueId:
         type: integer
       name:
         type: string
@@ -148,14 +148,14 @@ definitions:
       stadiumId:
         type: integer
     required:
-    - LeagueId
+    - leagueId
     - name
     - sportsId
     - stadiumId
     type: object
   adminTool.TeamUpdateRequest:
     properties:
-      LeagueId:
+      leagueId:
         type: integer
       name:
         type: string
@@ -164,7 +164,7 @@ definitions:
       stadiumId:
         type: integer
     required:
-    - LeagueId
+    - leagueId
     - name
     - sportsId
     - stadiumId

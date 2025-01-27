@@ -534,6 +534,7 @@ func (h *AdminToolHandler) GetIdTeam(c *gin.Context) {
 // @Router /api/admin/team/teamAdd [post]
 func (h *AdminToolHandler) TeamAdd(c *gin.Context) {
 	request := TeamAddRequest{}
+	log.Println("リクエスト値[チーム名:", request.Name, "  スタジアムid:", request.StadiumId, "  スポーツid:", request.SportsId, "  リーグid:", request.LeagueId)
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Println("リクエストエラー: %v", err)
 		utils.ErrorResponse[any](c, http.StatusBadRequest, utils.CreateSingleMessage("リクエストに不備があります"))

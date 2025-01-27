@@ -2201,8 +2201,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "address",
+                "capacity",
                 "description",
-                "image",
                 "name"
             ],
             "properties": {
@@ -2253,13 +2253,13 @@ const docTemplate = `{
         "adminTool.TeamAddRequest": {
             "type": "object",
             "required": [
-                "LeagueId",
+                "leagueId",
                 "name",
                 "sportsId",
                 "stadiumId"
             ],
             "properties": {
-                "LeagueId": {
+                "leagueId": {
                     "type": "integer"
                 },
                 "name": {
@@ -2276,13 +2276,13 @@ const docTemplate = `{
         "adminTool.TeamUpdateRequest": {
             "type": "object",
             "required": [
-                "LeagueId",
+                "leagueId",
                 "name",
                 "sportsId",
                 "stadiumId"
             ],
             "properties": {
-                "LeagueId": {
+                "leagueId": {
                     "type": "integer"
                 },
                 "name": {

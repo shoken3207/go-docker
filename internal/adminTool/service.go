@@ -80,11 +80,11 @@ func (s *AdminToolService) stadiumSearchKeyword(keyword string) ([]Stadium, erro
 	query := db.DB.Model(&models.Stadium{})
 
 	if keyword != "" {
-		if err := query.Select("id", "name", "description", "address", "capacity", "image").Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&stadiums).Error; err != nil {
+		if err := query.Order("id ASC").Select("id", "name", "description", "address", "capacity", "image").Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&stadiums).Error; err != nil {
 			return nil, err
 		}
 	} else {
-		if err := query.Find(&stadiums).Error; err != nil {
+		if err := query.Order("id ASC").Find(&stadiums).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -357,11 +357,11 @@ func (s *AdminToolService) sportSearchKeyword(keyword string) ([]models.Sport, e
 	sport := []models.Sport{}
 
 	if keyword != "" {
-		if err := db.DB.Where("name LIKE ?", "%"+keyword+"%").First(&sport).Error; err != nil {
+		if err := db.DB.Order("id ASC").Where("name LIKE ?", "%"+keyword+"%").First(&sport).Error; err != nil {
 			return nil, err
 		}
 
-		if err := db.DB.Where("name LIKE ? ", "%"+keyword+"%").Find(&sport).Error; err != nil {
+		if err := db.DB.Order("id ASC").Where("name LIKE ? ", "%"+keyword+"%").Find(&sport).Error; err != nil {
 			return nil, err
 		}
 	} else {
@@ -497,11 +497,11 @@ func (s *AdminToolService) leagueSearchKeyword(keyword string) ([]models.League,
 	league := []models.League{}
 	log.Println(keyword)
 	if keyword != "" {
-		if err := db.DB.Where("name LIKE ?", "%"+keyword+"%").First(&league).Error; err != nil {
+		if err := db.DB.Order("id ASC").Where("name LIKE ?", "%"+keyword+"%").First(&league).Error; err != nil {
 			return nil, err
 		}
 
-		if err := db.DB.Where("name LIKE ? ", "%"+keyword+"%").Find(&league).Error; err != nil {
+		if err := db.DB.Order("id ASC").Where("name LIKE ? ", "%"+keyword+"%").Find(&league).Error; err != nil {
 			return nil, err
 		}
 	} else {
@@ -537,10 +537,10 @@ func (s *AdminToolService) createTeamService(request *TeamAddRequest) error {
 	if sports != nil {
 		return utils.NewCustomError(http.StatusUnauthorized, "登録済みのチームです")
 	}
+	log.Println("リクエスト値[チーム名:", request.Name, "  スタジアムid:", request.StadiumId, "  スポーツid:", request.SportsId, "  リーグid:", request.LeagueId)
+	newTeam := models.Team{StadiumId: request.StadiumId, SportId: request.SportsId, LeagueId: request.LeagueId, Name: request.Name}
 
-	newLeague := models.Team{StadiumId: request.StadiumId, SportId: request.SportsId, LeagueId: request.LeagueId, Name: request.Name}
-
-	if err := db.DB.Create(&newLeague).Error; err != nil {
+	if err := db.DB.Create(&newTeam).Error; err != nil {
 		return utils.NewCustomError(http.StatusInternalServerError, "内部エラーが発生しました。")
 	}
 
@@ -637,15 +637,11 @@ func (s *AdminToolService) teamSearchKeyword(keyword string) ([]models.Team, err
 	team := []models.Team{}
 	log.Println(keyword)
 	if keyword != "" {
-		if err := db.DB.Where("name LIKE ?", "%"+keyword+"%").First(&team).Error; err != nil {
-			return nil, err
-		}
-
-		if err := db.DB.Where("name LIKE ? ", "%"+keyword+"%").Find(&team).Error; err != nil {
-			return nil, err
+		if err := db.DB.Order("id ASC").Where("name LIKE ? ", "%"+keyword+"%").Find(&team).Error; err != nil {
+			return team, err
 		}
 	} else {
-		if err := db.DB.Find(&team).Error; err != nil {
+		if err := db.DB.Order("id ASC").Find(&team).Error; err != nil {
 			return nil, err
 		}
 	}

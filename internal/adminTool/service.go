@@ -166,9 +166,18 @@ func (s *AdminToolService) UpdateStadiumService(id uint, request *StadiumUpdateR
 
 	log.Println(request.Name, request.Description, request.Address, int(request.Capacity), request.Image)
 
+	oldStadium, err := adminToolService.StadiumGetIdService(id)
+	if err != nil {
+		log.Println("値の取得に失敗しました。")
+		return err
+	}
+	log.Println("oldStadium.FileId:", oldStadium.FileId)
+
 	return db.DB.Transaction(func(tx *gorm.DB) error {
 		var fileId string
-		if request.Image != "" {
+		if oldStadium.Image == request.Image {
+			fileId = oldStadium.Image
+		} else if request.Image != "" {
 			tempImages, err := utils.ValidateAndPersistImages(tx, []string{request.Image})
 			if err != nil {
 				return err
@@ -228,7 +237,7 @@ func (s *AdminToolService) deleteStadiumService(id uint) error {
 // 該当idからレコードを取得
 func (s *AdminToolService) StadiumGetIdService(id uint) (*Stadium, error) {
 	var stadium Stadium
-	if err := db.DB.Select("id", "name", "description").Where("id = ?", id).Find(&stadium).Error; err != nil {
+	if err := db.DB.Select("id", "name", "address", "capacity", "description", "image", "file_id").Where("id = ?", id).Find(&stadium).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, utils.NewCustomError(http.StatusUnauthorized, "スタジアムが見つかりませんでした")
 		}
@@ -557,7 +566,7 @@ func (s *AdminToolService) UpdateTeamService(id uint, request *TeamUpdateRequest
 
 // チーム情報削除
 func (s *AdminToolService) deleteTeamService(id uint) error {
-	team, err := adminToolService.teamSearchId(id)
+	team, err := adminToolService.TeamGetIdService(id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return utils.NewCustomError(http.StatusUnauthorized, "リーグが見つかりませんでした")

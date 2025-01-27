@@ -2176,7 +2176,6 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
-                "fileId",
                 "image",
                 "name"
             ],
@@ -2188,9 +2187,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "fileId": {
                     "type": "string"
                 },
                 "image": {
@@ -2207,8 +2203,6 @@ const docTemplate = `{
                 "address",
                 "capacity",
                 "description",
-                "fileId",
-                "image",
                 "name"
             ],
             "properties": {
@@ -2219,9 +2213,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "fileId": {
                     "type": "string"
                 },
                 "image": {
@@ -2262,13 +2253,13 @@ const docTemplate = `{
         "adminTool.TeamAddRequest": {
             "type": "object",
             "required": [
-                "LeagueId",
+                "leagueId",
                 "name",
                 "sportsId",
                 "stadiumId"
             ],
             "properties": {
-                "LeagueId": {
+                "leagueId": {
                     "type": "integer"
                 },
                 "name": {
@@ -2285,13 +2276,13 @@ const docTemplate = `{
         "adminTool.TeamUpdateRequest": {
             "type": "object",
             "required": [
-                "LeagueId",
+                "leagueId",
                 "name",
                 "sportsId",
                 "stadiumId"
             ],
             "properties": {
-                "LeagueId": {
+                "leagueId": {
                     "type": "integer"
                 },
                 "name": {

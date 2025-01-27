@@ -2168,7 +2168,6 @@
                 "address",
                 "capacity",
                 "description",
-                "fileId",
                 "image",
                 "name"
             ],
@@ -2180,9 +2179,6 @@
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "fileId": {
                     "type": "string"
                 },
                 "image": {
@@ -2199,8 +2195,6 @@
                 "address",
                 "capacity",
                 "description",
-                "fileId",
-                "image",
                 "name"
             ],
             "properties": {
@@ -2211,9 +2205,6 @@
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "fileId": {
                     "type": "string"
                 },
                 "image": {
@@ -2254,13 +2245,13 @@
         "adminTool.TeamAddRequest": {
             "type": "object",
             "required": [
-                "LeagueId",
+                "leagueId",
                 "name",
                 "sportsId",
                 "stadiumId"
             ],
             "properties": {
-                "LeagueId": {
+                "leagueId": {
                     "type": "integer"
                 },
                 "name": {
@@ -2277,13 +2268,13 @@
         "adminTool.TeamUpdateRequest": {
             "type": "object",
             "required": [
-                "LeagueId",
+                "leagueId",
                 "name",
                 "sportsId",
                 "stadiumId"
             ],
             "properties": {
-                "LeagueId": {
+                "leagueId": {
                     "type": "integer"
                 },
                 "name": {

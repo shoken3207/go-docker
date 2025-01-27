@@ -8,7 +8,6 @@ type StadiumAddRequest struct {
 	Address     string `json:"address" binding:"required"`
 	Capacity    uint   `json:"capacity" binding:"required"`
 	Image       string `json:"image" binding:"required"`
-	FileId      string `json:"fileId" binding:"required"`
 }
 
 type StadiumUpdateRequest struct {
@@ -16,8 +15,7 @@ type StadiumUpdateRequest struct {
 	Description string `json:"description" binding:"required"`
 	Address     string `json:"address" binding:"required"`
 	Capacity    uint   `json:"capacity" binding:"required"`
-	Image       string `json:"image" binding:"required"`
-	FileId      string `json:"fileId" binding:"required"`
+	Image       string `json:"image" binding:"omitempty,url"`
 }
 
 // スポーツ情報
@@ -44,14 +42,14 @@ type LeagueUpdateRequest struct {
 type TeamAddRequest struct {
 	StadiumId uint   `json:"stadiumId" binding:"required"`
 	SportsId  uint   `json:"sportsId" binding:"required"`
-	LeagueId  uint   `json:"LeagueId" binding:"required"`
+	LeagueId  uint   `json:"leagueId" binding:"required"`
 	Name      string `json:"name" binding:"required"`
 }
 
 type TeamUpdateRequest struct {
 	StadiumId uint   `json:"stadiumId" binding:"required"`
 	SportsId  uint   `json:"sportsId" binding:"required"`
-	LeagueId  uint   `json:"LeagueId" binding:"required"`
+	LeagueId  uint   `json:"leagueId" binding:"required"`
 	Name      string `json:"name" binding:"required"`
 }
 
@@ -63,33 +61,33 @@ type IdRequest struct {
 // レスポンス
 // スタジアム情報
 type Stadium struct {
-	StadiumId   uint   `json:"id" binding:"required"`
-	Name        string `json:"name" binding:"required"`
-	Description string `json:"description" binding:"required"`
-	Address     string `json:"address" binding:"required"`
-	Capacity    uint   `json:"capacity" binding:"required"`
-	Image       string `json:"image" binding:"required"`
-	FileId      string `json:"file_id" binding:"required"`
+	StadiumId   uint    `json:"id" binding:"required" gorm:"column:id"`
+	Name        string  `json:"name" binding:"required"`
+	Description string  `json:"description" binding:"required"`
+	Address     string  `json:"address" binding:"required"`
+	Capacity    uint    `json:"capacity" binding:"required"`
+	Image       string  `json:"image" binding:"required"`
+	FileId      *string `json:"file_id" binding:"required"`
 }
 
 // スポーツ情報
 type Sports struct {
-	SportsId uint   `json:"id" binding:"required"`
+	SportsId uint   `json:"id" binding:"required" gorm:"column:id"`
 	Name     string `json:"name" binding:"required"`
 }
 
 // リーグ情報
 type League struct {
-	LeagueId uint   `json:"id" binding:"required"`
+	LeagueId uint   `json:"id" binding:"required" gorm:"column:id"`
 	Name     string `json:"name" binding:"required"`
-	SportsId uint   `json:"sport_id" binding:"required"`
+	SportsId uint   `json:"sport_id" binding:"required" gorm:"column:sport_id"`
 }
 
 // チーム情報
 type Team struct {
-	TeamId    uint   `json:"id" binding:"required"`
-	StadiumId uint   `json:"stadium_id" binding:"required"`
-	SportsId  uint   `json:"sport_id" binding:"required"`
-	LeagueId  uint   `json:"league_id" binding:"required"`
+	TeamId    uint   `json:"id" binding:"required" gorm:"column:id"`
+	StadiumId uint   `json:"stadium_id" binding:"required" gorm:"column:stadium_id"`
+	SportsId  uint   `json:"sport_id" binding:"required" gorm:"column:sport_id"`
+	LeagueId  uint   `json:"league_id" binding:"required" gorm"column:league_id"`
 	Name      string `json:"name" binding:"required"`
 }

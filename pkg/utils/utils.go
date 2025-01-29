@@ -255,19 +255,45 @@ func GetFieldDetail(fieldName string, structName any) (FieldDetail, error) {
 		Min:    nil,
 		Max:    nil,
 	}
-	field, found := val.Type().FieldByName(fieldName)
+
+	t := val.Type()
+	var targetField reflect.StructField
+	var found bool
+
+	if field, directFound := t.FieldByName(fieldName); directFound {
+		targetField = field
+		found = true
+	} else {
+		for i := 0; i < t.NumField(); i++ {
+			field := t.Field(i)
+			fieldType := field.Type
+
+			if fieldType.Kind() == reflect.Slice {
+				fieldType = fieldType.Elem()
+			}
+
+			if fieldType.Kind() == reflect.Ptr {
+				fieldType = fieldType.Elem()
+			}
+
+			if nestedField, nestedFound := fieldType.FieldByName(fieldName); nestedFound {
+				targetField = nestedField
+				found = true
+				break
+			}
+		}
+	}
+
 	if !found {
 		log.Printf("フィールド %s が見つかりません", fieldName)
 		return fieldDetail, NewCustomError(http.StatusInternalServerError, "フィールド詳細取得に失敗しました。")
 	}
 
-
-	fieldTag := field.Tag.Get("field")
-	if fieldTag != "" {
+	if fieldTag := targetField.Tag.Get("field"); fieldTag != "" {
 		fieldDetail.FieldName = fieldTag
 	}
 
-	bindingTag := field.Tag.Get("binding")
+	bindingTag := targetField.Tag.Get("binding")
 	if bindingTag != "" {
 		tagParts := strings.Split(bindingTag, ",")
 		for _, part := range tagParts {
@@ -286,7 +312,6 @@ func GetFieldDetail(fieldName string, structName any) (FieldDetail, error) {
 
 	return fieldDetail, nil
 }
-
 
 func GenerateRequestErrorMessages(err error, structName any) (*[]string, error) {
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {

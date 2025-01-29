@@ -351,14 +351,22 @@ func GenerateRequestErrorMessages(err error, structName any) (*[]string, error) 
 }
 
 func HandleCustomError(c *gin.Context, customErr *CustomError, err error, request any) {
-	log.Println(customErr.Code)
 	switch customErr.Code {
 	case http.StatusBadRequest:
 		errorMessages, genErr := GenerateRequestErrorMessages(err, request)
 		if genErr != nil {
 			ErrorResponse[any](c, http.StatusInternalServerError, CreateSingleMessage(genErr.Error()))
 		} else {
-			ErrorResponse[any](c, http.StatusBadRequest, *errorMessages)
+			uniqueMessages := make(map[string]bool)
+			var uniqueErrorMessages []string
+
+			for _, message := range *errorMessages {
+				if !uniqueMessages[message] {
+					uniqueMessages[message] = true
+					uniqueErrorMessages = append(uniqueErrorMessages, message)
+				}
+			}
+			ErrorResponse[any](c, http.StatusBadRequest, uniqueErrorMessages)
 		}
 		return
 	default:

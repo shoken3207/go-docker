@@ -26,7 +26,7 @@ type BaseGameRequest struct {
 }
 type GameRequest struct {
 	BaseGameRequest
-	Scores []GameScoreRequest `json:"scores" binding:"required" field:"試合スコア"`
+	Scores []GameScoreRequest `json:"scores" binding:"required,dive" field:"試合スコア"`
 }
 type GameResponse struct {
 	ID      uint                `json:"id" example:"1"`
@@ -62,7 +62,7 @@ type UpdateGameScoreRequest struct {
 }
 
 type VisitedFacilityRequest struct {
-	Name      string  `json:"name" binding:"required" example:"東京駅" field:"名前"`
+	Name      string  `json:"name" binding:"required" example:"東京駅" field:"施設名"`
 	CustomName      string  `json:"customName" binding:"required" example:"東京駅(おみやげ)" field:"カスタム名"`
 	Address   string  `json:"address" binding:"required" example:"東京都千代田区丸の内1-1-1" field:"住所"`
 	Icon      string  `json:"icon" binding:"required" example:"train" field:"アイコン"`
@@ -117,9 +117,9 @@ type ExpeditionResponse struct {
 
 type CreateExpeditionRequestBody struct {
 	BaseExpeditionRequest
-	Payments          []PaymentRequest         `json:"payments" binding:"required" field:"支払い"`
-	Games             []GameRequest            `json:"games" binding:"required" field:"試合"`
-	VisitedFacilities []VisitedFacilityRequest `json:"visitedFacilities" binding:"required" field:"周辺施設"`
+	Payments          []PaymentRequest         `json:"payments" binding:"required,dive" field:"支払い"`
+	Games             []GameRequest            `json:"games" binding:"required,dive" field:"試合"`
+	VisitedFacilities []VisitedFacilityRequest `json:"visitedFacilities" binding:"required,dive" field:"周辺施設"`
 	ImageUrls         []string                 `json:"imageUrls" binding:"required" field:"画像URL配列"`
 }
 
@@ -128,29 +128,29 @@ type GetExpeditionDetailRequestPath struct {
 }
 
 type UpdateGamesRequest struct {
-	Add    []GameRequest       `json:"add" field:"追加"`
-	Update []UpdateGameRequest `json:"update" field:"更新"`
-	Delete []uint              `json:"delete" field:"削除"`
+	Add    []GameRequest       `json:"add" binding:"required,dive" field:"追加"`
+	Update []UpdateGameRequest `json:"update" binding:"required,dive" field:"更新"`
+	Delete []uint              `json:"delete" binding:"required,dive" field:"削除"`
 }
 type UpdateGameScoresRequest struct {
-	Add    []GameScoreRequest       `json:"add" field:"追加"`
-	Update []UpdateGameScoreRequest `json:"update" field:"更新"`
-	Delete []uint                   `json:"delete" field:"削除"`
+	Add    []GameScoreRequest       `json:"add" binding:"required,dive" field:"追加"`
+	Update []UpdateGameScoreRequest `json:"update" binding:"required,dive" field:"更新"`
+	Delete []uint                   `json:"delete" binding:"required,dive" field:"削除"`
 }
 type UpdatePaymentsRequest struct {
-	Add    []PaymentRequest       `json:"add" field:"追加"`
-	Update []UpdatePaymentRequest `json:"update" field:"更新"`
-	Delete []uint                 `json:"delete" field:"削除"`
+	Add    []PaymentRequest       `json:"add" binding:"required,dive" field:"追加"`
+	Update []UpdatePaymentRequest `json:"update" binding:"required,dive" field:"更新"`
+	Delete []uint                 `json:"delete" binding:"required,dive" field:"削除"`
 }
 type UpdateVisitedFacilitiesRequest struct {
-	Add    []VisitedFacilityRequest       `json:"add" field:"追加"`
-	Update []UpdateVisitedFacilityRequest `json:"update" field:"更新"`
-	Delete []uint                         `json:"delete" field:"削除"`
+	Add    []VisitedFacilityRequest       `json:"add" binding:"required,dive" field:"追加"`
+	Update []UpdateVisitedFacilityRequest `json:"update" binding:"required,dive" field:"更新"`
+	Delete []uint                         `json:"delete" binding:"required,dive" field:"削除"`
 }
 
 type UpdateExpeditionImagesRequest struct {
-	Add    []string `json:"add" field:"追加"`
-	Delete []string `json:"delete" field:"削除"`
+	Add    []string `json:"add" binding:"required,dive" field:"追加"`
+	Delete []string `json:"delete" binding:"required,dive" field:"削除"`
 }
 
 type UpdateExpeditionRequestBody struct {
@@ -208,10 +208,6 @@ type GetExpeditionListRequestQuery struct {
 	TeamId   *uint      `form:"teamId" example:"1" field:"チームID"`
 	StadiumId *uint `form:"stadiumId" example:"1" field:"スタジアムID"`
 	UserId *uint `form:"userId" example:"1" field:"ユーザーID"`
-}
-
-type GetMyExpeditionListRequest struct {
-	Page     int        `form:"page" binding:"required,min=1" example:"1" field:"ページ番号"`
 }
 
 type GetExpeditionListByUserIdRequestQuery struct {

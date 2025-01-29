@@ -2150,6 +2150,9 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "attribuion": {
+                    "type": "string"
+                },
                 "capacity": {
                     "type": "integer"
                 },
@@ -2183,6 +2186,9 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "attribuion": {
+                    "type": "string"
+                },
                 "capacity": {
                     "type": "integer"
                 },
@@ -2207,6 +2213,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "attribuion": {
                     "type": "string"
                 },
                 "capacity": {

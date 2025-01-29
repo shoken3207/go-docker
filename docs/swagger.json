@@ -2142,6 +2142,9 @@
                 "address": {
                     "type": "string"
                 },
+                "attribuion": {
+                    "type": "string"
+                },
                 "capacity": {
                     "type": "integer"
                 },
@@ -2175,6 +2178,9 @@
                 "address": {
                     "type": "string"
                 },
+                "attribuion": {
+                    "type": "string"
+                },
                 "capacity": {
                     "type": "integer"
                 },
@@ -2199,6 +2205,9 @@
             ],
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "attribuion": {
                     "type": "string"
                 },
                 "capacity": {

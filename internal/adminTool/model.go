@@ -8,6 +8,7 @@ type StadiumAddRequest struct {
 	Address     string `json:"address" binding:"required"`
 	Capacity    uint   `json:"capacity" binding:"required"`
 	Image       string `json:"image" binding:"required"`
+	Attribution string `json:"attribution"`
 }
 
 type StadiumUpdateRequest struct {
@@ -16,6 +17,7 @@ type StadiumUpdateRequest struct {
 	Address     string `json:"address" binding:"required"`
 	Capacity    uint   `json:"capacity" binding:"required"`
 	Image       string `json:"image" binding:"omitempty,url"`
+	Attribution string `json:"attribution"`
 }
 
 // スポーツ情報
@@ -68,6 +70,7 @@ type Stadium struct {
 	Capacity    uint    `json:"capacity" binding:"required"`
 	Image       string  `json:"image" binding:"required"`
 	FileId      *string `json:"file_id" binding:"required"`
+	Attribution *string `json:"attribution"`
 }
 
 // スポーツ情報

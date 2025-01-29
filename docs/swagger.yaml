@@ -60,6 +60,8 @@ definitions:
     properties:
       address:
         type: string
+      attribuion:
+        type: string
       capacity:
         type: integer
       description:
@@ -85,6 +87,8 @@ definitions:
     properties:
       address:
         type: string
+      attribuion:
+        type: string
       capacity:
         type: integer
       description:
@@ -103,6 +107,8 @@ definitions:
   adminTool.StadiumUpdateRequest:
     properties:
       address:
+        type: string
+      attribuion:
         type: string
       capacity:
         type: integer

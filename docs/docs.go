@@ -2722,6 +2722,10 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
+                "isLiked": {
+                    "type": "boolean",
+                    "example": true
+                },
                 "isPublic": {
                     "type": "boolean",
                     "example": true

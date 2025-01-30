@@ -219,6 +219,7 @@ type GetExpeditionDetailResponse struct {
 	ExpeditionResponse
 	Username        string `json:"username" example:"user123"`
 	UserIcon    string          `json:"userIcon" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	IsLiked bool `json:"isLiked" example:"true"`
 	LikesCount  int64                  `json:"likesCount" example:"10"`
 	VisitedFacilities []VisitedFacilityResponse `json:"visitedFacilities"`
 	Payments          []PaymentResponse         `json:"payments"`

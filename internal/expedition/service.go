@@ -321,13 +321,15 @@ func (s *ExpeditionService) DeleteGameScores(tx *gorm.DB, gameScoreIds *[]uint) 
 	return nil
 }
 
-func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDetailRequestPath) (*GetExpeditionDetailResponse, error) {
+func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDetailRequestPath, loginUserId *uint) (*GetExpeditionDetailResponse, error) {
 	var expedition models.Expedition
 
 	if err := db.DB.Preload("VisitedFacilities").
 		Preload("Payments").
 		Preload("ExpeditionImages").
-		Preload("ExpeditionLikes").
+		Preload("ExpeditionLikes", func(db *gorm.DB) *gorm.DB {
+			return db.Select("expedition_id, user_id").Where("user_id = ?", loginUserId)
+		}).
 		Preload("Games.Team1").
 		Preload("Games.Team2").
 		Preload("Games.GameScores.Team").
@@ -340,7 +342,11 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 		return nil, utils.NewCustomError(http.StatusInternalServerError, "遠征記録詳細の取得に失敗しました。")
 	}
 
-	var visitedFacilities []VisitedFacilityResponse
+	visitedFacilities := make([]VisitedFacilityResponse, 0)
+	payments := make([]PaymentResponse, 0)
+	expeditionImages := make([]ExpeditionImageResponse, 0)
+	games := make([]GameResponse, 0)
+
 	for _, vf := range expedition.VisitedFacilities {
 		visitedFacilities = append(visitedFacilities, VisitedFacilityResponse{
 			ID:        int(vf.ID),
@@ -354,7 +360,6 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 		})
 	}
 
-	var payments []PaymentResponse
 	for _, p := range expedition.Payments {
 		payments = append(payments, PaymentResponse{
 			ID:    p.ID,
@@ -364,7 +369,6 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 		})
 	}
 
-	var expeditionImages []ExpeditionImageResponse
 	for _, img := range expedition.ExpeditionImages {
 		expeditionImages = append(expeditionImages, ExpeditionImageResponse{
 			ID:     img.ID,
@@ -373,9 +377,8 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 		})
 	}
 
-	var games []GameResponse
 	for _, g := range expedition.Games {
-		var scores []GameScoreResponse
+		scores := make([]GameScoreResponse, 0)
 		for _, s := range g.GameScores {
 			scores = append(scores, GameScoreResponse{
 				ID:       s.ID,
@@ -408,11 +411,12 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 			StadiumId:   expedition.StadiumId,
 			StadiumName: expedition.Stadium.Name,
 			Memo:        expedition.GetMemo(),
-			UserId: expedition.UserId,
+			UserId:      expedition.UserId,
 		},
+		IsLiked:     s.isLikedByUser(&expedition.ExpeditionLikes, loginUserId),
+		LikesCount:  int64(len(expedition.ExpeditionLikes)),
 		Username: expedition.User.Username,
 		UserIcon: expedition.User.GetProfileImage(),
-		LikesCount: int64(len(expedition.ExpeditionLikes)),
 		VisitedFacilities: visitedFacilities,
 		Payments:          payments,
 		ExpeditionImages:  expeditionImages,
@@ -420,6 +424,15 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 	}
 
 	return response, nil
+}
+
+func (s *ExpeditionService) isLikedByUser(likes *[]models.ExpeditionLike, userId *uint) bool {
+	for _, like := range *likes {
+		if like.UserId == *userId {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionRequestBody, userId *uint) error {

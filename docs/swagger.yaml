@@ -480,6 +480,9 @@ definitions:
       id:
         example: 1
         type: integer
+      isLiked:
+        example: true
+        type: boolean
       isPublic:
         example: true
         type: boolean

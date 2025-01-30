@@ -25,14 +25,14 @@ var expeditionService = NewExpeditionService()
 // @Router /api/expedition/{expeditionId} [get]
 func (h *ExpeditionHandler) GetExpeditionDetail(c *gin.Context) {
 	var requestPath GetExpeditionDetailRequestPath
-	_, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, true)
+	loginUserId, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, true)
 	if err != nil {
 		if customErr, ok := customErr.(*utils.CustomError); ok {
 			utils.HandleCustomError(c, customErr, err, requestPath)
 			return
 		}
 	}
-	expeditionDetail, err := expeditionService.GetExpeditionDetailService(&requestPath)
+	expeditionDetail, err := expeditionService.GetExpeditionDetailService(&requestPath, loginUserId)
 	if err != nil {
 		if customErr, ok := err.(*utils.CustomError); ok {
 			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))

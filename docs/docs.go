@@ -3265,6 +3265,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "大阪府大阪市西区千代崎3-1-1"
                 },
+                "attribution": {
+                    "type": "string",
+                    "example": "attribution"
+                },
                 "capacity": {
                     "type": "integer",
                     "example": 36000

@@ -19,6 +19,7 @@ type GetStadiumResponse struct {
 	Address     string `json:"address" example:"大阪府大阪市西区千代崎3-1-1"`
 	Capacity    int    `json:"capacity" example:"36000"`
 	Image       string `json:"image" example:"https://ik.imagekit.io/your_imagekit_id/image.jpg"`
+	Attribution string `json:"attribution" example:"attribution"`
 	Expeditions []expedition.ExpeditionListResponse `json:"expeditions"`
 	Facilities [] FacilityResponse `json:"facilities"`
 }

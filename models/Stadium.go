@@ -22,3 +22,17 @@ func (s *Stadium) SetFileId(fileId string) {
 		s.FileId = &fileId
 	}
 }
+
+func (s *Stadium) GetAttribution() string {
+	if s.Attribution != nil {
+		return *s.Attribution
+	}
+	return ""
+}
+func (s *Stadium) SetAttribution(attribution string) {
+	if attribution == "" {
+		s.Attribution = nil
+	} else {
+		s.Attribution = &attribution
+	}
+}

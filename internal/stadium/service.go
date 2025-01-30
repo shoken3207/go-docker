@@ -68,6 +68,7 @@ func (s *StadiumService) GetStadiumService(loginUserId *uint, request *GetStadiu
 		Description: stadium.Description,
 		Address: stadium.Address,
 		Capacity: stadium.Capacity,
+		Attribution: stadium.GetAttribution(),
 		Image: stadium.Image,
 		Expeditions: expeditions,
 		Facilities: facilities,

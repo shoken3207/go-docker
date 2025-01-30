@@ -873,6 +873,9 @@ definitions:
       address:
         example: 大阪府大阪市西区千代崎3-1-1
         type: string
+      attribution:
+        example: attribution
+        type: string
       capacity:
         example: 36000
         type: integer

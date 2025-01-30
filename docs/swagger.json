@@ -2142,6 +2142,9 @@
                 "address": {
                     "type": "string"
                 },
+                "attribution": {
+                    "type": "string"
+                },
                 "capacity": {
                     "type": "integer"
                 },
@@ -2175,6 +2178,9 @@
                 "address": {
                     "type": "string"
                 },
+                "attribution": {
+                    "type": "string"
+                },
                 "capacity": {
                     "type": "integer"
                 },
@@ -2199,6 +2205,9 @@
             ],
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "attribution": {
                     "type": "string"
                 },
                 "capacity": {
@@ -2825,6 +2834,10 @@
         },
         "expedition.UpdateExpeditionImagesRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete"
+            ],
             "properties": {
                 "add": {
                     "type": "array",
@@ -2957,6 +2970,11 @@
         },
         "expedition.UpdateGameScoresRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete",
+                "update"
+            ],
             "properties": {
                 "add": {
                     "type": "array",
@@ -2980,6 +2998,11 @@
         },
         "expedition.UpdateGamesRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete",
+                "update"
+            ],
             "properties": {
                 "add": {
                     "type": "array",
@@ -3030,6 +3053,11 @@
         },
         "expedition.UpdatePaymentsRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete",
+                "update"
+            ],
             "properties": {
                 "add": {
                     "type": "array",
@@ -3053,6 +3081,11 @@
         },
         "expedition.UpdateVisitedFacilitiesRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete",
+                "update"
+            ],
             "properties": {
                 "add": {
                     "type": "array",

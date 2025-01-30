@@ -2150,6 +2150,9 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "attribution": {
+                    "type": "string"
+                },
                 "capacity": {
                     "type": "integer"
                 },
@@ -2183,6 +2186,9 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "attribution": {
+                    "type": "string"
+                },
                 "capacity": {
                     "type": "integer"
                 },
@@ -2207,6 +2213,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "attribution": {
                     "type": "string"
                 },
                 "capacity": {
@@ -2833,6 +2842,10 @@ const docTemplate = `{
         },
         "expedition.UpdateExpeditionImagesRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete"
+            ],
             "properties": {
                 "add": {
                     "type": "array",
@@ -2965,6 +2978,11 @@ const docTemplate = `{
         },
         "expedition.UpdateGameScoresRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete",
+                "update"
+            ],
             "properties": {
                 "add": {
                     "type": "array",
@@ -2988,6 +3006,11 @@ const docTemplate = `{
         },
         "expedition.UpdateGamesRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete",
+                "update"
+            ],
             "properties": {
                 "add": {
                     "type": "array",
@@ -3038,6 +3061,11 @@ const docTemplate = `{
         },
         "expedition.UpdatePaymentsRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete",
+                "update"
+            ],
             "properties": {
                 "add": {
                     "type": "array",
@@ -3061,6 +3089,11 @@ const docTemplate = `{
         },
         "expedition.UpdateVisitedFacilitiesRequest": {
             "type": "object",
+            "required": [
+                "add",
+                "delete",
+                "update"
+            ],
             "properties": {
                 "add": {
                     "type": "array",

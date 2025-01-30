@@ -28,7 +28,7 @@ func (s *AdminToolService) stadiumSearchId(id uint) (*models.Stadium, error) {
 // ※スタジアム情報追加時
 func (s *AdminToolService) stadiumAddCheck(address string) (*models.Stadium, error) {
 	stadium := models.Stadium{}
-	if err := db.DB.Select("id", "name", "description", "address", "capacity", "file_id").Where("address = ?", address).First(&stadium).Error; err != nil {
+	if err := db.DB.Select("id", "name", "description", "address", "capacity", "file_id", "attribution").Where("address = ?", address).First(&stadium).Error; err != nil {
 		return nil, err
 	}
 	return &stadium, nil
@@ -77,7 +77,7 @@ func (s *AdminToolService) stadiumSearchKeyword(keyword string) ([]Stadium, erro
 	query := db.DB.Model(&models.Stadium{})
 
 	if keyword != "" {
-		if err := query.Order("id ASC").Select("id", "name", "description", "address", "capacity", "image").Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&stadiums).Error; err != nil {
+		if err := query.Order("id ASC").Select("id", "name", "description", "address", "capacity", "image", "attribution").Where("name LIKE ? OR address LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&stadiums).Error; err != nil {
 			return nil, err
 		}
 	} else {
@@ -96,6 +96,7 @@ func (s *AdminToolService) stadiumSearchKeyword(keyword string) ([]Stadium, erro
 			Capacity:    uint(stadium.Capacity),
 			Image:       stadium.Image,
 			FileId:      stadium.FileId,
+			Attribution: stadium.Attribution,
 		})
 	}
 	return stadiumResponse, nil
@@ -130,6 +131,7 @@ func (s *AdminToolService) createStadiumService(request *StadiumAddRequest) erro
 			Address:     request.Address,
 			Capacity:    int(request.Capacity),
 			Image:       request.Image,
+			Attribution: &request.Attribution,
 		}
 		newStadium.SetFileId(fileId)
 
@@ -182,6 +184,7 @@ func (s *AdminToolService) UpdateStadiumService(id uint, request *StadiumUpdateR
 			Address:     request.Address,
 			Capacity:    int(request.Capacity),
 			Image:       request.Image,
+			Attribution: &request.Attribution,
 		}
 
 		fileId = adminToolService.stadiumFileIdCheck(fileId)
@@ -225,7 +228,7 @@ func (s *AdminToolService) deleteStadiumService(id uint) error {
 // 該当idからレコードを取得
 func (s *AdminToolService) StadiumGetIdService(id uint) (*Stadium, error) {
 	var stadium Stadium
-	if err := db.DB.Select("id", "name", "address", "capacity", "description", "image", "file_id").Where("id = ?", id).Find(&stadium).Error; err != nil {
+	if err := db.DB.Select("id", "name", "address", "capacity", "description", "image", "file_id", "attribution").Where("id = ?", id).Find(&stadium).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, utils.NewCustomError(http.StatusUnauthorized, "スタジアムが見つかりませんでした")
 		}

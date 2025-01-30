@@ -10,6 +10,7 @@ type Stadium struct {
 	Capacity    int          `json:"capacity"`
 	Image       string       `json:"image" gorm:"not null"`
 	FileId      *string      `json:"fileId" gorm:"column:file_id"`
+	Attribution *string      `json:"attribution"`
 	Teams       []Team       `gorm:"foreignKey:StadiumId"`
 	Expeditions []Expedition `gorm:"foreignKey:StadiumId"`
 }

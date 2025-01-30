@@ -151,7 +151,7 @@ func (s *UserService) getUserByIdService(request *GetUserByIdRequestPath, loginU
 		return nil, err
 	}
 
-	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequestQuery{Page: 1, UserId: &user.ID}, loginUserId)
+	expeditionList, err := expeditionService.GetExpeditionListService(&expedition.GetExpeditionListRequestQuery{Page: 1, UserId: &user.ID}, loginUserId)
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +174,7 @@ func (s *UserService) getUserByUsernameService(request *GetUserByUsernameRequest
 		return nil, err
 	}
 
-	expeditionList, err := expeditionService.GetLikedExpeditionListService(&expedition.GetExpeditionListRequestQuery{Page: 1, UserId: &user.ID}, loginUserId)
+	expeditionList, err := expeditionService.GetExpeditionListService(&expedition.GetExpeditionListRequestQuery{Page: 1, UserId: &user.ID}, loginUserId)
 	if err != nil {
 		return nil, err
 	}

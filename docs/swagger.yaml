@@ -60,7 +60,7 @@ definitions:
     properties:
       address:
         type: string
-      attribuion:
+      attribution:
         type: string
       capacity:
         type: integer
@@ -87,7 +87,7 @@ definitions:
     properties:
       address:
         type: string
-      attribuion:
+      attribution:
         type: string
       capacity:
         type: integer
@@ -108,7 +108,7 @@ definitions:
     properties:
       address:
         type: string
-      attribuion:
+      attribution:
         type: string
       capacity:
         type: integer
@@ -575,6 +575,9 @@ definitions:
         items:
           type: string
         type: array
+    required:
+    - add
+    - delete
     type: object
   expedition.UpdateExpeditionRequestBody:
     properties:
@@ -676,6 +679,10 @@ definitions:
         items:
           $ref: '#/definitions/expedition.UpdateGameScoreRequest'
         type: array
+    required:
+    - add
+    - delete
+    - update
     type: object
   expedition.UpdateGamesRequest:
     properties:
@@ -691,6 +698,10 @@ definitions:
         items:
           $ref: '#/definitions/expedition.UpdateGameRequest'
         type: array
+    required:
+    - add
+    - delete
+    - update
     type: object
   expedition.UpdatePaymentRequest:
     properties:
@@ -726,6 +737,10 @@ definitions:
         items:
           $ref: '#/definitions/expedition.UpdatePaymentRequest'
         type: array
+    required:
+    - add
+    - delete
+    - update
     type: object
   expedition.UpdateVisitedFacilitiesRequest:
     properties:
@@ -741,6 +756,10 @@ definitions:
         items:
           $ref: '#/definitions/expedition.UpdateVisitedFacilityRequest'
         type: array
+    required:
+    - add
+    - delete
+    - update
     type: object
   expedition.UpdateVisitedFacilityRequest:
     properties:

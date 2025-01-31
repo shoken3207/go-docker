@@ -70,6 +70,23 @@ func (s *TeamService) GetTeamsService(userId *uint) (*[]SportResponse, error) {
 	return &response, nil
 }
 
+func (s *TeamService) GetTeamsBySportsId(sportsId *uint) (*[]TeamListResponse, error) {
+	var teams []models.Team
+	if err := db.DB.Select("id", "name").Where("sport_id = ?", *sportsId).Find(&teams).Error; err != nil {
+		log.Printf("チーム取得エラー: %v", err)
+		return nil, utils.NewCustomError(http.StatusInternalServerError, "チーム取得に失敗しました。")
+	}
+	var teamResponse []TeamListResponse
+
+	for _, team := range teams {
+		teamResponse = append(teamResponse, TeamListResponse{
+			ID:   team.ID,
+			Name: team.Name,
+		})
+	}
+	return &teamResponse, nil
+}
+
 func NewTeamService() *TeamService {
 	return &TeamService{}
 }

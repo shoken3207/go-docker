@@ -29,7 +29,6 @@ func BasicAuthMiddleware() gin.HandlerFunc {
 
 func checkAdminPermission() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		origin := c.Request.Header.Get("Origin")
 		referer := c.Request.Referer()
 		requestPath := c.Request.URL.Path
 		readonlyPath := "/swagger/readonly/"
@@ -38,13 +37,7 @@ func checkAdminPermission() gin.HandlerFunc {
 			return
 		}
 
-		if origin != "" && strings.Contains(origin, readonlyPath) {
-			utils.ErrorResponse[any](c, http.StatusForbidden, utils.CreateSingleMessage("読み取り専用モードではAPIの実行はできません。"))
-			log.Printf("読み取り専用UIからのAPIリクエストをOriginでブロック: Origin=%s", origin)
-			c.Abort()
-			return
-		}
-		if origin == "" && strings.Contains(referer, readonlyPath) {
+		if strings.Contains(referer, readonlyPath) {
 			utils.ErrorResponse[any](c, http.StatusForbidden, utils.CreateSingleMessage("読み取り専用モードではAPIの実行はできません。"))
 			log.Printf("読み取り専用UIからのAPIリクエストをRefererでブロック: Referer=%s", referer)
 			c.Abort()

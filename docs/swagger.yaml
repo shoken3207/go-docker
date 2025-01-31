@@ -926,6 +926,15 @@ definitions:
           $ref: '#/definitions/team.LeagueResponse'
         type: array
     type: object
+  team.TeamListResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name:
+        example: オリックス・バファローズ
+        type: string
+    type: object
   team.TeamResponse:
     properties:
       id:
@@ -1130,6 +1139,22 @@ definitions:
       data:
         items:
           $ref: '#/definitions/team.SportResponse'
+        type: array
+      messages:
+        example:
+        - 成功しました！！
+        items:
+          type: string
+        type: array
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.ApiResponse-array_team_TeamListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/team.TeamListResponse'
         type: array
       messages:
         example:
@@ -2346,6 +2371,33 @@ paths:
       summary: スタジアム情報、そのスタジアムの遠征記録、周辺施設を取得するAPI
       tags:
       - stadium
+  /api/team/{sportsId}:
+    get:
+      description: スポーツIDからチームをすべて取得する
+      parameters:
+      - description: スポーツID
+        in: path
+        name: sportsId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/utils.ApiResponse-array_team_TeamListResponse'
+        "400":
+          description: リクエストエラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+        "500":
+          description: 内部エラー
+          schema:
+            $ref: '#/definitions/utils.ErrorBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: クライアントでチーム一覧を表示する際に必要なチーム情報を取得するAPI
+      tags:
+      - team
   /api/team/me:
     get:
       description: sport, leagueで入れ子になったteamを返却<br>認証後、ログイン済みのuserIdからfavoriteTeamsを取得し、isFavoriteにtrueかfalseを設定する

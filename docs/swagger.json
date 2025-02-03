@@ -2673,17 +2673,9 @@
                     "type": "integer",
                     "example": 1
                 },
-                "team1Name": {
-                    "type": "string",
-                    "example": "ヤクルト"
-                },
                 "team2Id": {
                     "type": "integer",
                     "example": 2
-                },
-                "team2Name": {
-                    "type": "string",
-                    "example": "ソフトバンク"
                 }
             }
         },
@@ -2691,21 +2683,21 @@
             "type": "object",
             "required": [
                 "order",
-                "score",
-                "teamId"
+                "team1Score",
+                "team2Score"
             ],
             "properties": {
                 "order": {
                     "type": "integer",
                     "example": 1
                 },
-                "score": {
+                "team1Score": {
                     "type": "integer",
                     "example": 1
                 },
-                "teamId": {
+                "team2Score": {
                     "type": "integer",
-                    "example": 1
+                    "example": 2
                 }
             }
         },
@@ -2720,17 +2712,21 @@
                     "type": "integer",
                     "example": 1
                 },
-                "score": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "teamId": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "teamName": {
+                "team1Name": {
                     "type": "string",
                     "example": "ヤクルト"
+                },
+                "team1Score": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "team2Name": {
+                    "type": "string",
+                    "example": "ソフトバンク"
+                },
+                "team2Score": {
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },
@@ -2993,8 +2989,8 @@
             "required": [
                 "id",
                 "order",
-                "score",
-                "teamId"
+                "team1Score",
+                "team2Score"
             ],
             "properties": {
                 "id": {
@@ -3005,13 +3001,13 @@
                     "type": "integer",
                     "example": 1
                 },
-                "score": {
+                "team1Score": {
                     "type": "integer",
                     "example": 1
                 },
-                "teamId": {
+                "team2Score": {
                     "type": "integer",
-                    "example": 1
+                    "example": 2
                 }
             }
         },

@@ -332,7 +332,6 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 		}).
 		Preload("Games.Team1").
 		Preload("Games.Team2").
-		Preload("Games.GameScores.Team").
 		Preload("Games.GameScores").
 		Preload("Sport").
 		Preload("Stadium").
@@ -383,18 +382,17 @@ func (s *ExpeditionService) GetExpeditionDetailService(request *GetExpeditionDet
 			scores = append(scores, GameScoreResponse{
 				ID:       s.ID,
 				Order:    s.Order,
-				Score:    s.Score,
-				TeamId:   s.TeamId,
-				TeamName: s.Team.Name,
+				Team1Score: s.Team1Score,
+				Team2Score: s.Team2Score,
+				Team1Name:   g.Team1.Name,
+				Team2Name:   g.Team2.Name,
 			})
 		}
 		games = append(games, GameResponse{
 			ID:        g.ID,
 			Date:      g.Date,
 			Team1Id:   g.Team1Id,
-			Team1Name: g.Team1.Name,
 			Team2Id:   g.Team2Id,
-			Team2Name: g.Team2.Name,
 			Scores:    scores,
 		})
 	}
@@ -463,13 +461,13 @@ func (s *ExpeditionService) CreateExpeditionService(request *CreateExpeditionReq
 				return err
 			}
 
-		for _, gameScore := range game.Scores {
-			newGameScore := models.GameScore{
-				GameId: newGame.ID,
-				TeamId: gameScore.TeamId,
-				Score:  gameScore.Score,
-				Order:  gameScore.Order,
-			}
+			for _, gameScore := range game.Scores {
+				newGameScore := models.GameScore{
+					GameId: newGame.ID,
+					Team1Score: gameScore.Team1Score,
+					Team2Score: gameScore.Team2Score,
+					Order:  gameScore.Order,
+				}
 
 				if err :=s.CreateGameScore(tx, &newGameScore); err != nil {
 					return err
@@ -569,8 +567,8 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 			for _, gameScore := range game.Scores {
 				newGameScore := models.GameScore{
 					GameId: newGame.ID,
-					TeamId: gameScore.TeamId,
-					Score:  gameScore.Score,
+					Team1Score: gameScore.Team1Score,
+					Team2Score: gameScore.Team2Score,
 					Order:  gameScore.Order,
 				}
 
@@ -596,8 +594,8 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 			for _, gameScore := range gameScores.Add {
 				newGameScore := models.GameScore{
 					GameId: updateGame.ID,
-					TeamId: gameScore.TeamId,
-					Score:  gameScore.Score,
+					Team1Score: gameScore.Team1Score,
+					Team2Score: gameScore.Team2Score,
 					Order:  gameScore.Order,
 				}
 
@@ -611,8 +609,8 @@ func (s *ExpeditionService) UpdateExpeditionService(expeditionId *uint, userId *
 					return err
 				}
 
-				updateGameScore.TeamId = gameScore.TeamId
-				updateGameScore.Score = gameScore.Score
+				updateGameScore.Team1Score = gameScore.Team1Score
+				updateGameScore.Team2Score = gameScore.Team2Score
 				updateGameScore.Order = gameScore.Order
 
 				if err := s.UpdateGameScore(tx, updateGameScore); err != nil {

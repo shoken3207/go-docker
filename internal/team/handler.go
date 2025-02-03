@@ -57,6 +57,34 @@ func (h *TeamHandler) GetTeamsWithFavorites(c *gin.Context) {
 	utils.SuccessResponse[[]SportResponse](c,http.StatusOK, *response, utils.CreateSingleMessage("チームの取得に成功しました。"))
 }
 
+// @Summary クライアントでチーム一覧を表示する際に必要なチーム情報を取得するAPI
+// @Description スポーツIDからチームをすべて取得する
+// @Tags team
+// @Security BearerAuth
+// @Param sportsId path int true "スポーツID"
+// @Success 200 {object} utils.ApiResponse[[]TeamListResponse] "成功"
+// @Failure 400 {object} utils.ErrorBasicResponse "リクエストエラー"
+// @Failure 500 {object} utils.ErrorBasicResponse "内部エラー"
+// @Router /api/team/{sportsId} [get]
+func (h *TeamHandler) GetTeamBySportsId(c *gin.Context) {
+	var requestPath GetTeamBySportsIdRequestPath
+	_, err, customErr := utils.ValidateRequest(c, &requestPath, nil, nil, true)
+	if err != nil {
+		if customErr, ok := customErr.(*utils.CustomError); ok {
+			utils.HandleCustomError(c, customErr, err, requestPath)
+			return
+		}
+	}
+	response, err := teamService.GetTeamsBySportsId(&requestPath.SportsId)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			utils.ErrorResponse[any](c, customErr.Code, utils.CreateSingleMessage(customErr.Error()))
+			return
+		}
+	}
+
+	utils.SuccessResponse[[]TeamListResponse](c, http.StatusOK, *response, utils.CreateSingleMessage("チームの取得に成功しました。"))
+}
 
 func NewTeamHandler() *TeamHandler {
 	return &TeamHandler{}

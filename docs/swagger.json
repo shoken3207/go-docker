@@ -1736,6 +1736,49 @@
                 }
             }
         },
+        "/api/team/{sportsId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "スポーツIDからチームをすべて取得する",
+                "tags": [
+                    "team"
+                ],
+                "summary": "クライアントでチーム一覧を表示する際に必要なチーム情報を取得するAPI",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "スポーツID",
+                        "name": "sportsId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ApiResponse-array_team_TeamListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "リクエストエラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部エラー",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorBasicResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/upload/images": {
             "post": {
                 "description": "画像をアップロードし、URLを返します。\u003cbr\u003eプロフィール、スタジアム、遠征など、格納フォルダを指定してください。\u003cbr\u003e画像は1枚から10枚アップロードできるが、Swagger UIでは1つしか選択できません。\u003cbr\u003eファイルの拡張子は、[\".jpg\", \".jpeg\", \".png\"]だけを受け付けています。ファイルサイズは最大5MBを上限としています。",
@@ -3329,6 +3372,19 @@
                 }
             }
         },
+        "team.TeamListResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "オリックス・バファローズ"
+                }
+            }
+        },
         "team.TeamResponse": {
             "type": "object",
             "properties": {
@@ -3625,6 +3681,30 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/team.SportResponse"
+                    }
+                },
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "成功しました！！"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "utils.ApiResponse-array_team_TeamListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/team.TeamListResponse"
                     }
                 },
                 "messages": {

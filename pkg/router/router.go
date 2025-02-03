@@ -141,6 +141,7 @@ func SetupRouter(router *gin.Engine, ik *imagekit.ImageKit) *gin.Engine {
 		protectedTeamGroup := protectedGroup.Group("/team")
 		{
 			protectedTeamGroup.GET("/me", teamHandler.GetTeamsWithFavorites)
+			protectedTeamGroup.GET("/:sportsId", teamHandler.GetTeamBySportsId)
 		}
 		protectedStadiumGroup := protectedGroup.Group("/stadium")
 		{

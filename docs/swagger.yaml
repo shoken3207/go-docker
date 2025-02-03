@@ -420,31 +420,25 @@ definitions:
       team1Id:
         example: 1
         type: integer
-      team1Name:
-        example: ヤクルト
-        type: string
       team2Id:
         example: 2
         type: integer
-      team2Name:
-        example: ソフトバンク
-        type: string
     type: object
   expedition.GameScoreRequest:
     properties:
       order:
         example: 1
         type: integer
-      score:
+      team1Score:
         example: 1
         type: integer
-      teamId:
-        example: 1
+      team2Score:
+        example: 2
         type: integer
     required:
     - order
-    - score
-    - teamId
+    - team1Score
+    - team2Score
     type: object
   expedition.GameScoreResponse:
     properties:
@@ -454,15 +448,18 @@ definitions:
       order:
         example: 1
         type: integer
-      score:
-        example: 1
-        type: integer
-      teamId:
-        example: 1
-        type: integer
-      teamName:
+      team1Name:
         example: ヤクルト
         type: string
+      team1Score:
+        example: 1
+        type: integer
+      team2Name:
+        example: ソフトバンク
+        type: string
+      team2Score:
+        example: 2
+        type: integer
     type: object
   expedition.GetExpeditionDetailResponse:
     properties:
@@ -656,17 +653,17 @@ definitions:
       order:
         example: 1
         type: integer
-      score:
+      team1Score:
         example: 1
         type: integer
-      teamId:
-        example: 1
+      team2Score:
+        example: 2
         type: integer
     required:
     - id
     - order
-    - score
-    - teamId
+    - team1Score
+    - team2Score
     type: object
   expedition.UpdateGameScoresRequest:
     properties:

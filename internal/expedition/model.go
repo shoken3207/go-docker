@@ -32,9 +32,7 @@ type GameResponse struct {
 	ID      uint                `json:"id" example:"1"`
 	Date    time.Time           `json:"date" example:"2025-01-01T00:00:00Z"`
 	Team1Id uint                `json:"team1Id" example:"1"`
-	Team1Name string `json:"team1Name" example:"ヤクルト"`
 	Team2Id uint                `json:"team2Id" example:"2"`
-	Team2Name string `json:"team2Name" example:"ソフトバンク"`
 	Scores  []GameScoreResponse `json:"scores"`
 }
 
@@ -44,16 +42,17 @@ type UpdateGameRequest struct {
 	Scores UpdateGameScoresRequest `json:"scores" binding:"required" field:"試合スコア"`
 }
 type GameScoreRequest struct {
-	Order  int  `json:"order" binding:"required" example:"1" field:"順番"`
-	Score  int  `json:"score" binding:"required" example:"1" field:"スコア"`
-	TeamId uint `json:"teamId" binding:"required" example:"1" field:"チームID"`
+	Order      int  `json:"order" binding:"required" example:"1" field:"順番"`
+	Team1Score int  `json:"team1Score" binding:"required" example:"1" field:"チーム1スコア"`
+	Team2Score int  `json:"team2Score" binding:"required" example:"2" field:"チーム2スコア"`
 }
 type GameScoreResponse struct {
-	ID     uint `json:"id" example:"1"`
-	Order  int  `json:"order" example:"1"`
-	Score  int  `json:"score" example:"1"`
-	TeamId uint `json:"teamId" example:"1"`
-	TeamName string `json:"teamName" example:"ヤクルト"`
+	ID         uint   `json:"id" example:"1"`
+	Order      int    `json:"order" example:"1"`
+	Team1Score int    `json:"team1Score" example:"1"`
+	Team2Score int    `json:"team2Score" example:"2"`
+	Team1Name  string `json:"team1Name" example:"ヤクルト"`
+	Team2Name  string `json:"team2Name" example:"ソフトバンク"`
 }
 
 type UpdateGameScoreRequest struct {

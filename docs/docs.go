@@ -2638,17 +2638,9 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
-                "team1Name": {
-                    "type": "string",
-                    "example": "ヤクルト"
-                },
                 "team2Id": {
                     "type": "integer",
                     "example": 2
-                },
-                "team2Name": {
-                    "type": "string",
-                    "example": "ソフトバンク"
                 }
             }
         },
@@ -2656,21 +2648,21 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "order",
-                "score",
-                "teamId"
+                "team1Score",
+                "team2Score"
             ],
             "properties": {
                 "order": {
                     "type": "integer",
                     "example": 1
                 },
-                "score": {
+                "team1Score": {
                     "type": "integer",
                     "example": 1
                 },
-                "teamId": {
+                "team2Score": {
                     "type": "integer",
-                    "example": 1
+                    "example": 2
                 }
             }
         },
@@ -2685,17 +2677,21 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
-                "score": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "teamId": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "teamName": {
+                "team1Name": {
                     "type": "string",
                     "example": "ヤクルト"
+                },
+                "team1Score": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "team2Name": {
+                    "type": "string",
+                    "example": "ソフトバンク"
+                },
+                "team2Score": {
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },
@@ -2958,8 +2954,8 @@ const docTemplate = `{
             "required": [
                 "id",
                 "order",
-                "score",
-                "teamId"
+                "team1Score",
+                "team2Score"
             ],
             "properties": {
                 "id": {
@@ -2970,13 +2966,13 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
-                "score": {
+                "team1Score": {
                     "type": "integer",
                     "example": 1
                 },
-                "teamId": {
+                "team2Score": {
                     "type": "integer",
-                    "example": 1
+                    "example": 2
                 }
             }
         },

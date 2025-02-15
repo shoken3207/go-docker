@@ -42,9 +42,9 @@ type UpdateGameRequest struct {
 	Scores UpdateGameScoresRequest `json:"scores" binding:"required" field:"試合スコア"`
 }
 type GameScoreRequest struct {
-	Order      int  `json:"order" binding:"required" example:"1" field:"順番"`
-	Team1Score int  `json:"team1Score" binding:"required" example:"1" field:"チーム1スコア"`
-	Team2Score int  `json:"team2Score" binding:"required" example:"2" field:"チーム2スコア"`
+	Order      int  `json:"order" binding:"gte=0" example:"1" field:"順番"`
+	Team1Score int  `json:"team1Score" binding:"gte=0" example:"1" field:"チーム1スコア"`
+	Team2Score int  `json:"team2Score" binding:"gte=0" example:"2" field:"チーム2スコア"`
 }
 type GameScoreResponse struct {
 	ID         uint   `json:"id" example:"1"`
